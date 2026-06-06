@@ -30,6 +30,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column
+    private String profileImg;
+
     // relação com a tabela intermediária que liga famílias com usuarios
     @OneToMany(mappedBy = "users")
     private List<FamilyMember> memberships = new ArrayList<>();

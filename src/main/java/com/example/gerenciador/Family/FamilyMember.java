@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+// tabela intermediária entre family e user
 
 @Getter
 @Setter
