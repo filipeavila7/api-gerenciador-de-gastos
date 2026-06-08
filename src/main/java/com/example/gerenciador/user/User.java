@@ -33,6 +33,9 @@ public class User {
     @Column
     private String profileImg;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole role = UserRole.USER;
+
     // relação com a tabela intermediária que liga famílias com usuarios
     @OneToMany(mappedBy = "users")
     private List<FamilyMember> memberships = new ArrayList<>();
