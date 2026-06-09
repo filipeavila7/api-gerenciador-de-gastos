@@ -1,4 +1,4 @@
-package com.example.gerenciador.config;
+package com.example.gerenciador.security;
 
 
 import lombok.AllArgsConstructor;

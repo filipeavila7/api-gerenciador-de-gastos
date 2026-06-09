@@ -1,4 +1,4 @@
-package com.example.gerenciador.Family;
+package com.example.gerenciador.family;
 
 public enum FamilyRole {
     MEMBER,

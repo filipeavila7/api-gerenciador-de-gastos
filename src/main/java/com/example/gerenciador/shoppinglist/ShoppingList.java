@@ -1,6 +1,6 @@
 package com.example.gerenciador.shoppinglist;
 
-import com.example.gerenciador.Family.Family;
+import com.example.gerenciador.family.Family;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
