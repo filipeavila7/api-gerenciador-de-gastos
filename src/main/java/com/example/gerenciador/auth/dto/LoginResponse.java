@@ -1,4 +1,6 @@
 package com.example.gerenciador.auth.dto;
 
-public class LoginResponse {
+public record LoginResponse(
+        String token
+) {
 }

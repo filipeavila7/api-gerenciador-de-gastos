@@ -3,6 +3,7 @@ package com.example.gerenciador.jwt;
 import com.example.gerenciador.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +14,8 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-    private static final String SECRET =
-            "sua-chave-super-secreta-com-pelo-menos-32-caracteres";
+    @Value("${JWT_SECRET}")
+    private String SECRET;
 
     // transformar a chave secreta (SECRET) em um objeto Key que a biblioteca JJWT consegue usar para assinar e validar tokens.
     private Key getKey(){
