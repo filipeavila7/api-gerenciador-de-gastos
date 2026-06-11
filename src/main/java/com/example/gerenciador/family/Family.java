@@ -35,15 +35,15 @@ public class Family {
     private String profileImg;
 
     // relação com a tabela intermediária que liga famílias com usuarios
-    @OneToMany(mappedBy = "families")
+    @OneToMany(mappedBy = "family", cascade = CascadeType.ALL)
     private List<FamilyMember> userMembres = new ArrayList<>();
 
     // relação inversa com produtos
-    @OneToMany(mappedBy = "families")
+    @OneToMany(mappedBy = "family")
     private List<Products> products = new ArrayList<>();
 
     // relação inversa com categorias
-    @OneToMany(mappedBy = "families")
+    @OneToMany(mappedBy = "family")
     private List<Category> categories = new ArrayList<>();
 
 

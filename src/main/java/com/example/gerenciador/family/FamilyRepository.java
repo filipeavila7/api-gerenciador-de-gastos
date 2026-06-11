@@ -1,4 +1,7 @@
 package com.example.gerenciador.family;
 
-public interface FamilyRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FamilyRepository extends JpaRepository<Family, Long> {
+
 }
