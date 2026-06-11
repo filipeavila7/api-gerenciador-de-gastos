@@ -41,7 +41,7 @@ public class User implements UserDetails {
     private UserRole role = UserRole.USER;
 
     // relação com a tabela intermediária que liga famílias com usuarios
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "user")
     private List<FamilyMember> memberships = new ArrayList<>();
 
 
