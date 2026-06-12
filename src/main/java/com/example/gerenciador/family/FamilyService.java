@@ -138,6 +138,32 @@ public class FamilyService {
 
     }
 
+    // ================ PUT ======================
+
+    @Transactional
+    // admin trnasformar membros em admin
+    public MemberResponse changeMemberToAdmin(Long familyId, Long userId){
+        User loggedUser = securityService.getLoggedUser();
+
+       Family family = familyRepository.findById(familyId)
+                        .orElseThrow(FamilyNotFoundException::new);
+
+       // verifica se o usuario pertence aquela familia e é admin
+       getAdminMemberOrThrow(family, loggedUser);
+
+        FamilyMember member = familyMemberRepository.findByFamilyIdAndUserId(familyId, userId)
+                .orElseThrow(UserNotFoundException::new);
+
+
+        member.setRole(FamilyRole.ADMIN);
+
+        familyMemberRepository.save(member);
+
+        return toMemberResponse(member);
+
+
+    }
+
 
 
 
@@ -269,6 +295,7 @@ public class FamilyService {
     }
 
     // ================ HELPERS ======================
+
 
     private FamilyMember getAdminMemberOrThrow(Family family, User user) {
         FamilyMember member = familyMemberRepository.findByFamilyAndUser(family, user)
