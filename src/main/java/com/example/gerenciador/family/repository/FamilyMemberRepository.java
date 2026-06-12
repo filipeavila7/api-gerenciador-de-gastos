@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface FamilyMemberRepository extends JpaRepository<FamilyMember, Long> {
     long countByUserAndRole(User user, FamilyRole role);
 
+    long countByFamilyId(Long familyId);
+
     Boolean existsByFamilyAndUser(Family family, User user) ;
 
     List<FamilyMember> findByUserId(Long userId);

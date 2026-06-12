@@ -97,12 +97,6 @@ public class FamilyService {
     @Transactional
     public FamilyMemberResponse addNewMemberToFamily(Long familyId, Long memberId){
 
-        List<FamilyMember> members = familyMemberRepository.findByFamilyId(familyId);
-
-        if (members.size() == 12){
-            throw new MemberLimitExceededException();
-        }
-
         User loggedUser = securityService.getLoggedUser();
 
         // encontra o membro novo
@@ -112,6 +106,10 @@ public class FamilyService {
         // encontrar a familia
         Family family = familyRepository.findById(familyId)
                 .orElseThrow(FamilyNotFoundException::new);
+
+        if (familyMemberRepository.countByFamilyId(familyId) >= 12) {
+            throw new MemberLimitExceededException();
+        }
 
 
         // verificações:
@@ -154,6 +152,9 @@ public class FamilyService {
         FamilyMember member = familyMemberRepository.findByFamilyIdAndUserId(familyId, userId)
                 .orElseThrow(UserNotFoundException::new);
 
+        if (member.getRole() == FamilyRole.ADMIN){
+            return toMemberResponse(member);
+        }
 
         member.setRole(FamilyRole.ADMIN);
 
@@ -231,7 +232,7 @@ public class FamilyService {
         if (member.getRole() == FamilyRole.ADMIN){
             // filtrar somente os usuarios que não são o logado
             List<FamilyMember> candidates = members.stream()
-                    .filter(m -> !m.getId().equals(loggedUser.getId()))
+                    .filter(m -> !m.getUser().getId().equals(loggedUser.getId()))
                     .toList();
 
             // com os usuarios filtrados, passaremos os privilegios de admin para o mais antigo
