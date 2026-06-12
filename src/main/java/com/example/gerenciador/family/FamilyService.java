@@ -25,7 +25,7 @@ public class FamilyService {
     private final UserRepository userRepository;
     private final FamilyMemberRepository familyMemberRepository;
 
-
+    // ================ GET ======================
 
     // ver todas as familias em que o usuario logado esta ou tem
     public List<FamilyResponse> getMyFamilies(){
@@ -62,13 +62,13 @@ public class FamilyService {
 
     }
 
+    // ================ POST ======================
 
-    // criar família com o user logado sendo o admin dela
+    // criar família com o user logado sendo o admin
+    @Transactional
     public FamilyResponse createFamily (FamilyRequest request ) {
         User loggedUser = securityService.getLoggedUser();
 
-        userRepository.findByEmail(loggedUser.getEmail())
-                .orElseThrow(UserNotFoundException::new);
 
         long count = familyMemberRepository.countByUserAndRole(loggedUser, FamilyRole.ADMIN);
 
@@ -99,27 +99,8 @@ public class FamilyService {
 
     }
 
-    @Transactional
-    public void deleteFamily(Long familyId){
-        User loggedUser = securityService.getLoggedUser();
-
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
-
-        // verificações
-        FamilyMember loggedMember = familyMemberRepository.findByFamilyAndUser(family, loggedUser)
-                .orElseThrow(() -> new AccessDeniedException("Access denied"));
-
-
-        if (loggedMember.getRole() != FamilyRole.ADMIN){
-            throw new AccessDeniedException("Access denied");
-        }
-
-        familyRepository.delete(family);
-
-    }
-
     // usuário Admin adcionar novos membros as famílias
+    @Transactional
     public FamilyMemberResponse addNewMemberToFamily(Long familyId, Long memberId){
         User loggedUser = securityService.getLoggedUser();
 
@@ -139,17 +120,10 @@ public class FamilyService {
             throw new UserAlreadyInFamilyException();
         }
 
-        // verifica se o usuario que ta adcionando pertence a aquela família
-        FamilyMember loggedMember = familyMemberRepository.findByFamilyAndUser(family, loggedUser)
-                .orElseThrow(() -> new AccessDeniedException("Access denied"));
+        // verifica se o usuario que ta adcionando pertence aquela família e é admin
+        getAdminMemberOrThrow(family, loggedUser);
 
-
-        // verifica se o usuario que ta adcionando, é o admin daquela familia
-        if (loggedMember.getRole() != FamilyRole.ADMIN){
-            throw new AccessDeniedException("Access denied");
-        }
-
-        // criar o novo vinculo
+        // criar vinculo
         FamilyMember familyMember = new FamilyMember();
 
         familyMember.setUser(member);
@@ -163,16 +137,64 @@ public class FamilyService {
 
     }
 
-    // todo - criar metodo de admin da familia remover membros
+
+
+
+    // ================ DELETE ======================
+
+    @Transactional
+    public void deleteFamily(Long familyId){
+        User loggedUser = securityService.getLoggedUser();
+
+        Family family = familyRepository.findById(familyId)
+                .orElseThrow(FamilyNotFoundException::new);
+
+        // verifica se o usuariom logado pertence aquela família e é admin
+        getAdminMemberOrThrow(family, loggedUser);
+
+        familyRepository.delete(family);
+
+    }
+
+
+    @Transactional
+    public void removeMemberFromFamily(Long memberId, Long familyId) {
+        User loggedUser = securityService.getLoggedUser();
+
+        // encontrar a familia
+        Family family = familyRepository.findById(familyId)
+                .orElseThrow(FamilyNotFoundException::new);
+
+        // verifica se o usuario pertence aquela família ou é admin
+        getAdminMemberOrThrow(family, loggedUser);
+
+        // acha o membro que será removido
+        FamilyMember memberToRemove = familyMemberRepository.findByFamilyIdAndUserId(familyId, memberId)
+                .orElseThrow(UserNotFoundException::new);
+
+        // so remove se ele não for admin
+        if (memberToRemove.getRole() != FamilyRole.MEMBER) {
+            throw new CannotRemoveAdminException();
+        }
+
+
+        familyMemberRepository.delete(memberToRemove);
+
+
+    }
+
+    // ================ TODOLIST ======================
+
+    // todo - criar metodo de admin da familia remover membros - CRIADO
     // todo - criar metodo para um usuario sair de uma familia e caso ele seja admin, o cargo vai pro user mais antigo
     // todo - criar metodo para um admin tornar um membro admin
     // todo - criar metodo para editar dados da familia
-    // todo - criar verificação maxima de membros em uma familia - max 12
+    // todo - criar verificação maxima de membros em uma familia - max
+    // todo - criar crud para usuario admins
 
 
+    // ================ MAPPERS ======================
 
-
-    //  mappers
     public FamilyResponse toResponse(Family f){
         return new FamilyResponse(
                 f.getId(),
@@ -185,12 +207,15 @@ public class FamilyService {
     public FamilyMemberResponse toFamilyMemberResponse(FamilyMember f){
         return new FamilyMemberResponse(
                 f.getId(),
-                f.getFamily(),
-                f.getUser(),
+                f.getFamily().getId(),
+                f.getUser().getId(),
+                f.getUser().getName(),
+                f.getUser().getProfileImg(),
                 f.getJoinedAt(),
                 f.getRole()
         );
     }
+
 
     public MemberResponse toMemberResponse( FamilyMember f){
         return new MemberResponse(
@@ -199,5 +224,18 @@ public class FamilyService {
                 f.getRole(),
                 f.getJoinedAt()
         );
+    }
+
+    // ================ HELPERS ======================
+
+    private FamilyMember getAdminMemberOrThrow(Family family, User user) {
+        FamilyMember member = familyMemberRepository.findByFamilyAndUser(family, user)
+                .orElseThrow(() -> new AccessDeniedException("Access denied"));
+
+        if (member.getRole() != FamilyRole.ADMIN) {
+            throw new AccessDeniedException("Access denied");
+        }
+
+        return member;
     }
 }

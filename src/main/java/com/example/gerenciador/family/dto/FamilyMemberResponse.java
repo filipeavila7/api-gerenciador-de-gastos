@@ -8,8 +8,10 @@ import java.time.LocalDateTime;
 
 public record FamilyMemberResponse(
         Long id,
-        Family family,
-        User userMember,
+        Long familyId,
+        Long userId,
+        String userName,
+        String userProfileImg,
         LocalDateTime joinedAt,
         FamilyRole familyRole
 
