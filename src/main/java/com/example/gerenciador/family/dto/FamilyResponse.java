@@ -7,6 +7,7 @@ public record FamilyResponse(
         Long id,
         String name,
         LocalDateTime createdAt,
-        String profileImg
+        String profileImg,
+        int totalMembers
 ) {
 }

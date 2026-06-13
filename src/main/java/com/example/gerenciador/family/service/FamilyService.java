@@ -1,16 +1,20 @@
-package com.example.gerenciador.family;
+package com.example.gerenciador.family.service;
 
 import com.example.gerenciador.exceptions.*;
-import com.example.gerenciador.family.dto.FamilyMemberResponse;
-import com.example.gerenciador.family.dto.FamilyRequest;
-import com.example.gerenciador.family.dto.FamilyResponse;
-import com.example.gerenciador.family.dto.MemberResponse;
+import com.example.gerenciador.family.dto.*;
+import com.example.gerenciador.family.entity.Family;
+import com.example.gerenciador.family.entity.FamilyMember;
+import com.example.gerenciador.family.entity.FamilyRole;
+import com.example.gerenciador.family.mapper.FamilyMapper;
 import com.example.gerenciador.family.repository.FamilyMemberRepository;
 import com.example.gerenciador.family.repository.FamilyRepository;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.User;
 import com.example.gerenciador.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,7 @@ public class FamilyService {
     private final SecurityService securityService;
     private final UserRepository userRepository;
     private final FamilyMemberRepository familyMemberRepository;
+    private final FamilyMapper familyMapper;
 
     // ================ GET ======================
 
@@ -38,8 +43,23 @@ public class FamilyService {
         // pegar somente as famílias do FamilyMember
         return memberships.stream()
                 .map(FamilyMember::getFamily)
-                .map(this::toResponse)
+                .map(familyMapper::toResponse)
                 .toList();
+    }
+
+    // pegar somente uma familia pelo id
+    public FamilyResponse getFamily(Long familyId){
+        User loggedUser = securityService.getLoggedUser();
+
+        Family family = familyRepository.findById(familyId)
+                .orElseThrow(FamilyNotFoundException::new);
+
+        // so pode ver os membros caso o usuario pertenca a aquela familia
+        familyMemberRepository.findByFamilyAndUser(family, loggedUser)
+                .orElseThrow(() -> new AccessDeniedException("Access denied"));
+
+        return familyMapper.toResponse(family);
+
     }
 
 
@@ -58,7 +78,7 @@ public class FamilyService {
         List<FamilyMember> memberships = familyMemberRepository.findByFamilyId(familyId);
 
         return memberships.stream()
-                .map(this::toMemberResponse)
+                .map(familyMapper::toMemberResponse)
                 .toList();
 
     }
@@ -89,7 +109,7 @@ public class FamilyService {
 
         familyRepository.save(family);
 
-        return toResponse(family);
+        return familyMapper.toResponse(family);
 
     }
 
@@ -107,6 +127,7 @@ public class FamilyService {
         Family family = familyRepository.findById(familyId)
                 .orElseThrow(FamilyNotFoundException::new);
 
+        // verifica se a familia não esta cheia antes de adcionar um novo membro
         if (familyMemberRepository.countByFamilyId(familyId) >= 12) {
             throw new MemberLimitExceededException();
         }
@@ -132,7 +153,7 @@ public class FamilyService {
 
         familyMemberRepository.save(familyMember);
 
-        return toFamilyMemberResponse(familyMember);
+        return  familyMapper.toFamilyMemberResponse(familyMember);
 
     }
 
@@ -153,16 +174,45 @@ public class FamilyService {
                 .orElseThrow(UserNotFoundException::new);
 
         if (member.getRole() == FamilyRole.ADMIN){
-            return toMemberResponse(member);
+            return familyMapper.toMemberResponse(member);
         }
 
         member.setRole(FamilyRole.ADMIN);
 
         familyMemberRepository.save(member);
 
-        return toMemberResponse(member);
+        return familyMapper.toMemberResponse(member);
 
 
+    }
+
+
+    // editar dados da familia
+    @Transactional
+    public FamilyResponse updateFamily (Long familyId, FamilyUpdateRequest request){
+        User loggedUser = securityService.getLoggedUser();
+
+        Family family = familyRepository.findById(familyId)
+                .orElseThrow(FamilyNotFoundException::new);
+
+
+
+        // verifica se o usuario é admin e pértence aquela familia antes de editar
+        getAdminMemberOrThrow(family, loggedUser);
+
+
+        // atualizar os dados
+        if (request.name() != null){
+            family.setName(request.name());
+        }
+
+        if (request.profileImg() != null){
+            family.setProfileImg(request.profileImg());
+        }
+
+        familyRepository.save(family);
+
+        return familyMapper.toResponse(family);
     }
 
 
@@ -170,6 +220,7 @@ public class FamilyService {
 
     // ================ DELETE ======================
 
+    // apagar familia
     @Transactional
     public void deleteFamily(Long familyId){
         User loggedUser = securityService.getLoggedUser();
@@ -252,48 +303,22 @@ public class FamilyService {
 
     }
 
+
+
+
+
+
     // ================ TODOLIST ======================
 
     // todo - (X) criar metodo de admin da familia remover membros
     // todo - (X) criar metodo para um usuario sair de uma familia e caso ele seja admin, o cargo vai pro user mais antigo
-    // todo - () criar metodo para um admin tornar um membro admin
-    // todo - () criar metodo para editar dados da familia
-    // todo - () criar verificação maxima de membros em uma familia - max
+    // todo - (X) criar metodo para um admin tornar um membro admin
+    // todo - (X) criar metodo para editar dados da familia
+    // todo - (x) criar verificação maxima de membros em uma familia - max
     // todo - () criar crud para usuario admins
 
 
-    // ================ MAPPERS ======================
 
-    public FamilyResponse toResponse(Family f){
-        return new FamilyResponse(
-                f.getId(),
-                f.getName(),
-                f.getCreatedAt(),
-                f.getProfileImg()
-        );
-    }
-
-    public FamilyMemberResponse toFamilyMemberResponse(FamilyMember f){
-        return new FamilyMemberResponse(
-                f.getId(),
-                f.getFamily().getId(),
-                f.getUser().getId(),
-                f.getUser().getName(),
-                f.getUser().getProfileImg(),
-                f.getJoinedAt(),
-                f.getRole()
-        );
-    }
-
-
-    public MemberResponse toMemberResponse( FamilyMember f){
-        return new MemberResponse(
-                f.getUser().getName(),
-                f.getUser().getProfileImg(),
-                f.getRole(),
-                f.getJoinedAt()
-        );
-    }
 
     // ================ HELPERS ======================
 
