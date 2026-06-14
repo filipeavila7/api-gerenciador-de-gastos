@@ -1,4 +1,4 @@
-package com.example.gerenciador.user;
+package com.example.gerenciador.user.entity;
 
 
 public enum UserRole {

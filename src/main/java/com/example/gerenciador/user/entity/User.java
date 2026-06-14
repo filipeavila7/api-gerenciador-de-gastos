@@ -1,4 +1,4 @@
-package com.example.gerenciador.user;
+package com.example.gerenciador.user.entity;
 
 import com.example.gerenciador.family.entity.FamilyMember;
 import jakarta.persistence.*;

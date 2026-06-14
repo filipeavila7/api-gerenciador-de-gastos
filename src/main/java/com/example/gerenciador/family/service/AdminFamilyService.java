@@ -6,6 +6,7 @@ import com.example.gerenciador.family.dto.FamilyUpdateRequest;
 import com.example.gerenciador.family.dto.MemberResponse;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.family.entity.FamilyMember;
+import com.example.gerenciador.family.mapper.FamilyMapper;
 import com.example.gerenciador.family.repository.FamilyMemberRepository;
 import com.example.gerenciador.family.repository.FamilyRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,16 +23,17 @@ public class AdminFamilyService {
 
     private final FamilyRepository familyRepository;
     private final FamilyMemberRepository familyMemberRepository;
+    private final FamilyMapper familyMapper;
 
-    // ================ ROTAS ADMIN ======================
+
+    // ================ GET ======================
 
     // admin pode ver todas as familias
-    public List<FamilyResponse> adminGetAllFamilies(Pageable pageable){
-        Page<Family> all = familyRepository.findAll(pageable);
+    public Page<FamilyResponse> adminGetAllFamilies(Pageable pageable){
 
-        return all.stream()
-                .map(this::toResponse)
-                .toList();
+        return familyRepository.findAll(pageable)
+                .map(familyMapper::toResponse);
+
     }
 
     // admin pode ver somente uma familia
@@ -39,7 +41,7 @@ public class AdminFamilyService {
         Family family = familyRepository.findById(familyId)
                 .orElseThrow(FamilyNotFoundException::new);
 
-        return toResponse(family);
+        return familyMapper.toResponse(family);
     }
 
     // admin pode ver todos os membros de uma familia
@@ -50,10 +52,11 @@ public class AdminFamilyService {
         List<FamilyMember> memberships = familyMemberRepository.findByFamilyId(familyId);
 
         return memberships.stream()
-                .map(this::toMemberResponse)
+                .map(familyMapper::toMemberResponse)
                 .toList();
     }
 
+    // ================ DELETE ======================
 
     // admin pode deletar familia
     @Transactional
@@ -64,6 +67,7 @@ public class AdminFamilyService {
         familyRepository.delete(family);
     }
 
+    // ================ UPDATE ======================
 
     // admin pode editar uma familia
     @Transactional
@@ -83,7 +87,7 @@ public class AdminFamilyService {
 
         familyRepository.save(family);
 
-        return toResponse(family);
+        return familyMapper.toResponse(family);
     }
 
 

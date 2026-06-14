@@ -1,6 +1,6 @@
 package com.example.gerenciador.family.entity;
 
-import com.example.gerenciador.user.User;
+import com.example.gerenciador.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

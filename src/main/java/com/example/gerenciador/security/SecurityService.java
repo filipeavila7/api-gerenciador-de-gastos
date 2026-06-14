@@ -1,6 +1,6 @@
 package com.example.gerenciador.security;
 
-import com.example.gerenciador.user.User;
+import com.example.gerenciador.user.entity.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

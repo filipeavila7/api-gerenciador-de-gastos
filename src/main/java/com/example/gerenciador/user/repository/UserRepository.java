@@ -1,5 +1,6 @@
-package com.example.gerenciador.user;
+package com.example.gerenciador.user.repository;
 
+import com.example.gerenciador.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

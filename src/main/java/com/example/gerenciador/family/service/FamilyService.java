@@ -9,12 +9,9 @@ import com.example.gerenciador.family.mapper.FamilyMapper;
 import com.example.gerenciador.family.repository.FamilyMemberRepository;
 import com.example.gerenciador.family.repository.FamilyRepository;
 import com.example.gerenciador.security.SecurityService;
-import com.example.gerenciador.user.User;
-import com.example.gerenciador.user.UserRepository;
+import com.example.gerenciador.user.entity.User;
+import com.example.gerenciador.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +51,7 @@ public class FamilyService {
         Family family = familyRepository.findById(familyId)
                 .orElseThrow(FamilyNotFoundException::new);
 
-        // so pode ver os membros caso o usuario pertenca a aquela familia
+        // verifica se o usuario pertenca a aquela familia
         familyMemberRepository.findByFamilyAndUser(family, loggedUser)
                 .orElseThrow(() -> new AccessDeniedException("Access denied"));
 
@@ -196,7 +193,6 @@ public class FamilyService {
                 .orElseThrow(FamilyNotFoundException::new);
 
 
-
         // verifica se o usuario é admin e pértence aquela familia antes de editar
         getAdminMemberOrThrow(family, loggedUser);
 
@@ -315,7 +311,7 @@ public class FamilyService {
     // todo - (X) criar metodo para um admin tornar um membro admin
     // todo - (X) criar metodo para editar dados da familia
     // todo - (x) criar verificação maxima de membros em uma familia - max
-    // todo - () criar crud para usuario admins
+    // todo - (X) criar crud para usuario admins
 
 
 
@@ -323,7 +319,7 @@ public class FamilyService {
     // ================ HELPERS ======================
 
 
-    private FamilyMember getAdminMemberOrThrow(Family family, User user) {
+    private void getAdminMemberOrThrow(Family family, User user) {
         FamilyMember member = familyMemberRepository.findByFamilyAndUser(family, user)
                 .orElseThrow(() -> new AccessDeniedException("Access denied"));
 
@@ -331,6 +327,6 @@ public class FamilyService {
             throw new AccessDeniedException("Access denied");
         }
 
-        return member;
+
     }
 }

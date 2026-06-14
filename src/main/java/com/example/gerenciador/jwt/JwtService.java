@@ -1,6 +1,6 @@
 package com.example.gerenciador.jwt;
 
-import com.example.gerenciador.user.User;
+import com.example.gerenciador.user.entity.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,10 +1,12 @@
-package com.example.gerenciador.user;
+package com.example.gerenciador.user.service;
 
 
 import com.example.gerenciador.exceptions.EmailAlreadyExistsException;
 import com.example.gerenciador.exceptions.UserNotFoundException;
+import com.example.gerenciador.user.repository.UserRepository;
 import com.example.gerenciador.user.dto.UserRequest;
 import com.example.gerenciador.user.dto.UserResponse;
+import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

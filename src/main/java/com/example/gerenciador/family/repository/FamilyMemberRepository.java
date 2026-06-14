@@ -3,7 +3,7 @@ package com.example.gerenciador.family.repository;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.family.entity.FamilyMember;
 import com.example.gerenciador.family.entity.FamilyRole;
-import com.example.gerenciador.user.User;
+import com.example.gerenciador.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
