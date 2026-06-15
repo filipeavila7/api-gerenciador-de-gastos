@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class GlobalHelperService {
     private final FamilyMemberRepository familyMemberRepository;
 
+    // verificar se o usuario é admin da familia e pertence a ela
     public void getAdminMemberOrThrow(Family family, User user) {
         FamilyMember member = familyMemberRepository
                 .findByFamilyAndUser(family, user)
@@ -22,5 +23,13 @@ public class GlobalHelperService {
         if (member.getRole() != FamilyRole.ADMIN) {
             throw new AccessDeniedException("Access denied");
         }
+    }
+
+    // verificar somente se o usuario pertence a familia
+    public void getMemberOrThrow(Family family, User user) {
+        familyMemberRepository
+                .findByFamilyAndUser(family, user)
+                .orElseThrow(() -> new AccessDeniedException("Access denied"));
+
     }
 }
