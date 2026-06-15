@@ -319,7 +319,7 @@ public class FamilyService {
     // ================ HELPERS ======================
 
 
-    private void getAdminMemberOrThrow(Family family, User user) {
+    public void getAdminMemberOrThrow(Family family, User user) {
         FamilyMember member = familyMemberRepository.findByFamilyAndUser(family, user)
                 .orElseThrow(() -> new AccessDeniedException("Access denied"));
 
