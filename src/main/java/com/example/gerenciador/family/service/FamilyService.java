@@ -8,6 +8,7 @@ import com.example.gerenciador.family.entity.FamilyRole;
 import com.example.gerenciador.family.mapper.FamilyMapper;
 import com.example.gerenciador.family.repository.FamilyMemberRepository;
 import com.example.gerenciador.family.repository.FamilyRepository;
+import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
 import com.example.gerenciador.user.repository.UserRepository;
@@ -27,7 +28,7 @@ public class FamilyService {
     private final UserRepository userRepository;
     private final FamilyMemberRepository familyMemberRepository;
     private final FamilyMapper familyMapper;
-
+    private final GlobalHelperService globalHelperService;
     // ================ GET ======================
 
     // ver todas as familias em que o usuario logado esta ou tem
@@ -138,7 +139,7 @@ public class FamilyService {
         }
 
         // verifica se o usuario que ta adcionando pertence aquela família e é admin
-        getAdminMemberOrThrow(family, loggedUser);
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         // criar vinculo
         FamilyMember familyMember = new FamilyMember();
@@ -165,7 +166,7 @@ public class FamilyService {
                         .orElseThrow(FamilyNotFoundException::new);
 
        // verifica se o usuario pertence aquela familia e é admin
-       getAdminMemberOrThrow(family, loggedUser);
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         FamilyMember member = familyMemberRepository.findByFamilyIdAndUserId(familyId, userId)
                 .orElseThrow(UserNotFoundException::new);
@@ -194,7 +195,7 @@ public class FamilyService {
 
 
         // verifica se o usuario é admin e pértence aquela familia antes de editar
-        getAdminMemberOrThrow(family, loggedUser);
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
 
         // atualizar os dados
@@ -225,7 +226,7 @@ public class FamilyService {
                 .orElseThrow(FamilyNotFoundException::new);
 
         // verifica se o usuariom logado pertence aquela família e é admin
-        getAdminMemberOrThrow(family, loggedUser);
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         familyRepository.delete(family);
 
@@ -241,7 +242,7 @@ public class FamilyService {
                 .orElseThrow(FamilyNotFoundException::new);
 
         // verifica se o usuario pertence aquela família ou é admin
-        getAdminMemberOrThrow(family, loggedUser);
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         // acha o membro que será removido
         FamilyMember memberToRemove = familyMemberRepository.findByFamilyIdAndUserId(familyId, memberId)
@@ -316,17 +317,4 @@ public class FamilyService {
 
 
 
-    // ================ HELPERS ======================
-
-
-    public void getAdminMemberOrThrow(Family family, User user) {
-        FamilyMember member = familyMemberRepository.findByFamilyAndUser(family, user)
-                .orElseThrow(() -> new AccessDeniedException("Access denied"));
-
-        if (member.getRole() != FamilyRole.ADMIN) {
-            throw new AccessDeniedException("Access denied");
-        }
-
-
-    }
 }

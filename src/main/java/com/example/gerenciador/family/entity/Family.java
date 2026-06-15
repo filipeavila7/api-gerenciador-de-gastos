@@ -1,7 +1,7 @@
 package com.example.gerenciador.family.entity;
 
 
-import com.example.gerenciador.category.Category;
+import com.example.gerenciador.category.entity.Category;
 import com.example.gerenciador.products.Products;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

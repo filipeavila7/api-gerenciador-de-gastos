@@ -1,4 +1,4 @@
-package com.example.gerenciador.category;
+package com.example.gerenciador.category.entity;
 
 
 import com.example.gerenciador.family.entity.Family;
