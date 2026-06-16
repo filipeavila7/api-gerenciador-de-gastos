@@ -12,6 +12,7 @@ import com.example.gerenciador.family.repository.FamilyRepository;
 import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.products.dto.ProductRequest;
 import com.example.gerenciador.products.dto.ProductResponse;
+import com.example.gerenciador.products.dto.ProductUpdateRequest;
 import com.example.gerenciador.products.entity.Products;
 import com.example.gerenciador.products.mapper.ProductMapper;
 import com.example.gerenciador.products.repository.ProductRepository;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
+    // ================ GET ======================
 
     public Page<ProductResponse> getMyProducts(Long familyId, Pageable pageable){
         User loggedUser = securityService.getLoggedUser();
@@ -48,7 +51,10 @@ public class ProductService {
     }
 
 
+    // ================ POST ======================
+
     // usuario admin da familia criar produtos
+    @Transactional
     public ProductResponse createProduct(Long familyId, ProductRequest request){
         User loggedUser = securityService.getLoggedUser();
 
@@ -72,12 +78,49 @@ public class ProductService {
         products.setCategory(category);
         products.setFamily(family);
 
-        productRepository.save(products);
 
-        return productMapper.toProductResponse(products);
+        return productMapper.toProductResponse(productRepository.save(products));
     }
 
 
+    // ================ PUT ======================
+
+    // usuario admin editar produtos
+    @Transactional
+    public ProductResponse updateProduct(Long familyId, Long productId, ProductUpdateRequest request){
+        User loggedUser = securityService.getLoggedUser();
+
+        // acha a familia
+        Family family = familyRepository.findById(familyId)
+                .orElseThrow(FamilyNotFoundException::new);
+
+        // verifica se o user é admin e pertence aquela familia
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // verificar se a categoria pertence a aquela familia do user que ta adcionando
+        Category category = categoryRepository.findByIdAndFamilyId(request.categoryId(), familyId)
+                .orElseThrow(CategoryNotFoundException::new);
+
+        // acha o produto
+        Products product = productRepository.findByIdAndFamilyId(productId, familyId)
+                .orElseThrow(ProductNotFoundExeption::new);
+
+        if (request.name() != null){
+            product.setName(request.name());
+        }
+
+        if (request.categoryId() != null){
+            product.setCategory(category);
+        }
+
+        return productMapper.toProductResponse(productRepository.save(product));
+    }
+
+
+    // ================ DELETE ======================
+
+    // usuario admin deletar produtos
+    @Transactional
     public void deleteProduct (Long familyId, Long productId){
         User loggedUser = securityService.getLoggedUser();
 
