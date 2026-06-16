@@ -12,14 +12,16 @@
 - [x] Sair da família (com troca de admin se necessário)
 
 ---
-
+****
 ## Categorias
 - [x] Criar categoria (somente admin)
 - [X] Listar categorias por família
 - [X] Atualizar categoria
 - [X] Deletar categoria
 - [X] Paginação de categorias
+- [ ] Controller de categorias
 - [ ] Validar categoria pertence à família ao usar em produtos
+- [ ] rotas admin geral para categorias - ProductAdminService
 
 ---
 

@@ -1,7 +1,7 @@
 package com.example.gerenciador.purchase;
 
 
-import com.example.gerenciador.products.Products;
+import com.example.gerenciador.products.entity.Products;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

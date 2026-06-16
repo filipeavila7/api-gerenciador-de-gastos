@@ -15,7 +15,7 @@ public class GlobalHelperService {
     private final FamilyMemberRepository familyMemberRepository;
 
     // verificar se o usuario é admin da familia e pertence a ela
-    public void getAdminMemberOrThrow(Family family, User user) {
+    public FamilyMember getAdminMemberOrThrow(Family family, User user) {
         FamilyMember member = familyMemberRepository
                 .findByFamilyAndUser(family, user)
                 .orElseThrow(() -> new AccessDeniedException("Access denied"));
@@ -23,6 +23,8 @@ public class GlobalHelperService {
         if (member.getRole() != FamilyRole.ADMIN) {
             throw new AccessDeniedException("Access denied");
         }
+
+        return member;
     }
 
     // verificar somente se o usuario pertence a familia
