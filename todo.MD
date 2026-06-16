@@ -26,15 +26,17 @@
 ---
 
 ## Produtos
-- [ ] Criar produto
-- [ ] Listar produtos por família
+- [x] Criar produto
+- [x] Listar produtos por família
 - [ ] Atualizar produto
-- [ ] Deletar produto
+- [x] Deletar produto
 - [ ] Deletar produtos em lote
-- [ ] Associar produto à categoria
-- [ ] Validar categoria da mesma família
+- [x] Associar produto à categoria
+- [x] Validar categoria da mesma família
 - [ ] Filtrar por categoria
-- [ ] Paginação de produtos
+- [x] Paginação de produtos
+- [ ] controller de produtos
+- [ ] metodos admin geral 
 
 ---
 
