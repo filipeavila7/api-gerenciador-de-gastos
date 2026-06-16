@@ -10,6 +10,7 @@
 - [x] Adicionar membro (somente admin)
 - [x] Remover membro (somente admin)
 - [x] Sair da família (com troca de admin se necessário)
+- [ ] Admin geral poder adcionar qualquer usuario a qualquer familia
 
 ---
 ****
@@ -20,15 +21,15 @@
 - [X] Deletar categoria
 - [X] Paginação de categorias
 - [ ] Controller de categorias
-- [ ] Validar categoria pertence à família ao usar em produtos
-- [ ] rotas admin geral para categorias - ProductAdminService
+- [X] Validar categoria pertence à família ao usar em produtos
+- [X] rotas admin geral para categorias - CategoryAdminService
 
 ---
 
 ## Produtos
 - [x] Criar produto
 - [x] Listar produtos por família
-- [ ] Atualizar produto
+- [X] Atualizar produto
 - [x] Deletar produto
 - [ ] Deletar produtos em lote
 - [x] Associar produto à categoria
