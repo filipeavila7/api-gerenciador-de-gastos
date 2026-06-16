@@ -51,7 +51,8 @@ public class FamilyController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/add/{familyId}/member/{memberId}")
     public ResponseEntity<FamilyMemberResponse> adminAddNewUserToFamily(@PathVariable Long familyId, @PathVariable Long memberId){
-        return ResponseEntity.ok(adminFamilyService.adminAddNewUserToFamily(familyId, memberId));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(adminFamilyService.adminAddNewUserToFamily(familyId, memberId));
     }
 
     // ================ PUT ======================

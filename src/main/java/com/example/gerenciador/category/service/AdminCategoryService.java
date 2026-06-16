@@ -1,5 +1,6 @@
 package com.example.gerenciador.category.service;
 
+import com.example.gerenciador.category.dto.CategoryDeleteRequest;
 import com.example.gerenciador.category.dto.CategoryRequest;
 import com.example.gerenciador.category.dto.CategoryRequestUpdate;
 import com.example.gerenciador.category.dto.CategoryResponse;
@@ -25,6 +26,8 @@ public class AdminCategoryService {
     private final CategoryMapper categoryMapper;
 
 
+    // ================ GET ======================
+
     // admin geral pode ver todas as categorias
     public Page<CategoryResponse> adminGetAllCategories(Pageable pageable){
         return categoryRepository.findAll(pageable)
@@ -36,6 +39,8 @@ public class AdminCategoryService {
         return categoryRepository.findByFamilyId(familyId, pageable)
                 .map(categoryMapper::toCategoryResponse);
     }
+
+    // ================ POST ======================
 
     // admin geral pode criar categorias para familias mesmo não sendo o membro admin dela
     public CategoryResponse adminCreateCategories(Long familyId, CategoryRequest request){
@@ -50,6 +55,8 @@ public class AdminCategoryService {
         return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
+    // ================ DELETE ======================
+
     // admin geral pode deletar uma categoria pelo id
     public void adminDeleteCategoryById(Long categoryId){
         Category category = categoryRepository.findById(categoryId)
@@ -60,15 +67,17 @@ public class AdminCategoryService {
 
 
     // admin geral pode deletar varias categorias pelos ids
-    public void adminDeleteCategoriesByIds(List<Long> ids){
-        List<Category> categories = categoryRepository.findAllById(ids);
+    public void adminDeleteCategoriesByIds(CategoryDeleteRequest delete){
+        List<Category> categories = categoryRepository.findAllById(delete.ids());
 
-        if (categories.size() != ids.size()){
+        if (categories.size() != delete.ids().size()){
             throw new CategoryNotFoundException();
         }
 
         categoryRepository.deleteAll(categories);
     }
+
+    // ================ PUT ======================
 
     // admin geral pode editar uma categoria pelo id dela
     public CategoryResponse adminUpdateCategory(Long categoryId, CategoryRequestUpdate request){
