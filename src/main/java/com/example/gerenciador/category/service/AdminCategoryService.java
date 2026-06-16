@@ -10,8 +10,6 @@ import com.example.gerenciador.exceptions.CategoryNotFoundException;
 import com.example.gerenciador.exceptions.FamilyNotFoundException;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.family.repository.FamilyRepository;
-import com.example.gerenciador.helpers.GlobalHelperService;
-import com.example.gerenciador.security.SecurityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminCategoryService {
     private final CategoryRepository categoryRepository;
-    private final SecurityService securityService;
     private final FamilyRepository familyRepository;
-    private final GlobalHelperService globalHelperService;
     private final CategoryMapper categoryMapper;
 
 

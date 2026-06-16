@@ -28,35 +28,51 @@ public class FamilyController {
     // ================ GET ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin")
+    @GetMapping("/admin/get")
     public ResponseEntity<Page<FamilyResponse>>  adminGetAllFamilies(@PageableDefault(size = 15)Pageable pageable){
         return ResponseEntity.ok(adminFamilyService.adminGetAllFamilies(pageable));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/{familyId}")
+    @GetMapping("/admin/get/{familyId}")
     public ResponseEntity<FamilyResponse> adminGetByFamilyId(@PathVariable Long familyId){
         return ResponseEntity.ok(adminFamilyService.adminGetByFamilyId(familyId));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/{familyId}/members")
+    @GetMapping("/admin/get/{familyId}/members")
     public ResponseEntity<List<MemberResponse>> adminGetMembersByFamilyId(@PathVariable Long familyId){
         return ResponseEntity.ok(adminFamilyService.adminGetMembersByFamilyId(familyId));
+    }
+
+
+    // ================ POST ======================
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/add/{familyId}/member/{memberId}")
+    public ResponseEntity<FamilyMemberResponse> adminAddNewUserToFamily(@PathVariable Long familyId, @PathVariable Long memberId){
+        return ResponseEntity.ok(adminFamilyService.adminAddNewUserToFamily(familyId, memberId));
     }
 
     // ================ PUT ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/admin/{familyId}")
+    @PutMapping("/admin/update/{familyId}")
     public ResponseEntity<FamilyResponse> adminUpdateFamily(@PathVariable Long familyId, @RequestBody FamilyUpdateRequest request){
         return ResponseEntity.ok(adminFamilyService.adminUpdateFamily(familyId, request));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/admin/change/{familyId}/member/{memberId}")
+    public ResponseEntity<MemberResponse> dminChangeMemberToAdmin(@PathVariable Long familyId, @PathVariable Long memberId){
+        return ResponseEntity.ok(adminFamilyService.adminChangeMemberToAdmin(familyId, memberId));
+    }
+
+
     // ================ DELETE ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/{familyId}")
+    @DeleteMapping("/admin/delete/{familyId}")
     public ResponseEntity<Void> adminDeleteByFamilyId(@PathVariable long familyId){
         adminFamilyService.adminDeleteByFamilyId(familyId);
         return ResponseEntity.noContent().build();

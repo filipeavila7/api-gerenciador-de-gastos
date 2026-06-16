@@ -10,7 +10,7 @@
 - [x] Adicionar membro (somente admin)
 - [x] Remover membro (somente admin)
 - [x] Sair da família (com troca de admin se necessário)
-- [ ] Admin geral poder adcionar qualquer usuario a qualquer familia
+- [x] Admin geral poder adcionar qualquer usuario a qualquer familia
 
 ---
 ****
