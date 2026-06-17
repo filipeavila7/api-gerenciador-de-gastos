@@ -1,19 +1,21 @@
 package com.example.gerenciador.products.controller;
 
+import com.example.gerenciador.products.dto.ProductDeleteRequest;
+import com.example.gerenciador.products.dto.ProductRequest;
 import com.example.gerenciador.products.dto.ProductResponse;
+import com.example.gerenciador.products.dto.ProductUpdateRequest;
 import com.example.gerenciador.products.service.AdminProductService;
 import com.example.gerenciador.products.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,13 +50,46 @@ public class ProductController {
 
     // ================ POST ======================
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/new/{familyId}")
+    public ResponseEntity<ProductResponse> adminCreateProduct(
+            @PathVariable long familyId, @Valid @RequestBody ProductRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(adminProductService.adminCreateProduct(familyId, request));
+    }
+
 
     // ================ PUT ======================
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/admin/update/{familyId}/product/{productId}")
+    public ResponseEntity<ProductResponse> adminUpdateProduct(
+            @PathVariable Long familyId, @PathVariable Long productId,
+            @RequestBody ProductUpdateRequest request){
+        return ResponseEntity.ok(adminProductService.adminUpdateProduct(familyId, productId, request));
+    }
 
 
     // ================ DELETE ======================
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/admin/delete/product/{productId}")
+    public ResponseEntity<Void> adminDeleteProduct(@PathVariable Long productId){
+        adminProductService.adminDeleteProduct(productId);
 
+        return ResponseEntity.noContent().build();
+
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/admin/delete")
+    public ResponseEntity<Void> adminDeleteProducts(@RequestBody ProductDeleteRequest request){
+        adminProductService.adminDeleteProducts(request);
+
+        return ResponseEntity.noContent().build();
+
+    }
 
 
     // ================ ROTAS USER ======================

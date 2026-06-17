@@ -54,7 +54,7 @@ public class CategoryController {
     // ================ POST ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/add/{familyId}")
+    @GetMapping("/admin/new/{familyId}")
     public ResponseEntity<CategoryResponse>  adminCreateCategories(@PathVariable Long familyId
             ,@Valid @RequestBody CategoryRequest request){
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -64,7 +64,7 @@ public class CategoryController {
     // ================ PUT ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/add/{categoryId}")
+    @GetMapping("/admin/update/category/{categoryId}")
     public ResponseEntity<CategoryResponse>  adminCreateCategories(@PathVariable Long categoryId
             ,@RequestBody CategoryRequestUpdate request){
         return ResponseEntity.ok(adminCategoryService.adminUpdateCategory(categoryId, request));
@@ -73,7 +73,7 @@ public class CategoryController {
     // ================ DELETE ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/delete/{categoryId}")
+    @DeleteMapping("/admin/delete/category/{categoryId}")
     public ResponseEntity<Void> adminDeleteCategoryById(@PathVariable Long categoryId){
         adminCategoryService.adminDeleteCategoryById(categoryId);
 
@@ -82,7 +82,7 @@ public class CategoryController {
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/delete/{categoryId}")
+    @DeleteMapping("/admin/delete")
     public ResponseEntity<Void> adminDeleteCategoriesByIds(@Valid @RequestBody CategoryDeleteRequest request){
         adminCategoryService.adminDeleteCategoriesByIds(request);
 

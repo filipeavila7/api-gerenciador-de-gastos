@@ -100,7 +100,7 @@ public class AdminProductService {
 
     // admin geral pode deletar produtos
     @Transactional
-    public void deleteProduct (Long productId){
+    public void adminDeleteProduct (Long productId){
 
         // acha o produto
         Products product = productRepository.findById(productId)
@@ -113,7 +113,7 @@ public class AdminProductService {
 
     // admin geral pode deletar varios produtos
     @Transactional
-    public void deleteProducts (ProductDeleteRequest request){
+    public void adminDeleteProducts (ProductDeleteRequest request){
 
         List<Products> products = productRepository.findAllById(request.ids());
 
