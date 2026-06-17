@@ -50,6 +50,7 @@ public class AdminProductService {
     // ================ POST ======================
 
     // admin geral pode criar produtos para uma familia
+    @Transactional
     public ProductResponse adminCreateProduct (Long familyId, ProductRequest request){
         Family family = globalHelperService.getFamilyOrThrow(familyId);
 
@@ -72,6 +73,7 @@ public class AdminProductService {
     // ================ PUT ======================
 
     // admin geral pode editar produtos de uma familia
+    @Transactional
     public ProductResponse adminUpdateProduct(Long familyId, Long productId, ProductUpdateRequest request){
         // encontrar a familia
         globalHelperService.getFamilyOrThrow(familyId);
@@ -110,6 +112,7 @@ public class AdminProductService {
 
 
     // admin geral pode deletar varios produtos
+    @Transactional
     public void deleteProducts (ProductDeleteRequest request){
 
         List<Products> products = productRepository.findAllById(request.ids());
