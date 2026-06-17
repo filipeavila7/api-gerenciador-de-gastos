@@ -11,6 +11,7 @@ import com.example.gerenciador.exceptions.CategoryNotFoundException;
 import com.example.gerenciador.exceptions.FamilyNotFoundException;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.family.repository.FamilyRepository;
+import com.example.gerenciador.helpers.GlobalHelperService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ public class AdminCategoryService {
     private final CategoryRepository categoryRepository;
     private final FamilyRepository familyRepository;
     private final CategoryMapper categoryMapper;
+    private final GlobalHelperService globalHelperService;
 
 
     // ================ GET ======================
@@ -44,8 +46,9 @@ public class AdminCategoryService {
 
     // admin geral pode criar categorias para familias mesmo não sendo o membro admin dela
     public CategoryResponse adminCreateCategories(Long familyId, CategoryRequest request){
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         Category category = new Category();
 
@@ -81,6 +84,7 @@ public class AdminCategoryService {
 
     // admin geral pode editar uma categoria pelo id dela
     public CategoryResponse adminUpdateCategory(Long categoryId, CategoryRequestUpdate request){
+
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(CategoryNotFoundException::new);
 

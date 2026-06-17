@@ -49,12 +49,11 @@ public class FamilyService {
     public FamilyResponse getFamily(Long familyId){
         User loggedUser = securityService.getLoggedUser();
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o usuario pertenca a aquela familia
-        familyMemberRepository.findByFamilyAndUser(family, loggedUser)
-                .orElseThrow(() -> new AccessDeniedException("Access denied"));
+        globalHelperService.getMemberOrThrow(family, loggedUser);
 
         return familyMapper.toResponse(family);
 
@@ -65,8 +64,8 @@ public class FamilyService {
     public List<MemberResponse> getFamilyMembers(Long familyId){
         User loggedUser = securityService.getLoggedUser();
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // so pode ver os membros caso o usuario pertenca a aquela familia
         familyMemberRepository.findByFamilyAndUser(family, loggedUser)
@@ -122,16 +121,13 @@ public class FamilyService {
                 .orElseThrow(UserNotFoundException::new);
 
         // encontrar a familia
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se a familia não esta cheia antes de adcionar um novo membro
         if (familyMemberRepository.countByFamilyId(familyId) >= 12) {
             throw new MemberLimitExceededException();
         }
 
-
-        // verificações:
 
         // verifica se o novo usuario ja esta nessa família
         if (familyMemberRepository.existsByFamilyAndUser(family, member)){
@@ -162,8 +158,8 @@ public class FamilyService {
     public MemberResponse changeMemberToAdmin(Long familyId, Long userId){
         User loggedUser = securityService.getLoggedUser();
 
-       Family family = familyRepository.findById(familyId)
-                        .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
        // verifica se o usuario pertence aquela familia e é admin
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
@@ -190,13 +186,11 @@ public class FamilyService {
     public FamilyResponse updateFamily (Long familyId, FamilyUpdateRequest request){
         User loggedUser = securityService.getLoggedUser();
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
-
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o usuario é admin e pértence aquela familia antes de editar
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
-
 
         // atualizar os dados
         if (request.name() != null){
@@ -222,8 +216,8 @@ public class FamilyService {
     public void deleteFamily(Long familyId){
         User loggedUser = securityService.getLoggedUser();
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o usuariom logado pertence aquela família e é admin
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
@@ -238,8 +232,7 @@ public class FamilyService {
         User loggedUser = securityService.getLoggedUser();
 
         // encontrar a familia
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o usuario pertence aquela família ou é admin
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
@@ -263,8 +256,8 @@ public class FamilyService {
     public void exitFromFamily(Long familyId){
         User loggedUser = securityService.getLoggedUser();
 
-        familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // caso ele seja o último da família, ele não pode sair
         List<FamilyMember> members = familyMemberRepository.findByFamilyId(familyId);

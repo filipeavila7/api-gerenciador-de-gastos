@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    private final FamilyRepository familyRepository;
     private final SecurityService securityService;
     private final GlobalHelperService globalHelperService;
     private final CategoryRepository categoryRepository;
@@ -39,8 +38,8 @@ public class ProductService {
     public Page<ProductResponse> getMyProducts(Long familyId, Pageable pageable){
         User loggedUser = securityService.getLoggedUser();
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // so membros podem ver os produtos
         globalHelperService.getMemberOrThrow(family, loggedUser);
@@ -58,13 +57,12 @@ public class ProductService {
     public ProductResponse createProduct(Long familyId, ProductRequest request){
         User loggedUser = securityService.getLoggedUser();
 
-        // acha a familia
-        Family family = familyRepository.findById(familyId)
-                        .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
 
         // verifica se o user é admin e pertence aquela familia
-        FamilyMember member = globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         // verificar se a categoria pertence a aquela familia do user que ta adcionando
         Category category = categoryRepository.findByIdAndFamilyId(request.categoryId(), familyId)
@@ -90,9 +88,8 @@ public class ProductService {
     public ProductResponse updateProduct(Long familyId, Long productId, ProductUpdateRequest request){
         User loggedUser = securityService.getLoggedUser();
 
-        // acha a familia
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o user é admin e pertence aquela familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
@@ -124,9 +121,8 @@ public class ProductService {
     public void deleteProduct (Long familyId, Long productId){
         User loggedUser = securityService.getLoggedUser();
 
-        // acha a familia
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o user é admin e pertence aquela familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);

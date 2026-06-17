@@ -14,6 +14,7 @@ import com.example.gerenciador.family.entity.FamilyRole;
 import com.example.gerenciador.family.mapper.FamilyMapper;
 import com.example.gerenciador.family.repository.FamilyMemberRepository;
 import com.example.gerenciador.family.repository.FamilyRepository;
+import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.user.entity.User;
 import com.example.gerenciador.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class AdminFamilyService {
     private final FamilyMemberRepository familyMemberRepository;
     private final FamilyMapper familyMapper;
     private final UserRepository userRepository;
+    private final GlobalHelperService globalHelperService;
 
     // ================ GET ======================
 
@@ -46,16 +48,18 @@ public class AdminFamilyService {
 
     // admin pode ver somente uma familia
     public FamilyResponse adminGetByFamilyId(Long familyId){
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+
+
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         return familyMapper.toResponse(family);
     }
 
     // admin pode ver todos os membros de uma familia
     public List<MemberResponse> adminGetMembersByFamilyId(Long familyId){
-        familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+
+        // encontrar a familia
+        globalHelperService.getFamilyOrThrow(familyId);
 
         List<FamilyMember> memberships = familyMemberRepository.findByFamilyId(familyId);
 
@@ -70,8 +74,8 @@ public class AdminFamilyService {
     @Transactional
         public FamilyMemberResponse adminAddNewUserToFamily(Long familyId, Long userId){
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         User member =  userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
@@ -104,8 +108,8 @@ public class AdminFamilyService {
     // admin pode deletar familia
     @Transactional
     public void adminDeleteByFamilyId(Long familyId){
-        Family family =familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         familyRepository.delete(family);
     }
@@ -116,8 +120,8 @@ public class AdminFamilyService {
     @Transactional
     public FamilyResponse adminUpdateFamily (Long familyId, FamilyUpdateRequest request){
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // atualizar os dados
         if (request.name() != null){
@@ -138,9 +142,8 @@ public class AdminFamilyService {
     // admin trnasformar membros em admin
     public MemberResponse adminChangeMemberToAdmin(Long familyId, Long memberId){
 
-        familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
-
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         FamilyMember member = familyMemberRepository.findByFamilyIdAndUserId(familyId, memberId)
                 .orElseThrow(UserNotFoundException::new);

@@ -9,9 +9,7 @@ import com.example.gerenciador.category.entity.Category;
 import com.example.gerenciador.category.mapper.CategoryMapper;
 import com.example.gerenciador.category.repository.CategoryRepository;
 import com.example.gerenciador.exceptions.CategoryNotFoundException;
-import com.example.gerenciador.exceptions.FamilyNotFoundException;
 import com.example.gerenciador.family.entity.Family;
-import com.example.gerenciador.family.repository.FamilyRepository;
 import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
@@ -29,7 +27,6 @@ import java.util.List;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final SecurityService securityService;
-    private final FamilyRepository familyRepository;
     private final GlobalHelperService globalHelperService;
     private final CategoryMapper categoryMapper;
 
@@ -40,8 +37,8 @@ public class CategoryService {
     public Page<CategoryResponse> getMyCategorys(Long familyId, Pageable pageable){
         User loggedUser = securityService.getLoggedUser();
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o usuario pertence a familia
         globalHelperService.getMemberOrThrow(family, loggedUser);
@@ -57,8 +54,8 @@ public class CategoryService {
     public CategoryResponse createCategory(Long familyId ,CategoryRequest request){
         User loggedUser = securityService.getLoggedUser();
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o usuario é admin da familia e pertence a ela
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
@@ -83,8 +80,8 @@ public class CategoryService {
     public CategoryResponse updateCategory(Long familyId, Long categoryId, CategoryRequestUpdate request){
         User loggedUser = securityService.getLoggedUser();
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o usuario é admin da familia e pertence a ela
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
@@ -106,11 +103,12 @@ public class CategoryService {
     // ================ DELETE ======================
 
     // usuario admin apagar uma categoria
+    @Transactional
     public void deleteCategory(Long familyId, Long categoryId){
         User loggedUser = securityService.getLoggedUser();
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o usuario é admin da familia e pertence a ela
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
@@ -123,11 +121,12 @@ public class CategoryService {
     }
 
     // usuario admin apagar varias categorias
+    @Transactional
     public void deleteCategories(Long familyId, CategoryDeleteRequest request){
         User loggedUser = securityService.getLoggedUser();
 
-        Family family = familyRepository.findById(familyId)
-                .orElseThrow(FamilyNotFoundException::new);
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // verifica se o usuario é admin da familia e pertence a ela
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
