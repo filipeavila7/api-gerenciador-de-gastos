@@ -20,7 +20,7 @@
 - [X] Atualizar categoria
 - [X] Deletar categoria
 - [X] Paginação de categorias
-- [ ] Controller de categorias
+- [X] Controller de categorias
 - [X] Validar categoria pertence à família ao usar em produtos
 - [X] rotas admin geral para categorias - CategoryAdminService
 

@@ -1,14 +1,11 @@
 package com.example.gerenciador.products.service;
 
+
 import com.example.gerenciador.category.entity.Category;
 import com.example.gerenciador.category.repository.CategoryRepository;
-import com.example.gerenciador.exceptions.AccessDeniedException;
 import com.example.gerenciador.exceptions.CategoryNotFoundException;
-import com.example.gerenciador.exceptions.FamilyNotFoundException;
 import com.example.gerenciador.exceptions.ProductNotFoundExeption;
 import com.example.gerenciador.family.entity.Family;
-import com.example.gerenciador.family.entity.FamilyMember;
-import com.example.gerenciador.family.repository.FamilyRepository;
 import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.products.dto.ProductDeleteRequest;
 import com.example.gerenciador.products.dto.ProductRequest;
@@ -17,7 +14,6 @@ import com.example.gerenciador.products.dto.ProductUpdateRequest;
 import com.example.gerenciador.products.entity.Products;
 import com.example.gerenciador.products.mapper.ProductMapper;
 import com.example.gerenciador.products.repository.ProductRepository;
-import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,80 +25,63 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ProductService {
-    private final ProductRepository productRepository;
-    private final SecurityService securityService;
+public class AdminProductService {
     private final GlobalHelperService globalHelperService;
-    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final CategoryRepository categoryRepository;
+
 
     // ================ GET ======================
 
-    public Page<ProductResponse> getMyProducts(Long familyId, Pageable pageable){
-        User loggedUser = securityService.getLoggedUser();
+    // admin geral pode ver todos os produtos
+    public Page<ProductResponse> adminGetAllProducts (Pageable pageable){
+        return productRepository.findAll(pageable)
+                .map(productMapper::toProductResponse);
+    }
 
-        // encontrar a familia
-        Family family = globalHelperService.getFamilyOrThrow(familyId);
-
-        // so membros podem ver os produtos
-        globalHelperService.getMemberOrThrow(family, loggedUser);
+    // admin geral pode ver todos os produtos de uma familia pelo id dela
+    public Page<ProductResponse> adminGetProductsByfamilyId(Long familyId, Pageable pageable){
+        globalHelperService.getFamilyOrThrow(familyId);
 
         return productRepository.findByFamilyId(familyId, pageable)
                 .map(productMapper::toProductResponse);
-
     }
-
 
     // ================ POST ======================
 
-    // membro admin da familia criar produtos
-    @Transactional
-    public ProductResponse createProduct(Long familyId, ProductRequest request){
-        User loggedUser = securityService.getLoggedUser();
-
-        // encontrar a familia
+    // admin geral pode criar produtos para uma familia
+    public ProductResponse adminCreateProduct (Long familyId, ProductRequest request){
         Family family = globalHelperService.getFamilyOrThrow(familyId);
 
-
-        // verifica se o user é admin e pertence aquela familia
-        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
-
-        // verificar se a categoria pertence a aquela familia do user que ta adcionando
+        // garante que a categoria é daquela familia
         Category category = categoryRepository.findByIdAndFamilyId(request.categoryId(), familyId)
                 .orElseThrow(CategoryNotFoundException::new);
 
         // cria o produto
-
         Products products = new Products();
 
         products.setName(request.name());
         products.setCategory(category);
         products.setFamily(family);
 
-
         return productMapper.toProductResponse(productRepository.save(products));
+
     }
 
 
     // ================ PUT ======================
 
-    // membro admin editar produtos
-    @Transactional
-    public ProductResponse updateProduct(Long familyId, Long productId, ProductUpdateRequest request){
-        User loggedUser = securityService.getLoggedUser();
-
+    // admin geral pode editar produtos de uma familia
+    public ProductResponse adminUpdateProduct(Long familyId, Long productId, ProductUpdateRequest request){
         // encontrar a familia
-        Family family = globalHelperService.getFamilyOrThrow(familyId);
-
-        // verifica se o user é admin e pertence aquela familia
-        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+        globalHelperService.getFamilyOrThrow(familyId);
 
         // verificar se a categoria pertence a aquela familia do user que ta adcionando
         Category category = categoryRepository.findByIdAndFamilyId(request.categoryId(), familyId)
                 .orElseThrow(CategoryNotFoundException::new);
 
-        // acha o produto
-        Products product = productRepository.findByIdAndFamilyId(productId, familyId)
+        Products product = productRepository.findById(productId)
                 .orElseThrow(ProductNotFoundExeption::new);
 
         if (request.name() != null){
@@ -116,39 +95,25 @@ public class ProductService {
         return productMapper.toProductResponse(productRepository.save(product));
     }
 
-
     // ================ DELETE ======================
 
-    // membro admin deletar produtos
+    // admin geral pode deletar produtos
     @Transactional
-    public void deleteProduct (Long familyId, Long productId){
-        User loggedUser = securityService.getLoggedUser();
-
-        // encontrar a familia
-        Family family = globalHelperService.getFamilyOrThrow(familyId);
-
-        // verifica se o user é admin e pertence aquela familia
-        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+    public void deleteProduct (Long productId){
 
         // acha o produto
-        Products product = productRepository.findByIdAndFamilyId(productId, familyId)
+        Products product = productRepository.findById(productId)
                 .orElseThrow(ProductNotFoundExeption::new);
 
         // apaga
         productRepository.delete(product);
     }
 
-    // membro admin pode deletar varios produtos
-    public void deleteProducts (Long familyId, ProductDeleteRequest request){
-        User loggedUser = securityService.getLoggedUser();
 
-        // encontrar a familia
-        Family family = globalHelperService.getFamilyOrThrow(familyId);
+    // admin geral pode deletar varios produtos
+    public void deleteProducts (ProductDeleteRequest request){
 
-        // verifica se o user é admin e pertence aquela familia
-        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
-
-        List<Products> products = productRepository.findAllByIdInAndFamilyId(request.ids(), familyId);
+        List<Products> products = productRepository.findAllById(request.ids());
 
         if (products.size() != request.ids().size()){
             throw new ProductNotFoundExeption();
