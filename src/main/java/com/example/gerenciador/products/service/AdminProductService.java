@@ -14,7 +14,6 @@ import com.example.gerenciador.products.dto.ProductUpdateRequest;
 import com.example.gerenciador.products.entity.Products;
 import com.example.gerenciador.products.mapper.ProductMapper;
 import com.example.gerenciador.products.repository.ProductRepository;
-import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
