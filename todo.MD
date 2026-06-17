@@ -31,13 +31,13 @@
 - [x] Listar produtos por família
 - [X] Atualizar produto
 - [x] Deletar produto
-- [ ] Deletar produtos em lote
+- [X] Deletar produtos em lote
 - [x] Associar produto à categoria
 - [x] Validar categoria da mesma família
 - [ ] Filtrar por categoria
 - [x] Paginação de produtos
 - [ ] controller de produtos
-- [ ] metodos admin geral 
+- [x] metodos admin geral 
 
 ---
 
