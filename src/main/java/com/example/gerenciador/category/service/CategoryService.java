@@ -1,6 +1,7 @@
 package com.example.gerenciador.category.service;
 
 
+import com.example.gerenciador.category.dto.CategoryDeleteRequest;
 import com.example.gerenciador.category.dto.CategoryRequest;
 import com.example.gerenciador.category.dto.CategoryRequestUpdate;
 import com.example.gerenciador.category.dto.CategoryResponse;
@@ -35,7 +36,7 @@ public class CategoryService {
 
     // ================ GET ======================
 
-    // retornar as categprias daquela família
+    // retornar as categprias daquela família, só membros da familia podem ver
     public Page<CategoryResponse> getMyCategorys(Long familyId, Pageable pageable){
         User loggedUser = securityService.getLoggedUser();
 
@@ -88,8 +89,8 @@ public class CategoryService {
         // verifica se o usuario é admin da familia e pertence a ela
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
-        // pegar categoria
-        Category category = categoryRepository.findById(categoryId)
+        // pegar categoria, e ja garante que ela seja daquela familia
+        Category category = categoryRepository.findByIdAndFamilyId(categoryId, familyId)
                 .orElseThrow(CategoryNotFoundException::new);
 
         if (request.name() != null){
@@ -114,15 +115,15 @@ public class CategoryService {
         // verifica se o usuario é admin da familia e pertence a ela
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
-        // pegar categoria
-        Category category = categoryRepository.findById(categoryId)
+        // pegar categoria e ja verifica se ela é daquela familia
+        Category category = categoryRepository.findByIdAndFamilyId(categoryId, familyId)
                 .orElseThrow(CategoryNotFoundException::new);
 
         categoryRepository.delete(category);
     }
 
     // usuario admin apagar varias categorias
-    public void deleteCategories(Long familyId, List<Long> categoryIds){
+    public void deleteCategories(Long familyId, CategoryDeleteRequest request){
         User loggedUser = securityService.getLoggedUser();
 
         Family family = familyRepository.findById(familyId)
@@ -132,9 +133,9 @@ public class CategoryService {
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         // pegar categorias
-        List<Category> categories = categoryRepository.findAllById(categoryIds);
+        List<Category> categories = categoryRepository.findAllByIdInAndFamilyId(request.ids(), familyId);
 
-        if (categories.size() != categoryIds.size()) {
+        if (categories.size() != request.ids().size()) {
             throw new CategoryNotFoundException();
         }
 

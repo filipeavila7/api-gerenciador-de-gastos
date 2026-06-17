@@ -89,4 +89,49 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
+
+
+    // ================ ROTAS USER ======================
+
+    // ================ GET ======================
+
+    @GetMapping("/my/{familyId}")
+    public ResponseEntity<Page<CategoryResponse>> getMyCategories(Long familyId
+            , @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC ) Pageable pageable){
+
+        return ResponseEntity.ok(categoryService.getMyCategorys(familyId, pageable));
+    }
+
+
+    // ================ POST ======================
+
+    @PostMapping("/new/{familyId}")
+    public ResponseEntity<CategoryResponse> createCategory(@PathVariable Long familyId, @Valid @RequestBody CategoryRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(categoryService.createCategory(familyId, request));
+    }
+
+    // ================ PUT ======================
+
+    @PutMapping("/update/{familyId}/category/{categoryId}")
+    public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long familyId,
+            @PathVariable Long categoryId, @RequestBody CategoryRequestUpdate requestUpdate){
+
+        return ResponseEntity.ok(categoryService.updateCategory(familyId, categoryId, requestUpdate));
+    }
+
+    // ================ DELETE ======================
+
+    @DeleteMapping("/delete/{familyId}/category/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long familyId, @PathVariable Long categoryId){
+        categoryService.deleteCategory(familyId, categoryId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @DeleteMapping("/delete/{familyId}")
+    public ResponseEntity<Void> deleteCategories(@PathVariable Long familyId, @Valid @RequestBody CategoryDeleteRequest request){
+        categoryService.deleteCategories(familyId, request);
+        return ResponseEntity.noContent().build();
+    }
 }
