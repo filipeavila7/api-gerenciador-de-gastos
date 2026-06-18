@@ -129,7 +129,7 @@ public class CategoryController {
     }
 
 
-    @DeleteMapping("/delete/{familyId}")
+    @DeleteMapping("/delete/{familyId}/categories")
     public ResponseEntity<Void> deleteCategories(@PathVariable Long familyId, @Valid @RequestBody CategoryDeleteRequest request){
         categoryService.deleteCategories(familyId, request);
         return ResponseEntity.noContent().build();

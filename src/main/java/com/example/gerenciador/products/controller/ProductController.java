@@ -96,12 +96,47 @@ public class ProductController {
 
     // ================ GET ======================
 
+    @GetMapping("/my/{familyId}")
+    public ResponseEntity<Page<ProductResponse>> getMyProducts (@PathVariable Long familyId,
+            @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC)
+            Pageable pageable){
+        return ResponseEntity.ok(productService.getMyProducts(familyId, pageable));
+
+    }
+
 
     // ================ POST ======================
 
+    @PostMapping("/new/{familyId}")
+    public ResponseEntity<ProductResponse> createProduct (@PathVariable Long familyId,
+            @Valid @RequestBody ProductRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.createProduct(familyId, request));
+    }
 
     // ================ PUT ======================
 
+    @PutMapping("/update/{familyId}/product/{productId}")
+    ResponseEntity<ProductResponse> updateProduct(@PathVariable Long familyId,
+    @PathVariable Long productId, @RequestBody ProductUpdateRequest request){
+        return ResponseEntity.ok(productService.updateProduct(familyId, productId, request));
+    }
 
     // ================ DELETE ======================
+
+    @DeleteMapping("/delete/{familyId}/product/{productId}")
+    public ResponseEntity<Void> deleteProduct (@PathVariable Long familyId,
+    @PathVariable Long productId ){
+        productService.deleteProduct(familyId, productId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/delete/{familyId}/products")
+    public ResponseEntity<Void> deleteProduct (@PathVariable Long familyId
+    , @RequestBody ProductDeleteRequest request){
+        productService.deleteProducts(familyId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
