@@ -9,8 +9,10 @@ import com.example.gerenciador.category.entity.Category;
 import com.example.gerenciador.category.mapper.CategoryMapper;
 import com.example.gerenciador.category.repository.CategoryRepository;
 import com.example.gerenciador.exceptions.CategoryNotFoundException;
+import com.example.gerenciador.exceptions.ConflictException;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
+import com.example.gerenciador.products.repository.ProductRepository;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +31,7 @@ public class CategoryService {
     private final SecurityService securityService;
     private final GlobalHelperService globalHelperService;
     private final CategoryMapper categoryMapper;
-
+    private final ProductRepository productRepository;
 
     // ================ GET ======================
 
@@ -117,6 +119,11 @@ public class CategoryService {
         Category category = categoryRepository.findByIdAndFamilyId(categoryId, familyId)
                 .orElseThrow(CategoryNotFoundException::new);
 
+        // caso existam produtos relacionados a essa categoria, lança uma exeption
+        if (productRepository.existsByCategoryIdAndFamilyId(categoryId, familyId)){
+            throw new ConflictException("Essa categoria esta relacionada a algum produto");
+        }
+
         categoryRepository.delete(category);
     }
 
@@ -133,6 +140,12 @@ public class CategoryService {
 
         // pegar categorias
         List<Category> categories = categoryRepository.findAllByIdInAndFamilyId(request.ids(), familyId);
+
+
+
+       if (productRepository.existsByCategoryIdInAndFamilyId(request.ids(), familyId)){
+           throw new ConflictException("Uma ou mais categorias estão relacionadas a produtos");
+       }
 
         if (categories.size() != request.ids().size()) {
             throw new CategoryNotFoundException();

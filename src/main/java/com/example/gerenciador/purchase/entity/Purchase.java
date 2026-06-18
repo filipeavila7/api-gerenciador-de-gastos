@@ -1,4 +1,4 @@
-package com.example.gerenciador.purchase;
+package com.example.gerenciador.purchase.entity;
 
 
 import com.example.gerenciador.family.entity.Family;
@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "purchase")
+@Table(name = "purchase") // bloco de commpras
 public class Purchase {
 
     @Id

@@ -1,4 +1,4 @@
-package com.example.gerenciador.purchase;
+package com.example.gerenciador.purchase.entity;
 
 
 import com.example.gerenciador.products.entity.Products;
@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "purchase_itens")
+@Table(name = "purchase_itens") // itens dentro do bloco
 public class PurchaseItens {
 
     @Id

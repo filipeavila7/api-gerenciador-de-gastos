@@ -3,7 +3,7 @@ package com.example.gerenciador.family.entity;
 
 import com.example.gerenciador.category.entity.Category;
 import com.example.gerenciador.products.entity.Products;
-import com.example.gerenciador.purchase.Purchase;
+import com.example.gerenciador.purchase.entity.Purchase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

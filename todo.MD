@@ -36,7 +36,7 @@
 - [x] Validar categoria da mesma família
 - [ ] Filtrar por categoria
 - [x] Paginação de produtos
-- [ ] controller de produtos
+- [X] controller de produtos
 - [x] metodos admin geral 
 
 ---

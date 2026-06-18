@@ -8,10 +8,10 @@ import com.example.gerenciador.category.entity.Category;
 import com.example.gerenciador.category.mapper.CategoryMapper;
 import com.example.gerenciador.category.repository.CategoryRepository;
 import com.example.gerenciador.exceptions.CategoryNotFoundException;
-import com.example.gerenciador.exceptions.FamilyNotFoundException;
+import com.example.gerenciador.exceptions.ConflictException;
 import com.example.gerenciador.family.entity.Family;
-import com.example.gerenciador.family.repository.FamilyRepository;
 import com.example.gerenciador.helpers.GlobalHelperService;
+import com.example.gerenciador.products.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminCategoryService {
     private final CategoryRepository categoryRepository;
-    private final FamilyRepository familyRepository;
+    private final ProductRepository productRepository;
     private final CategoryMapper categoryMapper;
     private final GlobalHelperService globalHelperService;
 
@@ -65,6 +65,11 @@ public class AdminCategoryService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(CategoryNotFoundException::new);
 
+        // verifica se tem algum produto com essa categoria
+        if (productRepository.existsByCategoryId(categoryId)){
+            throw new ConflictException("Essa categoria esta relacionada a algum produto");
+        }
+
         categoryRepository.delete(category);
     }
 
@@ -75,6 +80,10 @@ public class AdminCategoryService {
 
         if (categories.size() != delete.ids().size()){
             throw new CategoryNotFoundException();
+        }
+
+        if (productRepository.existsByCategoryIdIn(delete.ids())){
+        throw new ConflictException("Uma ou mais categorias estão relacionadas a produtos");
         }
 
         categoryRepository.deleteAll(categories);
