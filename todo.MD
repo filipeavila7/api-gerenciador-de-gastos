@@ -53,16 +53,17 @@
 ---
 
 ## purchase
-- [X] Criar maleta
-- [X] Adcionar produtos na maleta
-- [ ] Calcular total de preço da maleta
-- [ ] Deletar maleta
-- [ ] Editar maleta
-- [ ] Deletar produto da maleta
-- [ ] Editar daddos do produto dentro da maleta - quantidade e preço unico
+- [X] Criar compra
+- [X] Adcionar produto na compra
+- [X] Adcionar varios produto na compra
+- [ ] Calcular total de preço da compra
+- [ ] Deletar compra
+- [ ] Editar compra
+- [ ] Deletar produto da compra
+- [ ] Editar daddos do produto dentro da compra - quantidade e preço unico
 - [ ] Controller de purchase
 - [ ] Metodos admin
-- [ ] Verificação de produtos caso tente apagar mas ele exista em purchaseItens****
+- [ ] Verificação de produtos caso tente apagar mas ele exista em purchaseItens
 
 ---
 
