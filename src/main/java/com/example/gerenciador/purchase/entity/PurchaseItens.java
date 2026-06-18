@@ -1,7 +1,7 @@
 package com.example.gerenciador.purchase.entity;
 
 
-import com.example.gerenciador.products.entity.Products;
+import com.example.gerenciador.products.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,7 +32,7 @@ public class PurchaseItens {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private Products products;
+    private Product products;
 
 
     @Column(nullable = false)

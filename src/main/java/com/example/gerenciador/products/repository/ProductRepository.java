@@ -1,6 +1,6 @@
 package com.example.gerenciador.products.repository;
 
-import com.example.gerenciador.products.entity.Products;
+import com.example.gerenciador.products.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductRepository extends JpaRepository<Products, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    Page<Products> findByFamilyId(Long familyId, Pageable pageable);
+    Page<Product> findByFamilyId(Long familyId, Pageable pageable);
 
     boolean existsByCategoryIdAndFamilyId(
             Long categoryId,
@@ -26,7 +26,7 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
 
     boolean existsByCategoryIdIn(List<Long> categoryIds);
 
-    Optional<Products> findByIdAndFamilyId(Long productId, Long familyId);
+    Optional<Product> findByIdAndFamilyId(Long productId, Long familyId);
 
-    List<Products> findAllByIdInAndFamilyId(List<Long> ids, Long familyId);
+    List<Product> findAllByIdInAndFamilyId(List<Long> ids, Long familyId);
 }

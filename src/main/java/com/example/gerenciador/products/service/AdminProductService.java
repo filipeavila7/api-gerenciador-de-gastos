@@ -11,7 +11,7 @@ import com.example.gerenciador.products.dto.ProductDeleteRequest;
 import com.example.gerenciador.products.dto.ProductRequest;
 import com.example.gerenciador.products.dto.ProductResponse;
 import com.example.gerenciador.products.dto.ProductUpdateRequest;
-import com.example.gerenciador.products.entity.Products;
+import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.products.mapper.ProductMapper;
 import com.example.gerenciador.products.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +59,7 @@ public class AdminProductService {
                 .orElseThrow(CategoryNotFoundException::new);
 
         // cria o produto
-        Products products = new Products();
+        Product products = new Product();
 
         products.setName(request.name());
         products.setCategory(category);
@@ -82,7 +82,7 @@ public class AdminProductService {
         Category category = categoryRepository.findByIdAndFamilyId(request.categoryId(), familyId)
                 .orElseThrow(CategoryNotFoundException::new);
 
-        Products product = productRepository.findById(productId)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(ProductNotFoundExeption::new);
 
         if (request.name() != null){
@@ -103,7 +103,7 @@ public class AdminProductService {
     public void adminDeleteProduct (Long productId){
 
         // acha o produto
-        Products product = productRepository.findById(productId)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(ProductNotFoundExeption::new);
 
         // apaga
@@ -115,7 +115,7 @@ public class AdminProductService {
     @Transactional
     public void adminDeleteProducts (ProductDeleteRequest request){
 
-        List<Products> products = productRepository.findAllById(request.ids());
+        List<Product> products = productRepository.findAllById(request.ids());
 
         if (products.size() != request.ids().size()){
             throw new ProductNotFoundExeption();

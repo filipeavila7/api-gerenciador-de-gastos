@@ -2,19 +2,15 @@ package com.example.gerenciador.products.service;
 
 import com.example.gerenciador.category.entity.Category;
 import com.example.gerenciador.category.repository.CategoryRepository;
-import com.example.gerenciador.exceptions.AccessDeniedException;
 import com.example.gerenciador.exceptions.CategoryNotFoundException;
-import com.example.gerenciador.exceptions.FamilyNotFoundException;
 import com.example.gerenciador.exceptions.ProductNotFoundExeption;
 import com.example.gerenciador.family.entity.Family;
-import com.example.gerenciador.family.entity.FamilyMember;
-import com.example.gerenciador.family.repository.FamilyRepository;
 import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.products.dto.ProductDeleteRequest;
 import com.example.gerenciador.products.dto.ProductRequest;
 import com.example.gerenciador.products.dto.ProductResponse;
 import com.example.gerenciador.products.dto.ProductUpdateRequest;
-import com.example.gerenciador.products.entity.Products;
+import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.products.mapper.ProductMapper;
 import com.example.gerenciador.products.repository.ProductRepository;
 import com.example.gerenciador.security.SecurityService;
@@ -73,7 +69,7 @@ public class ProductService {
 
         // cria o produto
 
-        Products products = new Products();
+        Product products = new Product();
 
         products.setName(request.name());
         products.setCategory(category);
@@ -102,7 +98,7 @@ public class ProductService {
                 .orElseThrow(CategoryNotFoundException::new);
 
         // acha o produto
-        Products product = productRepository.findByIdAndFamilyId(productId, familyId)
+        Product product = productRepository.findByIdAndFamilyId(productId, familyId)
                 .orElseThrow(ProductNotFoundExeption::new);
 
         if (request.name() != null){
@@ -131,7 +127,7 @@ public class ProductService {
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         // acha o produto
-        Products product = productRepository.findByIdAndFamilyId(productId, familyId)
+        Product product = productRepository.findByIdAndFamilyId(productId, familyId)
                 .orElseThrow(ProductNotFoundExeption::new);
 
         // apaga
@@ -148,7 +144,7 @@ public class ProductService {
         // verifica se o user é admin e pertence aquela familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
-        List<Products> products = productRepository.findAllByIdInAndFamilyId(request.ids(), familyId);
+        List<Product> products = productRepository.findAllByIdInAndFamilyId(request.ids(), familyId);
 
         if (products.size() != request.ids().size()){
             throw new ProductNotFoundExeption();

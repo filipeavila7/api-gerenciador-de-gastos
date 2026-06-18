@@ -2,7 +2,7 @@ package com.example.gerenciador.family.entity;
 
 
 import com.example.gerenciador.category.entity.Category;
-import com.example.gerenciador.products.entity.Products;
+import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.purchase.entity.Purchase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,7 +43,7 @@ public class Family {
 
     // relação inversa com produtos
     @OneToMany(mappedBy = "family", cascade = CascadeType.ALL)
-    private List<Products> products = new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
     // relação inversa com categorias
     @OneToMany(mappedBy = "family", cascade = CascadeType.ALL)

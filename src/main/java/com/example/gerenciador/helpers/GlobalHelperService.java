@@ -2,11 +2,17 @@ package com.example.gerenciador.helpers;
 
 import com.example.gerenciador.exceptions.AccessDeniedException;
 import com.example.gerenciador.exceptions.FamilyNotFoundException;
+import com.example.gerenciador.exceptions.ProductNotFoundExeption;
+import com.example.gerenciador.exceptions.PurchaseNotFoundException;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.family.entity.FamilyMember;
 import com.example.gerenciador.family.entity.FamilyRole;
 import com.example.gerenciador.family.repository.FamilyMemberRepository;
 import com.example.gerenciador.family.repository.FamilyRepository;
+import com.example.gerenciador.products.entity.Product;
+import com.example.gerenciador.products.repository.ProductRepository;
+import com.example.gerenciador.purchase.entity.Purchase;
+import com.example.gerenciador.purchase.repository.PurchaseRepository;
 import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,6 +22,8 @@ import org.springframework.stereotype.Component;
 public class GlobalHelperService {
     private final FamilyMemberRepository familyMemberRepository;
     private final FamilyRepository familyRepository;
+    private final ProductRepository productRepository;
+    private final PurchaseRepository purchaseRepository;
 
 
     // verificar se o usuario é admin da familia e pertence a ela
@@ -43,5 +51,17 @@ public class GlobalHelperService {
     public Family getFamilyOrThrow(Long familyId){
         return familyRepository.findById(familyId)
                 .orElseThrow(FamilyNotFoundException::new);
+    }
+
+    // buscar produto pelo id do produto e da familia
+    public Product getProductOrThrow(Long familyId, Long productId){
+        return productRepository.findByIdAndFamilyId(productId, familyId)
+                .orElseThrow(ProductNotFoundExeption::new);
+    }
+
+    // buscara purchase pelo id da purchase e da familia
+    public Purchase getPurchaseOrThrow(Long familyId, Long purchaseId){
+        return purchaseRepository.findByIdAndFamilyId(purchaseId, familyId)
+                .orElseThrow(PurchaseNotFoundException::new);
     }
 }

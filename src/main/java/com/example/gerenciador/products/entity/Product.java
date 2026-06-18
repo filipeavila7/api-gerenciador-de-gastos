@@ -20,7 +20,7 @@ import java.util.List;
 @Setter
 @Getter
 @Table(name = "products")
-public class Products {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,5 +43,5 @@ public class Products {
 
 
     @OneToMany(mappedBy = "products")
-    List<PurchaseItens> purchases = new ArrayList<>();
+    List<PurchaseItens> purchaseItens = new ArrayList<>();
 }

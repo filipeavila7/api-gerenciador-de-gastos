@@ -2,7 +2,7 @@ package com.example.gerenciador.category.entity;
 
 
 import com.example.gerenciador.family.entity.Family;
-import com.example.gerenciador.products.entity.Products;
+import com.example.gerenciador.products.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class Category {
 
     // uma categoria pertence a varios produtos
     @OneToMany(mappedBy = "products")
-    private List<Products> products = new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
 
     // relação com a família
     @ManyToOne

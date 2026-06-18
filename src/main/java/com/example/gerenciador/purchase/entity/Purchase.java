@@ -33,9 +33,8 @@ public class Purchase {
     private Family family;
 
     // relação com a tabela intermediário que junta o pacote de compra com produto
-    @OneToMany(mappedBy = "purchase")
+    @OneToMany(mappedBy = "purchase" , cascade = CascadeType.ALL) // caso apague um bloco, todos os registros de dentro são apagados tambem
     private List<PurchaseItens> itens = new ArrayList<>();
-
 
 
     @Column(nullable = false)

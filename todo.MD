@@ -50,6 +50,22 @@
 
 ---
 
+---
+
+## purchase
+- [X] Criar maleta
+- [X] Adcionar produtos na maleta
+- [ ] Calcular total de preço da maleta
+- [ ] Deletar maleta
+- [ ] Editar maleta
+- [ ] Deletar produto da maleta
+- [ ] Editar daddos do produto dentro da maleta - quantidade e preço unico
+- [ ] Controller de purchase
+- [ ] Metodos admin
+- [ ] Verificação de produtos caso tente apagar mas ele exista em purchaseItens****
+
+---
+
 ## Testes
 - [x] Testes de criação de família
 - [x] Testes de adicionar membro
