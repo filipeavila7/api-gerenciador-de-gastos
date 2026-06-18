@@ -34,13 +34,13 @@ public class FamilyController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/get/{familyId}")
+    @GetMapping("/admin/get/family/{familyId}")
     public ResponseEntity<FamilyResponse> adminGetByFamilyId(@PathVariable Long familyId){
         return ResponseEntity.ok(adminFamilyService.adminGetByFamilyId(familyId));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/get/{familyId}/members")
+    @GetMapping("/admin/get/family/{familyId}/members")
     public ResponseEntity<List<MemberResponse>> adminGetMembersByFamilyId(@PathVariable Long familyId){
         return ResponseEntity.ok(adminFamilyService.adminGetMembersByFamilyId(familyId));
     }
@@ -49,7 +49,7 @@ public class FamilyController {
     // ================ POST ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/admin/add/{familyId}/member/{memberId}")
+    @PostMapping("/admin/add/family/{familyId}/member/{memberId}")
     public ResponseEntity<FamilyMemberResponse> adminAddNewUserToFamily(@PathVariable Long familyId, @PathVariable Long memberId){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(adminFamilyService.adminAddNewUserToFamily(familyId, memberId));
@@ -58,13 +58,13 @@ public class FamilyController {
     // ================ PUT ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/admin/update/{familyId}")
+    @PutMapping("/admin/update/family/{familyId}")
     public ResponseEntity<FamilyResponse> adminUpdateFamily(@PathVariable Long familyId, @RequestBody FamilyUpdateRequest request){
         return ResponseEntity.ok(adminFamilyService.adminUpdateFamily(familyId, request));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/admin/change/{familyId}/member/{memberId}")
+    @PutMapping("/admin/change/family/{familyId}/member/{memberId}")
     public ResponseEntity<MemberResponse> dminChangeMemberToAdmin(@PathVariable Long familyId, @PathVariable Long memberId){
         return ResponseEntity.ok(adminFamilyService.adminChangeMemberToAdmin(familyId, memberId));
     }
@@ -73,7 +73,7 @@ public class FamilyController {
     // ================ DELETE ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/admin/delete/{familyId}")
+    @DeleteMapping("/admin/delete/family/{familyId}")
     public ResponseEntity<Void> adminDeleteByFamilyId(@PathVariable long familyId){
         adminFamilyService.adminDeleteByFamilyId(familyId);
         return ResponseEntity.noContent().build();
@@ -89,13 +89,13 @@ public class FamilyController {
         return ResponseEntity.ok(familyService.getMyFamilies());
     }
 
-    @GetMapping("/my/{familyId}")
+    @GetMapping("/my/family/{familyId}")
     public ResponseEntity<FamilyResponse> getFamily(@PathVariable Long familyId){
         return ResponseEntity.ok(familyService.getFamily(familyId));
     }
 
 
-    @GetMapping("/my/{familyId}/members")
+    @GetMapping("/my/family/{familyId}/members")
     public ResponseEntity<List<MemberResponse>> getFamilyMembers(@PathVariable Long familyId){
         return ResponseEntity.ok(familyService.getFamilyMembers(familyId));
     }
@@ -109,7 +109,7 @@ public class FamilyController {
                 .body(familyService.createFamily(request));
     }
 
-    @PostMapping("/add/{familyId}/member/{memberId}")
+    @PostMapping("/add/family/{familyId}/member/{memberId}")
     public ResponseEntity<FamilyMemberResponse> addNewMemberToFamily(@PathVariable Long familyId, @PathVariable Long memberId){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(familyService.addNewMemberToFamily(familyId, memberId));
@@ -118,31 +118,31 @@ public class FamilyController {
 
     // ================ PUT ======================
 
-    @PutMapping("/update/{familyId}")
+    @PutMapping("/update/family/{familyId}")
     public ResponseEntity<FamilyResponse> updateFamily(@PathVariable Long familyId, @RequestBody FamilyUpdateRequest request){
         return ResponseEntity.ok(familyService.updateFamily(familyId, request));
     }
 
-    @PutMapping("/update/{familyId}/member/{memberId}")
+    @PutMapping("/update/family/{familyId}/member/{memberId}")
     public ResponseEntity<MemberResponse> changeMemberToAdmin(@PathVariable Long familyId, @PathVariable Long memberId){
         return ResponseEntity.ok(familyService.changeMemberToAdmin(familyId, memberId));
     }
 
     // ================ DELETE ======================
 
-    @DeleteMapping("/delete/{familyId}")
+    @DeleteMapping("/delete/family/{familyId}")
     public ResponseEntity<Void> deleteFamily(@PathVariable Long familyId){
         familyService.deleteFamily(familyId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/remove/{familyId}/member/{memberId}")
+    @DeleteMapping("/remove/family/{familyId}/member/{memberId}")
     public ResponseEntity<Void> removeMemberFromFamily(@PathVariable Long familyId, @PathVariable Long memberId){
         familyService.removeMemberFromFamily(memberId, familyId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/exit/{familyId}")
+    @DeleteMapping("/exit/family/{familyId}")
     public ResponseEntity<Void> exitFromFamily(@PathVariable Long familyId){
         familyService.exitFromFamily(familyId);
         return ResponseEntity.noContent().build();

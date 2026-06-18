@@ -39,8 +39,8 @@ public class ProductController {
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/get/{familyId}")
-    public ResponseEntity<Page<ProductResponse>> adminGetProductsByfamilyId(
+    @GetMapping("/admin/get/family/{familyId}")
+    public ResponseEntity<Page<ProductResponse>> adminGetProductsByFamilyId(
             @PathVariable Long familyId,
             @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC)
             Pageable pageable){
@@ -51,7 +51,7 @@ public class ProductController {
     // ================ POST ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/admin/new/{familyId}")
+    @PostMapping("/admin/new/family/{familyId}")
     public ResponseEntity<ProductResponse> adminCreateProduct(
             @PathVariable long familyId, @Valid @RequestBody ProductRequest request){
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -62,7 +62,7 @@ public class ProductController {
     // ================ PUT ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/admin/update/{familyId}/product/{productId}")
+    @PutMapping("/admin/update/family/{familyId}/product/{productId}")
     public ResponseEntity<ProductResponse> adminUpdateProduct(
             @PathVariable Long familyId, @PathVariable Long productId,
             @RequestBody ProductUpdateRequest request){
@@ -96,7 +96,7 @@ public class ProductController {
 
     // ================ GET ======================
 
-    @GetMapping("/my/{familyId}")
+    @GetMapping("/my/family/{familyId}")
     public ResponseEntity<Page<ProductResponse>> getMyProducts (@PathVariable Long familyId,
             @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC)
             Pageable pageable){
@@ -107,7 +107,7 @@ public class ProductController {
 
     // ================ POST ======================
 
-    @PostMapping("/new/{familyId}")
+    @PostMapping("/new/family/{familyId}")
     public ResponseEntity<ProductResponse> createProduct (@PathVariable Long familyId,
             @Valid @RequestBody ProductRequest request){
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -116,7 +116,7 @@ public class ProductController {
 
     // ================ PUT ======================
 
-    @PutMapping("/update/{familyId}/product/{productId}")
+    @PutMapping("/update/family/{familyId}/product/{productId}")
     ResponseEntity<ProductResponse> updateProduct(@PathVariable Long familyId,
     @PathVariable Long productId, @RequestBody ProductUpdateRequest request){
         return ResponseEntity.ok(productService.updateProduct(familyId, productId, request));
@@ -124,14 +124,14 @@ public class ProductController {
 
     // ================ DELETE ======================
 
-    @DeleteMapping("/delete/{familyId}/product/{productId}")
+    @DeleteMapping("/delete/family/{familyId}/product/{productId}")
     public ResponseEntity<Void> deleteProduct (@PathVariable Long familyId,
     @PathVariable Long productId ){
         productService.deleteProduct(familyId, productId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/delete/{familyId}/products")
+    @DeleteMapping("/delete/family/{familyId}/products")
     public ResponseEntity<Void> deleteProduct (@PathVariable Long familyId
     , @RequestBody ProductDeleteRequest request){
         productService.deleteProducts(familyId, request);

@@ -43,7 +43,7 @@ public class CategoryController {
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/get/{familyId}")
+    @GetMapping("/admin/get/family/{familyId}")
     public ResponseEntity<Page<CategoryResponse>> adminGetCategoriesByfamilyId(@PathVariable Long familyId,
         @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC ) Pageable pageable) {
 
@@ -54,7 +54,7 @@ public class CategoryController {
     // ================ POST ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/new/{familyId}")
+    @GetMapping("/admin/new/family/{familyId}")
     public ResponseEntity<CategoryResponse>  adminCreateCategories(@PathVariable Long familyId
             ,@Valid @RequestBody CategoryRequest request){
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -95,7 +95,7 @@ public class CategoryController {
 
     // ================ GET ======================
 
-    @GetMapping("/my/{familyId}")
+    @GetMapping("/my/family/{familyId}")
     public ResponseEntity<Page<CategoryResponse>> getMyCategories(Long familyId
             , @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC ) Pageable pageable){
 
@@ -105,7 +105,7 @@ public class CategoryController {
 
     // ================ POST ======================
 
-    @PostMapping("/new/{familyId}")
+    @PostMapping("/new/family/{familyId}")
     public ResponseEntity<CategoryResponse> createCategory(@PathVariable Long familyId, @Valid @RequestBody CategoryRequest request){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(categoryService.createCategory(familyId, request));
@@ -113,7 +113,7 @@ public class CategoryController {
 
     // ================ PUT ======================
 
-    @PutMapping("/update/{familyId}/category/{categoryId}")
+    @PutMapping("/update/family/{familyId}/category/{categoryId}")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long familyId,
             @PathVariable Long categoryId, @RequestBody CategoryRequestUpdate requestUpdate){
 
@@ -122,14 +122,14 @@ public class CategoryController {
 
     // ================ DELETE ======================
 
-    @DeleteMapping("/delete/{familyId}/category/{categoryId}")
+    @DeleteMapping("/delete/family/{familyId}/category/{categoryId}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long familyId, @PathVariable Long categoryId){
         categoryService.deleteCategory(familyId, categoryId);
         return ResponseEntity.noContent().build();
     }
 
 
-    @DeleteMapping("/delete/{familyId}/categories")
+    @DeleteMapping("/delete/family/{familyId}")
     public ResponseEntity<Void> deleteCategories(@PathVariable Long familyId, @Valid @RequestBody CategoryDeleteRequest request){
         categoryService.deleteCategories(familyId, request);
         return ResponseEntity.noContent().build();
