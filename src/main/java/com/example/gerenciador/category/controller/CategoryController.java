@@ -54,7 +54,7 @@ public class CategoryController {
     // ================ POST ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/new/family/{familyId}")
+    @PostMapping("/admin/new/family/{familyId}")
     public ResponseEntity<CategoryResponse>  adminCreateCategories(@PathVariable Long familyId
             ,@Valid @RequestBody CategoryRequest request){
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -64,7 +64,7 @@ public class CategoryController {
     // ================ PUT ======================
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/update/category/{categoryId}")
+    @PutMapping("/admin/update/category/{categoryId}")
     public ResponseEntity<CategoryResponse>  adminCreateCategories(@PathVariable Long categoryId
             ,@Valid @RequestBody CategoryRequestUpdate request){
         return ResponseEntity.ok(adminCategoryService.adminUpdateCategory(categoryId, request));
@@ -96,7 +96,7 @@ public class CategoryController {
     // ================ GET ======================
 
     @GetMapping("/my/family/{familyId}")
-    public ResponseEntity<Page<CategoryResponse>> getMyCategories(Long familyId
+    public ResponseEntity<Page<CategoryResponse>> getMyCategories(@PathVariable Long familyId
             , @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC ) Pageable pageable){
 
         return ResponseEntity.ok(categoryService.getMyCategorys(familyId, pageable));

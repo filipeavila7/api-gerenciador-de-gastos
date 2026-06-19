@@ -13,7 +13,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
 
     Page<Purchase> findAllByFamilyId(Long familyId, Pageable pageable);
 
-    List<Purchase> findAllByFamilyIdAndPurchaseIdIn(Long familyId, List<Long> ids);
+    List<Purchase> findAllByFamilyIdAndIdIn(Long familyId, List<Long> ids);
 
 
 }

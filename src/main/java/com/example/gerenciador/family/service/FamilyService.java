@@ -100,6 +100,7 @@ public class FamilyService {
         member.setFamily(family);
         member.setUser(loggedUser);
         member.setRole(FamilyRole.ADMIN);
+        member.setJoinedAt(LocalDateTime.now());
 
         // adciona o membro do outro lado
         family.getUserMembres().add(member);

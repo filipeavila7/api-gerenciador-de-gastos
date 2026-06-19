@@ -4,6 +4,7 @@ package com.example.gerenciador.products.service;
 import com.example.gerenciador.category.entity.Category;
 import com.example.gerenciador.category.repository.CategoryRepository;
 import com.example.gerenciador.exceptions.CategoryNotFoundException;
+import com.example.gerenciador.exceptions.ConflictException;
 import com.example.gerenciador.exceptions.ProductNotFoundExeption;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -78,18 +80,19 @@ public class AdminProductService {
         // encontrar a familia
         globalHelperService.getFamilyOrThrow(familyId);
 
-        // verificar se a categoria pertence a aquela familia do user que ta adcionando
-        Category category = categoryRepository.findByIdAndFamilyId(request.categoryId(), familyId)
-                .orElseThrow(CategoryNotFoundException::new);
 
-        Product product = productRepository.findById(productId)
+        Product product = productRepository.findByIdAndFamilyId(productId, familyId)
                 .orElseThrow(ProductNotFoundExeption::new);
 
         if (request.name() != null){
             product.setName(request.name());
         }
 
+        // verificar se a categoria pertence a aquela familia
         if (request.categoryId() != null){
+            Category category = categoryRepository.findByIdAndFamilyId(request.categoryId(), familyId)
+                    .orElseThrow(CategoryNotFoundException::new);
+
             product.setCategory(category);
         }
 
@@ -114,6 +117,12 @@ public class AdminProductService {
     // admin geral pode deletar varios produtos
     @Transactional
     public void adminDeleteProducts (ProductDeleteRequest request){
+
+        if(request.ids().size() != new HashSet<>(request.ids()).size()){
+            throw new ConflictException(
+                    "Existem IDs repetidos na requisição"
+            );
+        }
 
         List<Product> products = productRepository.findAllById(request.ids());
 

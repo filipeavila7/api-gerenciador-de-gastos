@@ -42,6 +42,6 @@ public class Product {
     private Family family;
 
 
-    @OneToMany(mappedBy = "products")
+    @OneToMany(mappedBy = "product")
     List<PurchaseItens> purchaseItens = new ArrayList<>();
 }

@@ -27,7 +27,7 @@ public class Category {
     private String name;
 
     // uma categoria pertence a varios produtos
-    @OneToMany(mappedBy = "products")
+    @OneToMany(mappedBy = "category")
     private List<Product> products = new ArrayList<>();
 
     // relação com a família

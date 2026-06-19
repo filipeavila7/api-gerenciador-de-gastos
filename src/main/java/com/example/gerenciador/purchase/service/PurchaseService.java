@@ -281,6 +281,12 @@ public class PurchaseService {
     // membro admin pode deletar varias purchases
     @Transactional
     public void deleteManyPurchases(Long familyId, DeleteManyRequest request){
+        if(request.ids().size() != new HashSet<>(request.ids()).size()){
+            throw new ConflictException(
+                    "Existem IDs repetidos na requisição"
+            );
+        }
+
         User loggedUser = securityService.getLoggedUser();
 
         // busca a familia e verifica se ela existe
@@ -290,7 +296,7 @@ public class PurchaseService {
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         // busca a lista no banco
-        List<Purchase> purchases = purchaseRepository.findAllByFamilyIdAndPurchaseIdIn(familyId, request.ids());
+        List<Purchase> purchases = purchaseRepository.findAllByFamilyIdAndIdIn(familyId, request.ids());
 
         // verifica se esta faltando algum que não achou no banco
         if (purchases.size() != request.ids().size()){
@@ -324,6 +330,12 @@ public class PurchaseService {
 
     // membro admin pode apagar varios produtos dentro da purchase
     public void deleteManyProductsInPurchase(Long familyId, Long purchaseId, DeleteManyRequest request ){
+        if(request.ids().size() != new HashSet<>(request.ids()).size()){
+            throw new ConflictException(
+                    "Existem IDs repetidos na requisição"
+            );
+        }
+
         User loggedUser = securityService.getLoggedUser();
 
         // busca a familia e verifica se ela existe

@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -130,6 +131,12 @@ public class CategoryService {
     // usuario admin apagar varias categorias
     @Transactional
     public void deleteCategories(Long familyId, CategoryDeleteRequest request){
+        if(request.ids().size() != new HashSet<>(request.ids()).size()){
+            throw new ConflictException(
+                    "Existem IDs repetidos na requisição"
+            );
+        }
+
         User loggedUser = securityService.getLoggedUser();
 
         // encontrar a familia

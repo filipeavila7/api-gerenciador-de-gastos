@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -76,6 +77,12 @@ public class AdminCategoryService {
 
     // admin geral pode deletar varias categorias pelos ids
     public void adminDeleteCategoriesByIds(CategoryDeleteRequest delete){
+
+        if(delete.ids().size() != new HashSet<>(delete.ids()).size()){
+            throw new ConflictException(
+                    "Existem IDs repetidos na requisição"
+            );
+        }
         List<Category> categories = categoryRepository.findAllById(delete.ids());
 
         if (categories.size() != delete.ids().size()){
