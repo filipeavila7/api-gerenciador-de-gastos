@@ -38,8 +38,8 @@ public class PurchaseMapper {
         return new PurchaseItensResponse(
                 p.getPurchase().getId(),
                 p.getPurchase().getFamily().getId(),
-                p.getProducts().getId(),
-                p.getProducts().getName(),
+                p.getProduct().getId(),
+                p.getProduct().getName(),
                 p.getUnitPrice(),
                 p.getQuantity(),
                 subtotal
@@ -57,8 +57,8 @@ public class PurchaseMapper {
                     return new PurchaseItensResponse(
                             item.getPurchase().getId(),
                             item.getPurchase().getFamily().getId(),
-                            item.getProducts().getId(),
-                            item.getProducts().getName(),
+                            item.getProduct().getId(),
+                            item.getProduct().getName(),
                             item.getUnitPrice(),
                             item.getQuantity(),
                             subTotal

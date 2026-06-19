@@ -32,7 +32,7 @@ public class PurchaseItens {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private Product products;
+    private Product product;
 
 
     @Column(nullable = false)

@@ -65,7 +65,7 @@ public class ProductController {
     @PutMapping("/admin/update/family/{familyId}/product/{productId}")
     public ResponseEntity<ProductResponse> adminUpdateProduct(
             @PathVariable Long familyId, @PathVariable Long productId,
-            @RequestBody ProductUpdateRequest request){
+           @Valid @RequestBody ProductUpdateRequest request){
         return ResponseEntity.ok(adminProductService.adminUpdateProduct(familyId, productId, request));
     }
 
@@ -118,7 +118,7 @@ public class ProductController {
 
     @PutMapping("/update/family/{familyId}/product/{productId}")
     ResponseEntity<ProductResponse> updateProduct(@PathVariable Long familyId,
-    @PathVariable Long productId, @RequestBody ProductUpdateRequest request){
+    @PathVariable Long productId, @Valid @RequestBody ProductUpdateRequest request){
         return ResponseEntity.ok(productService.updateProduct(familyId, productId, request));
     }
 

@@ -59,7 +59,7 @@ public class FamilyController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/update/family/{familyId}")
-    public ResponseEntity<FamilyResponse> adminUpdateFamily(@PathVariable Long familyId, @RequestBody FamilyUpdateRequest request){
+    public ResponseEntity<FamilyResponse> adminUpdateFamily(@PathVariable Long familyId, @Valid @RequestBody FamilyUpdateRequest request){
         return ResponseEntity.ok(adminFamilyService.adminUpdateFamily(familyId, request));
     }
 
@@ -119,7 +119,7 @@ public class FamilyController {
     // ================ PUT ======================
 
     @PutMapping("/update/family/{familyId}")
-    public ResponseEntity<FamilyResponse> updateFamily(@PathVariable Long familyId, @RequestBody FamilyUpdateRequest request){
+    public ResponseEntity<FamilyResponse> updateFamily(@PathVariable Long familyId, @Valid @RequestBody FamilyUpdateRequest request){
         return ResponseEntity.ok(familyService.updateFamily(familyId, request));
     }
 

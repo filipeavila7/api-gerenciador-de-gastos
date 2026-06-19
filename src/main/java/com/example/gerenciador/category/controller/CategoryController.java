@@ -66,7 +66,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/update/category/{categoryId}")
     public ResponseEntity<CategoryResponse>  adminCreateCategories(@PathVariable Long categoryId
-            ,@RequestBody CategoryRequestUpdate request){
+            ,@Valid @RequestBody CategoryRequestUpdate request){
         return ResponseEntity.ok(adminCategoryService.adminUpdateCategory(categoryId, request));
     }
 
@@ -115,7 +115,7 @@ public class CategoryController {
 
     @PutMapping("/update/family/{familyId}/category/{categoryId}")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long familyId,
-            @PathVariable Long categoryId, @RequestBody CategoryRequestUpdate requestUpdate){
+            @PathVariable Long categoryId, @Valid @RequestBody CategoryRequestUpdate requestUpdate){
 
         return ResponseEntity.ok(categoryService.updateCategory(familyId, categoryId, requestUpdate));
     }

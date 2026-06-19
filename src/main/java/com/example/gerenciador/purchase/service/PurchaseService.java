@@ -1,6 +1,7 @@
 package com.example.gerenciador.purchase.service;
 
 import com.example.gerenciador.exceptions.ConflictException;
+import com.example.gerenciador.exceptions.ProductNotFoundExeption;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.products.entity.Product;
@@ -12,8 +13,6 @@ import com.example.gerenciador.purchase.repository.PurchaseItensRepository;
 import com.example.gerenciador.purchase.repository.PurchaseRepository;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +52,24 @@ public class PurchaseService {
         return purchaseRepository.findAllByFamilyId(familyId, pageable)
                 .map(purchaseMapper::toPurchaseResponse);
 
+
+    }
+
+    // membros podem ver todos os produtos dentro da compra da familia
+    public Page<PurchaseItensResponse> getMyProductsInPurchase(Long familyId, Long purchaseId, Pageable pageable){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verfica se é membro
+        globalHelperService.getMemberOrThrow(family, loggedUser);
+
+        // busca a purchase e verifica se é da familia e se existe
+        globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        return purchaseItensRepository.findAllByPurchaseId(purchaseId, pageable)
+                .map(purchaseMapper::toPurchaseItensResponse);
 
     }
 
@@ -108,7 +125,7 @@ public class PurchaseService {
         // criar o vinculo entre purchase e produto -> purchaseItens
         PurchaseItens purchaseItens = new PurchaseItens();
 
-        purchaseItens.setProducts(product);
+        purchaseItens.setProduct(product);
         purchaseItens.setPurchase(purchase);
 
         purchaseItens.setQuantity(request.quantity());
@@ -153,7 +170,7 @@ public class PurchaseService {
         }
 
         // verifica se ja existe
-         if (purchaseItensRepository.existsByPurchaseIdAndProductsIdIn(purchaseId, productsIds)){
+         if (purchaseItensRepository.existsByPurchaseIdAndProductIdIn(purchaseId, productsIds)){
              throw new ConflictException("Já existem produtos nessa compra");
          }
 
@@ -173,7 +190,7 @@ public class PurchaseService {
                             // cria o vinculo
                             PurchaseItens item = new PurchaseItens();
                             item.setPurchase(purchase);
-                            item.setProducts(product);
+                            item.setProduct(product);
                             item.setQuantity(itemRequest.quantity());
                             item.setUnitPrice(itemRequest.unitPrice());
 
@@ -184,10 +201,68 @@ public class PurchaseService {
 
         return purchaseMapper.toPurchaseManyItensResponse(purchaseItensRepository
                         .saveAll(purchaseItensList));
-
     }
 
     // ================ PUT ======================
 
+    // membro admin pode editar purchase
+    public PurchaseResponse updatePurchase(Long familyId, long purchaseId,
+                                           PurchaseUpdateRequest request){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia e verifica se ela existe
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin ou pertence a familia
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
+        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        // atualiza os dados
+        if (request.name() != null){
+            purchase.setName(request.name());
+        }
+
+        return purchaseMapper.toPurchaseResponse(purchaseRepository.save(purchase));
+    }
+
+    // membro admin pode editar produtos dentro da purchase
+    public PurchaseItensResponse updateItemInPurchase(Long familyId, Long purchaseId
+            , Long productId, PurchaseItenUpdateRequest request){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia e verifica se ela existe
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin ou pertence a familia
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
+        globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        // pega o item
+        PurchaseItens item = purchaseItensRepository.findByPurchaseIdAndProductId(purchaseId, productId)
+                .orElseThrow(ProductNotFoundExeption::new);
+
+        // atualiza
+        if (request.unitPrice() != null){
+            item.setUnitPrice(request.unitPrice());
+        }
+
+        if (request.quantity() != null){
+            item.setQuantity(request.quantity());
+        }
+
+        return purchaseMapper.toPurchaseItensResponse(purchaseItensRepository.save(item));
+
+    }
+
     // ================ DELETE ======================
+
+    // membro admin pode deletar purchase
+
+    // membro admin pode apaagr produto dentro da purchase
+
+    // membro admin pode apagar varios produtos dentro da purchase
 }
