@@ -57,13 +57,13 @@
 - [X] Adcionar produto na compra
 - [X] Adcionar varios produto na compra
 - [X] Calcular total de preço da compra
-- [ ] Deletar compra
-- [ ] Deletar varias compras
+- [X] Deletar compra
+- [X] Deletar varias compras
 - [X] listar todas as compras de uma familia - paginados
 - [X] listar todos os produtos em uma compra - paginados
 - [X] Editar compra
-- [ ] Deletar produto da compra
-- [ ] Deletar varios produto da compra
+- [X] Deletar produto da compra
+- [X] Deletar varios produto da compra
 - [X] Editar dados do produto dentro da compra - quantidade e preço unico
 - [ ] Controller de purchase
 - [ ] Metodos admin
