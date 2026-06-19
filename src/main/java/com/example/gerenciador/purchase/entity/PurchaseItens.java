@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "purchase_itens") // itens dentro do bloco
+@Table(name = "purchase_items") // itens dentro do bloco
 public class PurchaseItens {
 
     @Id

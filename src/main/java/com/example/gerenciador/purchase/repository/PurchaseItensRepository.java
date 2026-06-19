@@ -23,4 +23,6 @@ public interface PurchaseItensRepository extends JpaRepository<PurchaseItens, Lo
     Page<PurchaseItens> findAllByPurchaseId(Long purchaseId, Pageable pageable);
 
     Optional<PurchaseItens> findByPurchaseIdAndProductId(Long purchaseId, Long productId);
+
+    List<PurchaseItens> findAllByPurchaseIdAndProductIdIn(Long purchaseId, List<Long> productIds);
 }

@@ -2,6 +2,7 @@ package com.example.gerenciador.purchase.service;
 
 import com.example.gerenciador.exceptions.ConflictException;
 import com.example.gerenciador.exceptions.ProductNotFoundExeption;
+import com.example.gerenciador.exceptions.PurchaseNotFoundException;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.products.entity.Product;
@@ -261,8 +262,82 @@ public class PurchaseService {
     // ================ DELETE ======================
 
     // membro admin pode deletar purchase
+    @Transactional
+    public void deletePurchase(Long familyId, Long purchaseId){
+        User loggedUser = securityService.getLoggedUser();
 
-    // membro admin pode apaagr produto dentro da purchase
+        // busca a familia e verifica se ela existe
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin ou pertence a familia
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
+        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        purchaseRepository.delete(purchase);
+    }
+
+    // membro admin pode deletar varias purchases
+    @Transactional
+    public void deleteManyPurchases(Long familyId, DeleteManyRequest request){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia e verifica se ela existe
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin ou pertence a familia
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // busca a lista no banco
+        List<Purchase> purchases = purchaseRepository.findAllByFamilyIdAndPurchaseIdIn(familyId, request.ids());
+
+        // verifica se esta faltando algum que não achou no banco
+        if (purchases.size() != request.ids().size()){
+            throw new PurchaseNotFoundException();
+        }
+
+        purchaseRepository.deleteAll(purchases);
+
+    }
+
+    // membro admin pode apagar produto dentro da purchase
+    @Transactional
+    public void deleteProductInPurchase (Long familyId, Long purchaseId, Long productId){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia e verifica se ela existe
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin ou pertence a familia
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
+        globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        // pega o item
+        PurchaseItens item = purchaseItensRepository.findByPurchaseIdAndProductId(purchaseId, productId)
+                .orElseThrow(ProductNotFoundExeption::new);
+
+        purchaseItensRepository.delete(item);
+    }
 
     // membro admin pode apagar varios produtos dentro da purchase
+    public void deleteManyProductsInPurchase(Long familyId, Long purchaseId, DeleteManyRequest request ){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia e verifica se ela existe
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin ou pertence a familia
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        List<PurchaseItens> items = purchaseItensRepository.findAllByPurchaseIdAndProductIdIn(purchaseId, request.ids());
+
+        if (items.size() != request.ids().size()){
+            throw new ProductNotFoundExeption();
+        }
+
+        purchaseItensRepository.deleteAll(items);
+    }
 }
