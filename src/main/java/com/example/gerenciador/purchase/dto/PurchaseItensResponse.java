@@ -8,7 +8,8 @@ public record PurchaseItensResponse(
         Long productId,
         String productName,
         BigDecimal unitPrice,
-        Long quantity
+        Long quantity,
+        BigDecimal subtotal
 
 ) {
 }

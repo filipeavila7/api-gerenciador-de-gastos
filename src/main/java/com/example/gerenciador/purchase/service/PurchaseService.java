@@ -15,6 +15,8 @@ import com.example.gerenciador.user.entity.User;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,23 @@ public class PurchaseService {
     private final PurchaseMapper purchaseMapper;
 
     // ================ GET ======================
+
+    // retornar todas as compras da familia, apenas para membros dela
+    public Page<PurchaseResponse> getMyPurchases(Long familyId, Pageable pageable){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verfica se é membro
+        globalHelperService.getMemberOrThrow(family, loggedUser);
+
+        // busca as purchase
+        return purchaseRepository.findAllByFamilyId(familyId, pageable)
+                .map(purchaseMapper::toPurchaseResponse);
+
+
+    }
 
 
     // ================ POST ======================

@@ -55,9 +55,11 @@
 ## purchase
 - [X] Criar compra
 - [X] Adcionar produto na compra
-- [ ] Adcionar varios produto na compra
-- [ ] Calcular total de preço da compra
+- [X] Adcionar varios produto na compra
+- [X] Calcular total de preço da compra
 - [ ] Deletar compra
+- [ ] listar todas as compras de uma familia - paginados
+- [ ] listar todos os produtos em uma compra - paginados
 - [ ] Editar compra
 - [ ] Deletar produto da compra
 - [ ] Editar daddos do produto dentro da compra - quantidade e preço unico
