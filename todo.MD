@@ -55,7 +55,7 @@
 ## purchase
 - [X] Criar compra
 - [X] Adcionar produto na compra
-- [X] Adcionar varios produto na compra
+- [ ] Adcionar varios produto na compra
 - [ ] Calcular total de preço da compra
 - [ ] Deletar compra
 - [ ] Editar compra

@@ -6,6 +6,8 @@ import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.purchase.entity.PurchaseItens;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class PurchaseMapper {
 
@@ -27,5 +29,18 @@ public class PurchaseMapper {
                 p.getUnitPrice(),
                 p.getQuantity()
         );
+    }
+
+    public List<PurchaseItensResponse> toPurchaseManyItensResponse(List<PurchaseItens> purchaseItens){
+        return purchaseItens.stream()
+                .map(item -> new PurchaseItensResponse(
+                        item.getPurchase().getId(),
+                        item.getPurchase().getFamily().getId(),
+                        item.getProducts().getId(),
+                        item.getProducts().getName(),
+                        item.getUnitPrice(),
+                        item.getQuantity()
+                ))
+                .toList();
     }
 }

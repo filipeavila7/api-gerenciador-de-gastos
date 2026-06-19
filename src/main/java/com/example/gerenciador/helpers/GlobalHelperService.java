@@ -17,6 +17,8 @@ import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class GlobalHelperService {
@@ -63,5 +65,15 @@ public class GlobalHelperService {
     public Purchase getPurchaseOrThrow(Long familyId, Long purchaseId){
         return purchaseRepository.findByIdAndFamilyId(purchaseId, familyId)
                 .orElseThrow(PurchaseNotFoundException::new);
+    }
+
+    public List<Product> getManyProductOrThrow(List<Long> ids, Long familyId){
+        List<Product> products = productRepository.findAllByIdInAndFamilyId(ids, familyId);
+
+        if (products.size() != ids.size()){
+            throw new ProductNotFoundExeption();
+        }
+
+        return products;
     }
 }
