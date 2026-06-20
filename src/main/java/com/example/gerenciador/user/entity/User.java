@@ -37,12 +37,17 @@ public class User implements UserDetails {
     @Column
     private String profileImg;
 
+    @Column(nullable = false)
+    private boolean enabled = true;
+
     @Enumerated(EnumType.STRING)
     private UserRole role = UserRole.USER;
 
     // relação com a tabela intermediária que liga famílias com usuarios
     @OneToMany(mappedBy = "user")
     private List<FamilyMember> memberships = new ArrayList<>();
+
+
 
 
     // informar ao Spring quais permissões (authorities/roles) o usuário possui.
@@ -87,7 +92,7 @@ public class User implements UserDetails {
     // Define se a conta está ativa
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
 }

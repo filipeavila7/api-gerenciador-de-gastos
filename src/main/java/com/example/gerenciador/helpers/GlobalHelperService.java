@@ -1,9 +1,6 @@
 package com.example.gerenciador.helpers;
 
-import com.example.gerenciador.exceptions.AccessDeniedException;
-import com.example.gerenciador.exceptions.FamilyNotFoundException;
-import com.example.gerenciador.exceptions.ProductNotFoundExeption;
-import com.example.gerenciador.exceptions.PurchaseNotFoundException;
+import com.example.gerenciador.exceptions.*;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.family.entity.FamilyMember;
 import com.example.gerenciador.family.entity.FamilyRole;
@@ -14,6 +11,7 @@ import com.example.gerenciador.products.repository.ProductRepository;
 import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.purchase.repository.PurchaseRepository;
 import com.example.gerenciador.user.entity.User;
+import com.example.gerenciador.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +24,7 @@ public class GlobalHelperService {
     private final FamilyRepository familyRepository;
     private final ProductRepository productRepository;
     private final PurchaseRepository purchaseRepository;
-
+    private final UserRepository userRepository;
 
     // verificar se o usuario é admin da familia e pertence a ela
     public FamilyMember getAdminMemberOrThrow(Family family, User user) {
@@ -75,5 +73,10 @@ public class GlobalHelperService {
         }
 
         return products;
+    }
+
+    public User getUserOrThrow(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
     }
 }
