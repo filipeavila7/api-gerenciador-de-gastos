@@ -14,7 +14,7 @@ import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -38,6 +38,7 @@ public class UserService {
 
     // ================ POST ======================
 
+    @Transactional
     public UserResponse createUser(UserRequest request){
         if (repository.existsByEmail(request.email())) {
             throw new EmailAlreadyExistsException();
@@ -59,6 +60,7 @@ public class UserService {
     // ================ DELETE ======================
 
     // Próprio usuario se deletar
+    @Transactional
     public void deleteMe(){
         User loggedUser = securityService.getLoggedUser();
         repository.delete(loggedUser);
@@ -68,6 +70,7 @@ public class UserService {
     // ================ PUT ======================
 
     // Próprio usuario logado se editar
+    @Transactional
     public UserResponse editMe(UpdateUserRequest request){
         User user = securityService.getLoggedUser();
 

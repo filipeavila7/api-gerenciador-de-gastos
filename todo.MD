@@ -81,6 +81,15 @@
 
 ---
 
+
+---
+
+## Admin
+- [ ] Painel admistrativo estatístico - quantidade de familias, usuarios etc
+
+
+---
+
 ## Melhorias futuras
 - [ ] Paginação geral padrão
 - [ ] Soft delete

@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -43,6 +43,7 @@ public class AdminUserService {
     // ================ POST ======================
 
     // usuario admin pode criar novos usuarios podendo escolher a role
+    @Transactional
     public UserAdminResponse adminCreateUser(UserAdminRequest request){
         userRepository.findByEmail(request.email())
                 .orElseThrow(EmailAlreadyExistsException::new);
@@ -64,6 +65,7 @@ public class AdminUserService {
     // ================ PUT ======================
 
     // admin geral pode editar qualquer usuario
+    @Transactional
     public UserAdminResponse adminUpdateUserById(Long id, UpdateAdminUserRequest request){
         User user = globalHelperService.getUserOrThrow(id);
 
@@ -101,14 +103,16 @@ public class AdminUserService {
     }
 
     // desativar conta de usuario
+    @Transactional
     public void adminUserDisableAccount(Long id){
-        User user =globalHelperService.getUserOrThrow(id);
+        User user = globalHelperService.getUserOrThrow(id);
 
         user.setEnabled(false);
         userRepository.save(user);
     }
 
     // ativar conta de usuario
+    @Transactional
     public void adminUserEnableAccount(Long id){
         User user =globalHelperService.getUserOrThrow(id);
 
@@ -119,6 +123,7 @@ public class AdminUserService {
     // ================ DELETE ======================
 
     // admin geral pode apagar usuarios
+    @Transactional
     public void adminDeleteUserById(Long id){
        User user = globalHelperService.getUserOrThrow(id);
        userRepository.delete(user);

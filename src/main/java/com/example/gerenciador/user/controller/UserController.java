@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,6 +26,7 @@ public class UserController {
 
     // ================ GET ======================
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/get")
     public ResponseEntity<Page<UserAdminResponse>> adminGetAllUsers(
             @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC)
@@ -32,6 +34,7 @@ public class UserController {
         return ResponseEntity.ok(adminUserService.adminGetAllUsers(pageable));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/get/user/{userId}")
     public ResponseEntity<UserAdminResponse> adminGetAllUsers(@PathVariable Long userId){
         return ResponseEntity.ok(adminUserService.adminGetUser(userId));
@@ -39,6 +42,7 @@ public class UserController {
 
     // ================ POST ======================
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/new")
     public ResponseEntity<UserAdminResponse> adminCreateUser (
             @RequestBody UserAdminRequest request){
@@ -49,12 +53,14 @@ public class UserController {
 
     // ================ PUT ======================
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/update/user/{userId}")
     public ResponseEntity<UserAdminResponse> adminCreateUser (
            @PathVariable Long userId ,@RequestBody UpdateAdminUserRequest request){
         return ResponseEntity.ok(adminUserService.adminUpdateUserById(userId, request));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/disable/user/{userId}")
     public ResponseEntity<Void> adminDisableAccount (@PathVariable Long userId){
         adminUserService.adminUserDisableAccount(userId);
@@ -62,6 +68,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/enable/user/{userId}")
     public ResponseEntity<Void> adminEnableAccount (@PathVariable Long userId){
         adminUserService.adminUserEnableAccount(userId);
@@ -70,6 +77,7 @@ public class UserController {
 
     // ================ DELETE ======================
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/delete/user/{userId}")
     public ResponseEntity<Void> adminDeleteUserById(@PathVariable Long userId){
         adminUserService.adminDeleteUserById(userId);
