@@ -1,10 +1,10 @@
 package com.example.gerenciador.user.service;
 
 
-import com.example.gerenciador.exceptions.AccessDeniedException;
+
 import com.example.gerenciador.exceptions.EmailAlreadyExistsException;
-import com.example.gerenciador.exceptions.UserNotFoundException;
 import com.example.gerenciador.security.SecurityService;
+import com.example.gerenciador.user.dto.UpdateUserRequest;
 import com.example.gerenciador.user.entity.UserRole;
 import com.example.gerenciador.user.mapper.UserMapper;
 import com.example.gerenciador.user.repository.UserRepository;
@@ -58,30 +58,18 @@ public class UserService {
 
     // ================ DELETE ======================
 
-    // Próprio usuario apagar o perfil (Fszer verificação de id logado)
-    public void deleteUserById(Long id){
+    // Próprio usuario se deletar
+    public void deleteMe(){
         User loggedUser = securityService.getLoggedUser();
-
-        if (!loggedUser.getId().equals(id)){
-            throw new AccessDeniedException("Acess denied");
-        }
-
-       repository.delete(loggedUser);
+        repository.delete(loggedUser);
     }
 
 
     // ================ PUT ======================
 
-    // Próprio usuario logado se editar (Fazer verificação do id logado)
-    public UserResponse editUserById(Long id, UserRequest request){
-        User loggedUser = securityService.getLoggedUser();
-
-        if (!loggedUser.getId().equals(id)){
-            throw new AccessDeniedException("Acess denied");
-        }
-
-        User user = repository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
+    // Próprio usuario logado se editar
+    public UserResponse editMe(UpdateUserRequest request){
+        User user = securityService.getLoggedUser();
 
         if (request.name() != null) {
             user.setName(request.name());

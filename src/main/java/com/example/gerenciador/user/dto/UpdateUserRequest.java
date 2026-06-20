@@ -12,6 +12,7 @@ public record UpdateUserRequest(
 
         @Size(min = 6, max = 100, message = "Senha deve ter pelo menos 6 caracteres")
         String password,
+
         String profileImg
 ) {
 }

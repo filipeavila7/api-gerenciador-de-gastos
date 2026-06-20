@@ -78,7 +78,6 @@ public class UserController {
     }
 
 
-
     // ================ ROTAS USER ======================
 
 
@@ -100,7 +99,19 @@ public class UserController {
 
     // ================ PUT ======================
 
+    @PutMapping("/update")
+    public ResponseEntity<UserResponse> updateMe(@RequestBody UpdateUserRequest request){
+        return ResponseEntity.ok(userService.editMe(request));
+    }
+
 
     // ================ DELETE ======================
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteMe(){
+        userService.deleteMe();
+        return ResponseEntity.noContent().build();
+
+    }
 
 }
