@@ -114,7 +114,7 @@ public class PurchaseController {
 
 
     @PutMapping("/update/family/{familyId}/purchase/{purchaseId}/product/{productId}")
-    public ResponseEntity<PurchaseItensResponse> pdateItemInPurchase(
+    public ResponseEntity<PurchaseItensResponse> updateItemInPurchase(
             @PathVariable Long familyId,
             @PathVariable Long purchaseId,
             @PathVariable Long productId,
@@ -123,8 +123,9 @@ public class PurchaseController {
         return ResponseEntity.ok(purchaseService.updateItemInPurchase(familyId, purchaseId, productId, request));
     }
 
+    // ================ PATCH ======================
 
-    @PutMapping("/close/family/{familyId}/purchase/{purchaseId}")
+    @PatchMapping("/close/family/{familyId}/purchase/{purchaseId}")
     public ResponseEntity<PurchaseResponse> closePurchase(
             @PathVariable Long familyId,
             @PathVariable Long purchaseId
@@ -141,6 +142,37 @@ public class PurchaseController {
             @PathVariable Long purchaseId
     ){
         purchaseService.deletePurchase(familyId, purchaseId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/delete/family/{familyId}/purchase/many")
+    public ResponseEntity<Void> deletePurchase(
+            @PathVariable Long familyId,
+            @Valid @RequestBody DeleteManyRequest request
+    ){
+        purchaseService.deleteManyPurchases(familyId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @DeleteMapping("/delete/family/{familyId}/purchase/{purchaseId}/product/{productId}")
+    public ResponseEntity<Void> deleteProductInPurchase(
+            @PathVariable Long familyId,
+            @PathVariable Long purchaseId,
+            @PathVariable Long productId
+    ){
+        purchaseService.deleteProductInPurchase(familyId, purchaseId, productId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @DeleteMapping("/delete/family/{familyId}/purchase/{purchaseId}/product/many")
+    public ResponseEntity<Void> deleteManyProductsInPurchase(
+            @PathVariable Long familyId,
+            @PathVariable Long purchaseId,
+            @Valid @RequestBody DeleteManyRequest request
+    ){
+        purchaseService.deleteManyProductsInPurchase(familyId, purchaseId,request);
         return ResponseEntity.noContent().build();
     }
 
