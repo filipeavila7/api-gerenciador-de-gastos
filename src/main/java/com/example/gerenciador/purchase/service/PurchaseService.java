@@ -1,5 +1,6 @@
 package com.example.gerenciador.purchase.service;
 
+import com.example.gerenciador.exceptions.BusinessException;
 import com.example.gerenciador.exceptions.ConflictException;
 import com.example.gerenciador.exceptions.ProductNotFoundExeption;
 import com.example.gerenciador.exceptions.PurchaseNotFoundException;
@@ -9,6 +10,7 @@ import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.purchase.dto.*;
 import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.purchase.entity.PurchaseItens;
+import com.example.gerenciador.purchase.entity.PurchaseStatus;
 import com.example.gerenciador.purchase.mapper.PurchaseMapper;
 import com.example.gerenciador.purchase.repository.PurchaseItensRepository;
 import com.example.gerenciador.purchase.repository.PurchaseRepository;
@@ -77,7 +79,7 @@ public class PurchaseService {
 
     // ================ POST ======================
 
-    // membro admin criar bloco de compra / maleta
+    // membro admin criar compra
     @Transactional
     public PurchaseResponse createPurchase (Long familyId, PurchaseRequest request){
         User loggedUser = securityService.getLoggedUser();
@@ -88,12 +90,13 @@ public class PurchaseService {
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
-        // cria o bloco
+        // cria a compra
         Purchase purchase = new Purchase();
 
         purchase.setName(request.name());
         purchase.setFamily(family);
         purchase.setDateTime(LocalDateTime.now());
+        purchase.setPurchaseStatus(PurchaseStatus.OPEN);
 
         purchaseRepository.save(purchase);
 
@@ -109,14 +112,20 @@ public class PurchaseService {
         // busca a familia e verifica se ela existe
         Family family = globalHelperService.getFamilyOrThrow(familyId);
 
+        // busca a purchase e verifica se ela existe e pertence aquela familia
+        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        if (purchase.getPurchaseStatus() == PurchaseStatus.CLOSED){
+            throw new BusinessException("Compra fechada");
+        }
+
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         // busca o produto e verifica se ele existe
         Product product = globalHelperService.getProductOrThrow(familyId, request.productId());
 
-        // busca a purchase e verifica se ela existe e pertence aquela familia
-        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
 
         // verifica se o produto ja existe dentro da maleta purchaseItens
        if (purchaseItensRepository.existsByProductIdAndPurchaseId(request.productId(), purchaseId)){
@@ -149,6 +158,13 @@ public class PurchaseService {
         // busca a familia e verifica se ela existe
         Family family = globalHelperService.getFamilyOrThrow(familyId);
 
+        // busca a purchase e verifica se ela existe e pertence aquela familia
+        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        if (purchase.getPurchaseStatus() == PurchaseStatus.CLOSED){
+            throw new BusinessException("Compra fechada");
+        }
+
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
@@ -160,8 +176,7 @@ public class PurchaseService {
         // verifica se eles existem
         List<Product> products = globalHelperService.getManyProductOrThrow(productsIds, familyId);
 
-        // busca a purchase e verifica se ela existe e pertence aquela familia
-        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
 
         // verificar se não tem ids repetidos
         if(productsIds.size() != new HashSet<>(productsIds).size()){
@@ -214,11 +229,17 @@ public class PurchaseService {
         // busca a familia e verifica se ela existe
         Family family = globalHelperService.getFamilyOrThrow(familyId);
 
+        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
+        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        if (purchase.getPurchaseStatus() == PurchaseStatus.CLOSED){
+            throw new BusinessException("Compra fechada");
+        }
+
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
-        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
-        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
 
         // atualiza os dados
         if (request.name() != null){
@@ -236,11 +257,15 @@ public class PurchaseService {
         // busca a familia e verifica se ela existe
         Family family = globalHelperService.getFamilyOrThrow(familyId);
 
+        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
+        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        if (purchase.getPurchaseStatus() == PurchaseStatus.CLOSED){
+            throw new BusinessException("Compra fechada");
+        }
+
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
-
-        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
-        globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
 
         // pega o item
         PurchaseItens item = purchaseItensRepository.findByPurchaseIdAndProductId(purchaseId, productId)
@@ -259,6 +284,38 @@ public class PurchaseService {
 
     }
 
+    // usuario admin pode fechar a compra, não é permitido editar e nem apagar depois disso
+    // cria a transação do tipo gasto automaticamente
+    @Transactional
+    public PurchaseResponse closePurchase(Long familyId, Long purchaseId){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia e verifica se ela existe
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
+        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        // não é possivel fechar uma compra que esta fechada
+        if (purchase.getPurchaseStatus() == PurchaseStatus.CLOSED){
+            throw new BusinessException("Compra fechada");
+        }
+
+        // não é possível fechar uma compra que não possui produtos
+        if (purchase.getItens().isEmpty()) {
+            throw new BusinessException("Não é possível fechar uma compra sem itens.");
+        }
+
+        // verifica se o usuario é admin ou pertence a familia
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+
+        purchase.setPurchaseStatus(PurchaseStatus.CLOSED);
+
+
+        return purchaseMapper.toPurchaseResponse(purchaseRepository.save(purchase));
+    }
+
     // ================ DELETE ======================
 
     // membro admin pode deletar purchase
@@ -269,11 +326,16 @@ public class PurchaseService {
         // busca a familia e verifica se ela existe
         Family family = globalHelperService.getFamilyOrThrow(familyId);
 
+        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
+        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        if (purchase.getPurchaseStatus() == PurchaseStatus.CLOSED){
+            throw new BusinessException("Compra fechada");
+        }
+
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
-        // pega a purchase e ja verifica se ela exise e se pertence aquela familia
-        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
 
         purchaseRepository.delete(purchase);
     }
@@ -298,6 +360,12 @@ public class PurchaseService {
         // busca a lista no banco
         List<Purchase> purchases = purchaseRepository.findAllByFamilyIdAndIdIn(familyId, request.ids());
 
+        // anyMatch para no primeiro closed
+        if (purchases.stream()
+                .anyMatch(p -> p.getPurchaseStatus() == PurchaseStatus.CLOSED)) {
+            throw new BusinessException("Uma ou mais compras estão fechadas");
+        }
+
         // verifica se esta faltando algum que não achou no banco
         if (purchases.size() != request.ids().size()){
             throw new PurchaseNotFoundException();
@@ -319,7 +387,11 @@ public class PurchaseService {
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         // pega a purchase e ja verifica se ela exise e se pertence aquela familia
-        globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        if (purchase.getPurchaseStatus() == PurchaseStatus.CLOSED){
+            throw new BusinessException("Compra fechada");
+        }
 
         // pega o item
         PurchaseItens item = purchaseItensRepository.findByPurchaseIdAndProductId(purchaseId, productId)
@@ -343,6 +415,12 @@ public class PurchaseService {
 
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
+
+        if (purchase.getPurchaseStatus() == PurchaseStatus.CLOSED){
+            throw new BusinessException("Compra fechada");
+        }
 
         List<PurchaseItens> items = purchaseItensRepository.findAllByPurchaseIdAndProductIdIn(purchaseId, request.ids());
 

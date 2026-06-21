@@ -1,5 +1,7 @@
 package com.example.gerenciador.purchase.dto;
 
+import com.example.gerenciador.purchase.entity.PurchaseStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -8,6 +10,7 @@ public record PurchaseResponse(
         String name,
         Long familyId,
         LocalDateTime dateTime,
+        PurchaseStatus status,
         BigDecimal total
 
 ) {

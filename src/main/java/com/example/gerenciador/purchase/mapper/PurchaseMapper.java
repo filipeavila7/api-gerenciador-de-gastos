@@ -26,6 +26,7 @@ public class PurchaseMapper {
                 p.getName(),
                 p.getFamily().getId(),
                 p.getDateTime(),
+                p.getPurchaseStatus(),
                 total
         );
     }

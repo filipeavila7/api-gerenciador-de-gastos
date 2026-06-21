@@ -40,5 +40,8 @@ public class Purchase {
     @Column(nullable = false)
     LocalDateTime dateTime;
 
+    @Enumerated(EnumType.STRING)
+    PurchaseStatus purchaseStatus = PurchaseStatus.OPEN;
+
 
 }

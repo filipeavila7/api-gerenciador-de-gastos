@@ -1,14 +1,24 @@
 package com.example.gerenciador.purchase.controller;
 
+import com.example.gerenciador.purchase.dto.*;
+import com.example.gerenciador.purchase.service.PurchaseService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/purchase")
 @RequiredArgsConstructor
 public class PurchaseController {
-
+    private final PurchaseService purchaseService;
 
 
     // ================ ROTAS ADMIN ======================
@@ -33,14 +43,106 @@ public class PurchaseController {
 
     // ================ GET ======================
 
+    @GetMapping("/my/family/{familyId}")
+    public ResponseEntity<Page<PurchaseResponse>> getMyPurchases(
+            @PathVariable Long familyId,
+            @PageableDefault(size = 12, sort = "dateTime", direction = Sort.Direction.DESC)
+            Pageable pageable
+            ){
+        return ResponseEntity.ok(purchaseService.getMyPurchases(familyId, pageable));
+
+    }
+
+    @GetMapping("/my/family/{familyId}/purchase/{purchaseId}")
+    public ResponseEntity<Page<PurchaseItensResponse>> getMyProductsInPurchase(
+            @PathVariable Long familyId,
+            @PathVariable Long purchaseId,
+            @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ){
+        return ResponseEntity.ok(purchaseService.getMyProductsInPurchase(familyId, purchaseId,pageable));
+
+    }
+
+
 
     // ================ POST ======================
+
+    @PostMapping("/new/family/{familyId}")
+    public ResponseEntity<PurchaseResponse> createPurchase(
+            @PathVariable Long familyId,
+            @Valid @RequestBody PurchaseRequest request
+            ){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(purchaseService.createPurchase(familyId, request));
+    }
+
+    @PostMapping("/add/family/{familyId}/purchase/{purchaseId}")
+    public ResponseEntity<PurchaseItensResponse> addProductToPurchase(
+            @PathVariable Long familyId,
+            @PathVariable Long purchaseId,
+            @Valid @RequestBody PurchaseItensRequest request
+    ){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(purchaseService.addProductToPurchase(familyId, purchaseId, request));
+    }
+
+
+    @PostMapping("/add/family/{familyId}/purchase/{purchaseId}/many")
+    public ResponseEntity<List<PurchaseItensResponse>> addManyProductsToPurchase(
+            @PathVariable Long familyId,
+            @PathVariable Long purchaseId,
+            @Valid @RequestBody PurchaseManyItensRequest request
+    ){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(purchaseService.addManyProductsToPurchase(familyId, purchaseId, request));
+    }
+
+
 
 
     // ================ PUT ======================
 
+    @PutMapping("/update/family/{familyId}/purchase/{purchaseId}")
+    public ResponseEntity<PurchaseResponse> updatePurchase(
+            @PathVariable Long familyId,
+            @PathVariable Long purchaseId,
+            @Valid @RequestBody PurchaseUpdateRequest request
+    ){
+        return ResponseEntity.ok(purchaseService.updatePurchase(familyId, purchaseId, request));
+    }
+
+
+    @PutMapping("/update/family/{familyId}/purchase/{purchaseId}/product/{productId}")
+    public ResponseEntity<PurchaseItensResponse> pdateItemInPurchase(
+            @PathVariable Long familyId,
+            @PathVariable Long purchaseId,
+            @PathVariable Long productId,
+            @Valid @RequestBody PurchaseItenUpdateRequest request
+    ){
+        return ResponseEntity.ok(purchaseService.updateItemInPurchase(familyId, purchaseId, productId, request));
+    }
+
+
+    @PutMapping("/close/family/{familyId}/purchase/{purchaseId}")
+    public ResponseEntity<PurchaseResponse> closePurchase(
+            @PathVariable Long familyId,
+            @PathVariable Long purchaseId
+    ){
+        return ResponseEntity.ok(purchaseService.closePurchase(familyId, purchaseId));
+    }
+
 
     // ================ DELETE ======================
+
+    @DeleteMapping("/delete/family/{familyId}/purchase/{purchaseId}")
+    public ResponseEntity<Void> deletePurchase(
+            @PathVariable Long familyId,
+            @PathVariable Long purchaseId
+    ){
+        purchaseService.deletePurchase(familyId, purchaseId);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }
