@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "purchase") // bloco de commpras
+@Table(name = "purchase") // compra
 public class Purchase {
 
     @Id

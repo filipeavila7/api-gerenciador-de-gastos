@@ -1,4 +1,4 @@
-package com.example.gerenciador.transaction;
+package com.example.gerenciador.transaction.entity;
 
 import com.example.gerenciador.family.entity.Family;
 import jakarta.persistence.*;
@@ -25,11 +25,15 @@ public class Transaction {
     @JoinColumn(name = "family_id")
     private Family family;
 
+
     @Column(nullable = false)
     private BigDecimal amount;
 
     @Column(nullable = false)
-    private String description;
+    private String title;
+
+    @Column
+    private String description; // opcional
 
     @Column(nullable = false)
     private LocalDateTime dateTime;

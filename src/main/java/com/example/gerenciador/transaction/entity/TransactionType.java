@@ -1,4 +1,4 @@
-package com.example.gerenciador.transaction;
+package com.example.gerenciador.transaction.entity;
 
 public enum TransactionType {
     INCOME, // entrada de dinheiro

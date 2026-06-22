@@ -65,7 +65,7 @@
 - [X] Deletar produto da compra
 - [X] Deletar varios produto da compra
 - [X] Editar dados do produto dentro da compra - quantidade e preço unico
-- [ ] Controller de purchase
+- [X] Controller de purchase
 - [ ] Metodos admin
 - [ ] Verificação de produtos caso tente apagar mas ele exista em purchaseItens
 
