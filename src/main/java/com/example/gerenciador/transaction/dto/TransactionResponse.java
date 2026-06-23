@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public record TransactionResponse(
         Long id,
         Long familyId,
+        Long purchaseId,
         String title,
         BigDecimal ammount,
         TransactionType type,

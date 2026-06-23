@@ -2,7 +2,9 @@ package com.example.gerenciador.transaction.service;
 
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
+import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.security.SecurityService;
+import com.example.gerenciador.transaction.dto.BalanceResponse;
 import com.example.gerenciador.transaction.dto.TransactionIncomeRequest;
 import com.example.gerenciador.transaction.dto.TransactionResponse;
 import com.example.gerenciador.transaction.entity.Transaction;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -42,6 +45,24 @@ public class TransactionService {
 
     }
 
+    // ver detalhes de uma transação so, se ela for do tipo exepense, mostrar os produtos da purhcase
+    // e seus respectivos valores
+
+
+    // calcular saldo geral da familia (INCOME - EXPENSE)
+    public BalanceResponse getMyBalance(Long familyId){
+        User loggedUser = securityService.getLoggedUser();
+
+        // verifica se a familia existe
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é membro dela
+        globalHelperService.getMemberOrThrow(family, loggedUser);
+
+        // banco faz o cálculo
+        return transactionMapper.toBalanceResponse(transactionRepository.calculateBalance(familyId));
+    }
+
 
     // membro admin pode criar transações do tipo income
     public TransactionResponse createIncomeTransaction(Long familyId, TransactionIncomeRequest request){
@@ -66,5 +87,22 @@ public class TransactionService {
 
         return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
 
+    }
+
+
+    // criar a trnasação de gasto (metodo exclusivo para closePurchase de PurchaseService)
+    public TransactionResponse createExpenseTransaction(Purchase purchase, BigDecimal total){
+
+        // cria a transação
+        Transaction transaction = new Transaction();
+
+        transaction.setTitle(purchase.getName());
+        transaction.setPurchase(purchase);
+        transaction.setFamily(purchase.getFamily());
+        transaction.setDateTime(LocalDateTime.now());
+        transaction.setAmount(total);
+        transaction.setTransactionType(TransactionType.EXPENSE);
+
+        return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
     }
 }

@@ -15,6 +15,8 @@ import com.example.gerenciador.purchase.mapper.PurchaseMapper;
 import com.example.gerenciador.purchase.repository.PurchaseItensRepository;
 import com.example.gerenciador.purchase.repository.PurchaseRepository;
 import com.example.gerenciador.security.SecurityService;
+import com.example.gerenciador.transaction.dto.TransactionResponse;
+import com.example.gerenciador.transaction.service.TransactionService;
 import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +41,7 @@ public class PurchaseService {
     private final PurchaseItensRepository purchaseItensRepository;
     private final SecurityService securityService;
     private final PurchaseMapper purchaseMapper;
+    private final TransactionService transactionService;
 
     // ================ GET ======================
 
@@ -287,7 +291,7 @@ public class PurchaseService {
     // usuario admin pode fechar a compra, não é permitido editar e nem apagar depois disso
     // cria a transação do tipo gasto automaticamente
     @Transactional
-    public PurchaseResponse closePurchase(Long familyId, Long purchaseId){
+    public PurchaseTransactionResponse closePurchase(Long familyId, Long purchaseId){
         User loggedUser = securityService.getLoggedUser();
 
         // busca a familia e verifica se ela existe
@@ -309,11 +313,18 @@ public class PurchaseService {
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
+        // calcula total e salva no banco
+        BigDecimal total = calculatePurchaseTotal(purchase);
+        purchase.setTotal(total);
 
+        // fecha
         purchase.setPurchaseStatus(PurchaseStatus.CLOSED);
 
+        // criar a trasação
+        TransactionResponse expenseTransaction = transactionService.createExpenseTransaction(purchase, total);
 
-        return purchaseMapper.toPurchaseResponse(purchaseRepository.save(purchase));
+
+        return purchaseMapper.toPurchaseTransactionResponse(purchaseRepository.save(purchase), expenseTransaction);
     }
 
     // ================ DELETE ======================
@@ -429,5 +440,17 @@ public class PurchaseService {
         }
 
         purchaseItensRepository.deleteAll(items);
+    }
+
+
+    private BigDecimal calculatePurchaseTotal(Purchase p){
+        return p.getItens()
+                .stream()
+                .map(item ->
+                        item.getUnitPrice()
+                                .multiply(BigDecimal.valueOf(item.getQuantity())) // multiplica o unit price pela quantidade
+                )
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
     }
 }

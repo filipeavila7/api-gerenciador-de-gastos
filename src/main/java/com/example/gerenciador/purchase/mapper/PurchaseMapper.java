@@ -2,8 +2,10 @@ package com.example.gerenciador.purchase.mapper;
 
 import com.example.gerenciador.purchase.dto.PurchaseItensResponse;
 import com.example.gerenciador.purchase.dto.PurchaseResponse;
+import com.example.gerenciador.purchase.dto.PurchaseTransactionResponse;
 import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.purchase.entity.PurchaseItens;
+import com.example.gerenciador.transaction.dto.TransactionResponse;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -66,5 +68,15 @@ public class PurchaseMapper {
                     );
                 })
                 .toList();
+    }
+
+    public PurchaseTransactionResponse toPurchaseTransactionResponse(Purchase p, TransactionResponse t){
+        return new PurchaseTransactionResponse(
+                p.getId(),
+                p.getFamily().getId(),
+                p.getPurchaseStatus(),
+                t
+
+        );
     }
 }

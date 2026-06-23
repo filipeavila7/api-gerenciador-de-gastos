@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,9 @@ public class Purchase {
 
     @Enumerated(EnumType.STRING)
     PurchaseStatus purchaseStatus = PurchaseStatus.OPEN;
+
+    @Column
+    BigDecimal total;
 
 
 }

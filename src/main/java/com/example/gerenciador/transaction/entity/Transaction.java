@@ -1,6 +1,7 @@
 package com.example.gerenciador.transaction.entity;
 
 import com.example.gerenciador.family.entity.Family;
+import com.example.gerenciador.purchase.entity.Purchase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,10 @@ public class Transaction {
     @JoinColumn(name = "family_id")
     private Family family;
 
+    @ManyToOne
+    @JoinColumn(name = "purchase_id")
+    private Purchase purchase;
+
 
     @Column(nullable = false)
     private BigDecimal amount;
@@ -34,6 +39,7 @@ public class Transaction {
 
     @Column
     private String description; // opcional
+
 
     @Column(nullable = false)
     private LocalDateTime dateTime;
