@@ -43,6 +43,7 @@ public class PurchaseMapper {
                 p.getPurchase().getFamily().getId(),
                 p.getProduct().getId(),
                 p.getProduct().getName(),
+                p.getProduct().getCategory().getName(),
                 p.getUnitPrice(),
                 p.getQuantity(),
                 subtotal
@@ -62,6 +63,7 @@ public class PurchaseMapper {
                             item.getPurchase().getFamily().getId(),
                             item.getProduct().getId(),
                             item.getProduct().getName(),
+                            item.getProduct().getCategory().getName(),
                             item.getUnitPrice(),
                             item.getQuantity(),
                             subTotal

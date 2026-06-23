@@ -48,4 +48,6 @@ public class Purchase {
     BigDecimal total;
 
 
+
+
 }

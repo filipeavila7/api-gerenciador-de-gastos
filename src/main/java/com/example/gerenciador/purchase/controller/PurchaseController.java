@@ -126,11 +126,12 @@ public class PurchaseController {
     // ================ PATCH ======================
 
     @PatchMapping("/close/family/{familyId}/purchase/{purchaseId}")
-    public ResponseEntity<PurchaseResponse> closePurchase(
+    public ResponseEntity<PurchaseTransactionResponse> closePurchase(
             @PathVariable Long familyId,
-            @PathVariable Long purchaseId
+            @PathVariable Long purchaseId,
+            @RequestBody PurchaseTransactionRequest request
     ){
-        return ResponseEntity.ok(purchaseService.closePurchase(familyId, purchaseId));
+        return ResponseEntity.ok(purchaseService.closePurchase(familyId, purchaseId, request));
     }
 
 

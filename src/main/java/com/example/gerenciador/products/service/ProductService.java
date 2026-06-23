@@ -14,6 +14,7 @@ import com.example.gerenciador.products.dto.ProductUpdateRequest;
 import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.products.mapper.ProductMapper;
 import com.example.gerenciador.products.repository.ProductRepository;
+import com.example.gerenciador.purchase.repository.PurchaseItensRepository;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class ProductService {
     private final GlobalHelperService globalHelperService;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final PurchaseItensRepository purchaseItensRepository;
 
     // ================ GET ======================
 
@@ -45,7 +47,7 @@ public class ProductService {
         // so membros podem ver os produtos
         globalHelperService.getMemberOrThrow(family, loggedUser);
 
-        return productRepository.findByFamilyId(familyId, pageable)
+        return productRepository.findByFamilyIdAndActiveTrue(familyId, pageable)
                 .map(productMapper::toProductResponse);
 
     }
@@ -76,6 +78,7 @@ public class ProductService {
         products.setName(request.name());
         products.setCategory(category);
         products.setFamily(family);
+        products.setActive(true);
 
 
         return productMapper.toProductResponse(productRepository.save(products));
@@ -100,6 +103,11 @@ public class ProductService {
         // acha o produto
         Product product = productRepository.findByIdAndFamilyId(productId, familyId)
                 .orElseThrow(ProductNotFoundExeption::new);
+
+
+        if (purchaseItensRepository.existsByProductId(productId)){
+            throw new ConflictException("Não é possível editar um produto que está em uma compra ");
+        }
 
 
         if (request.categoryId()!= null){
@@ -137,7 +145,9 @@ public class ProductService {
                 .orElseThrow(ProductNotFoundExeption::new);
 
         // apaga
-        productRepository.delete(product);
+        product.setActive(false);
+
+        productRepository.save(product);
     }
 
     // membro admin pode deletar varios produtos
@@ -162,6 +172,8 @@ public class ProductService {
             throw new ProductNotFoundExeption();
         }
 
-        productRepository.deleteAll(products);
+        products.forEach(p -> p.setActive(false));
+
+        productRepository.saveAll(products);
     }
 }

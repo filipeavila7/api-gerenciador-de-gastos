@@ -1,9 +1,11 @@
 package com.example.gerenciador.transaction.dto;
 
+import com.example.gerenciador.purchase.dto.PurchaseItensResponse;
 import com.example.gerenciador.transaction.entity.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record TransactionInfoResponse(
         Long id,
@@ -13,7 +15,8 @@ public record TransactionInfoResponse(
         BigDecimal ammount,
         String description,
         LocalDateTime date,
-        TransactionType type
+        TransactionType type,
+        List<PurchaseItensResponse> items
 
 ) {
 }

@@ -10,6 +10,8 @@ import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.products.repository.ProductRepository;
 import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.purchase.repository.PurchaseRepository;
+import com.example.gerenciador.transaction.entity.Transaction;
+import com.example.gerenciador.transaction.repository.TransactionRepository;
 import com.example.gerenciador.user.entity.User;
 import com.example.gerenciador.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class GlobalHelperService {
     private final ProductRepository productRepository;
     private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
 
     // verificar se o usuario é admin da familia e pertence a ela
     public FamilyMember getAdminMemberOrThrow(Family family, User user) {
@@ -66,7 +69,7 @@ public class GlobalHelperService {
     }
 
     public List<Product> getManyProductOrThrow(List<Long> ids, Long familyId){
-        List<Product> products = productRepository.findAllByIdInAndFamilyId(ids, familyId);
+        List<Product> products = productRepository.findAllByIdInAndFamilyIdAndActiveTrue(ids, familyId);
 
         if (products.size() != ids.size()){
             throw new ProductNotFoundExeption();
@@ -80,5 +83,10 @@ public class GlobalHelperService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
+
+    public Transaction getTransactionOrThrow(Long familyId, Long transactionId){
+        return transactionRepository.findByFamilyIdAndId(familyId, transactionId)
+                .orElseThrow(TransactionNotFoundException::new);
+    }
 
 }

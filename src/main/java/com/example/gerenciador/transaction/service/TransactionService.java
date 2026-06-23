@@ -2,10 +2,12 @@ package com.example.gerenciador.transaction.service;
 
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
+import com.example.gerenciador.purchase.dto.PurchaseTransactionRequest;
 import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.transaction.dto.BalanceResponse;
 import com.example.gerenciador.transaction.dto.TransactionIncomeRequest;
+import com.example.gerenciador.transaction.dto.TransactionInfoResponse;
 import com.example.gerenciador.transaction.dto.TransactionResponse;
 import com.example.gerenciador.transaction.entity.Transaction;
 import com.example.gerenciador.transaction.entity.TransactionType;
@@ -30,6 +32,8 @@ public class TransactionService {
     private final TransactionMapper transactionMapper;
 
 
+    // ================ GET ======================
+
     // membro da familia pode ver todas as transações
     public Page<TransactionResponse> getMyTransactions(Long familyId, Pageable pageable){
         User loggedUser = securityService.getLoggedUser();
@@ -45,8 +49,22 @@ public class TransactionService {
 
     }
 
-    // ver detalhes de uma transação so, se ela for do tipo exepense, mostrar os produtos da purhcase
+    // ver detalhes de uma transação so se ela for do tipo exepense, mostrar os produtos da purhcase
     // e seus respectivos valores
+    public TransactionInfoResponse getTransactionDetails(Long familyId, Long transactionId){
+        User loggedUser = securityService.getLoggedUser();
+
+        // verifica se a familia existe
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é membro dela
+        globalHelperService.getMemberOrThrow(family, loggedUser);
+
+        // verificar se a transação existe
+        Transaction transaction = globalHelperService.getTransactionOrThrow(familyId, transactionId);
+
+        return transactionMapper.toTransactionInfoResponse(transaction);
+    }
 
 
     // calcular saldo geral da familia (INCOME - EXPENSE)
@@ -63,6 +81,7 @@ public class TransactionService {
         return transactionMapper.toBalanceResponse(transactionRepository.calculateBalance(familyId));
     }
 
+    // ================ POST ======================
 
     // membro admin pode criar transações do tipo income
     public TransactionResponse createIncomeTransaction(Long familyId, TransactionIncomeRequest request){
@@ -91,7 +110,8 @@ public class TransactionService {
 
 
     // criar a trnasação de gasto (metodo exclusivo para closePurchase de PurchaseService)
-    public TransactionResponse createExpenseTransaction(Purchase purchase, BigDecimal total){
+    public TransactionResponse createExpenseTransaction(
+            Purchase purchase, BigDecimal total, PurchaseTransactionRequest request){
 
         // cria a transação
         Transaction transaction = new Transaction();
@@ -102,6 +122,9 @@ public class TransactionService {
         transaction.setDateTime(LocalDateTime.now());
         transaction.setAmount(total);
         transaction.setTransactionType(TransactionType.EXPENSE);
+
+        // descrição da transação é opcional
+        transaction.setDescription(request.description());
 
         return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
     }

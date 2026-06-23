@@ -7,12 +7,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     Page<Transaction> findAllByFamilyId(
             Long familyId,
             Pageable pageable
+    );
+
+    Optional<Transaction> findByFamilyIdAndId(
+            Long familyId,
+            Long transactionId
     );
 
 

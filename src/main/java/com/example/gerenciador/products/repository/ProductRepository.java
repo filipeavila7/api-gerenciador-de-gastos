@@ -12,6 +12,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Page<Product> findByFamilyId(Long familyId, Pageable pageable);
 
+    Page<Product> findByFamilyIdAndActiveTrue(
+            Long familyId,
+            Pageable pageable
+    );
+
+    List<Product> findAllByIdInAndFamilyIdAndActiveTrue(
+            List<Long> ids,
+            Long familyId
+    );
+
     boolean existsByCategoryIdAndFamilyId(
             Long categoryId,
             Long familyId

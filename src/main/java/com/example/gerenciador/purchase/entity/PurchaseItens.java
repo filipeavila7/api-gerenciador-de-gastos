@@ -41,4 +41,6 @@ public class PurchaseItens {
     @Column(nullable = false)
     private BigDecimal unitPrice;
 
+
+
 }

@@ -129,7 +129,9 @@ public class PurchaseService {
         // busca o produto e verifica se ele existe
         Product product = globalHelperService.getProductOrThrow(familyId, request.productId());
 
-
+        if (product.getActive() == false) {
+            throw new ProductNotFoundExeption();
+        }
 
         // verifica se o produto ja existe dentro da maleta purchaseItens
        if (purchaseItensRepository.existsByProductIdAndPurchaseId(request.productId(), purchaseId)){
@@ -144,6 +146,7 @@ public class PurchaseService {
 
         purchaseItens.setQuantity(request.quantity());
         purchaseItens.setUnitPrice(request.unitPrice());
+
 
         // adcionar do outro lado da relação
         purchase.getItens().add(purchaseItens);
@@ -177,10 +180,8 @@ public class PurchaseService {
                 .map(PurchaseItensRequest::productId)
                 .toList();
 
-        // verifica se eles existem
+        // verifica se eles existem e se estão ativos
         List<Product> products = globalHelperService.getManyProductOrThrow(productsIds, familyId);
-
-
 
         // verificar se não tem ids repetidos
         if(productsIds.size() != new HashSet<>(productsIds).size()){
@@ -291,7 +292,8 @@ public class PurchaseService {
     // usuario admin pode fechar a compra, não é permitido editar e nem apagar depois disso
     // cria a transação do tipo gasto automaticamente
     @Transactional
-    public PurchaseTransactionResponse closePurchase(Long familyId, Long purchaseId){
+    public PurchaseTransactionResponse closePurchase(Long familyId, Long purchaseId,
+    PurchaseTransactionRequest request){
         User loggedUser = securityService.getLoggedUser();
 
         // busca a familia e verifica se ela existe
@@ -321,7 +323,7 @@ public class PurchaseService {
         purchase.setPurchaseStatus(PurchaseStatus.CLOSED);
 
         // criar a trasação
-        TransactionResponse expenseTransaction = transactionService.createExpenseTransaction(purchase, total);
+        TransactionResponse expenseTransaction = transactionService.createExpenseTransaction(purchase, total, request);
 
 
         return purchaseMapper.toPurchaseTransactionResponse(purchaseRepository.save(purchase), expenseTransaction);

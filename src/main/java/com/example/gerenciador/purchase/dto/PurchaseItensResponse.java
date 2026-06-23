@@ -7,6 +7,7 @@ public record PurchaseItensResponse(
         Long familyId,
         Long productId,
         String productName,
+        String categoryName,
         BigDecimal unitPrice,
         Long quantity,
         BigDecimal subtotal
