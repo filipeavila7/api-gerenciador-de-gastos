@@ -126,6 +126,7 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
+    // TODO AJUSTAR ESSE METODO PARA SOFT DELETE
     // usuario admin apagar varias categorias
     @Transactional
     public void deleteCategories(Long familyId, CategoryDeleteRequest request){
@@ -148,9 +149,7 @@ public class CategoryService {
 
 
 
-       if (productRepository.existsByCategoryIdInAndFamilyId(request.ids(), familyId)){
-           throw new ConflictException("Uma ou mais categorias estão relacionadas a produtos");
-       }
+
 
         if (categories.size() != request.ids().size()) {
             throw new CategoryNotFoundException();

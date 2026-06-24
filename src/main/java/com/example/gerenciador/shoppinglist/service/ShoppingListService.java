@@ -1,10 +1,12 @@
 package com.example.gerenciador.shoppinglist.service;
 
 
+import com.example.gerenciador.exceptions.ConflictException;
 import com.example.gerenciador.exceptions.ShoppingListNotFoundException;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.security.SecurityService;
+import com.example.gerenciador.shoppinglist.dto.ShoppingListDeleteRequest;
 import com.example.gerenciador.shoppinglist.dto.ShoppingListRequest;
 import com.example.gerenciador.shoppinglist.dto.ShoppingListResponse;
 import com.example.gerenciador.shoppinglist.dto.ShoppingListUpdateRequest;
@@ -18,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -67,6 +71,8 @@ public class ShoppingListService {
 
     }
 
+    // adcionar itens na lista
+
 
     // ================ PUT ======================
 
@@ -111,6 +117,36 @@ public class ShoppingListService {
                         .orElseThrow(ShoppingListNotFoundException::new);
 
         shoppingListRepository.delete(shoppingList);
+    }
+
+
+    // membro admin pode apagar varias listas
+    public void deleteManyShoppingLists(Long familyId, ShoppingListDeleteRequest request){
+        // evitar repetidos
+        if (request.ids().size() != new HashSet<>(request.ids()).size()){
+            throw new ConflictException("Ha Listas repetidas na requisição");
+        }
+
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin dela
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // pegar listas
+        List<ShoppingList> shoppingLists = shoppingListRepository
+                .findAllByFamilyIdAndIdIn(familyId, request.ids());
+
+        // caso falte alguns lança exceção
+        if (shoppingLists.size() != request.ids().size()){
+            throw new ShoppingListNotFoundException();
+        }
+
+        shoppingListRepository.deleteAll(shoppingLists);
+
+
     }
 
 
