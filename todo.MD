@@ -98,6 +98,26 @@
 - [ ] Deletar transação manual
 - [ ] Métodos admin geral
 
+
+---
+
+## Shopping List
+- [X] Criar lista de compras
+- [X] Listar listas de compras por família
+- [ ] Buscar lista de compras por ID validando família
+- [X] Atualizar lista de compras
+- [X] Deletar lista de compras
+- [X] Deletar várias listas de compras
+- [X] Paginação de listas de compras
+- [ ] Adicionar produtos na lista de compras
+- [ ] Remover produtos da lista de compras
+- [ ] Editar quantidade dos produtos da lista
+- [ ] Listar produtos dentro de uma lista de compras
+- [ ] Validar produtos pertencentes à mesma família
+- [ ] Controller de Shopping List
+- [ ] Permissões de acesso (membro/admin)
+- [ ] Métodos admin geral para listas de compras
+
 ---
 
 ## Admin
