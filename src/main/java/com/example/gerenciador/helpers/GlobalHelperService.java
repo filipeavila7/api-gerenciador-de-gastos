@@ -10,11 +10,14 @@ import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.products.repository.ProductRepository;
 import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.purchase.repository.PurchaseRepository;
+import com.example.gerenciador.shoppinglist.entity.ShoppingList;
+import com.example.gerenciador.shoppinglist.repository.ShoppingListRepository;
 import com.example.gerenciador.transaction.entity.Transaction;
 import com.example.gerenciador.transaction.repository.TransactionRepository;
 import com.example.gerenciador.user.entity.User;
 import com.example.gerenciador.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,6 +31,7 @@ public class GlobalHelperService {
     private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
+    private final ShoppingListRepository shoppingListRepository;
 
     // verificar se o usuario é admin da familia e pertence a ela
     public FamilyMember getAdminMemberOrThrow(Family family, User user) {
@@ -68,6 +72,7 @@ public class GlobalHelperService {
                 .orElseThrow(PurchaseNotFoundException::new);
     }
 
+    // busca varios produtos
     public List<Product> getManyProductOrThrow(List<Long> ids, Long familyId){
         List<Product> products = productRepository.findAllByIdInAndFamilyIdAndActiveTrue(ids, familyId);
 
@@ -78,15 +83,24 @@ public class GlobalHelperService {
         return products;
     }
 
+    // busca um usuario
     public User getUserOrThrow(Long id){
         return userRepository.findById(id)
                 .orElseThrow(UserNotFoundException::new);
     }
 
 
+    // busca uma transação
     public Transaction getTransactionOrThrow(Long familyId, Long transactionId){
         return transactionRepository.findByFamilyIdAndId(familyId, transactionId)
                 .orElseThrow(TransactionNotFoundException::new);
+    }
+
+
+    // busca uma lista de compras
+    public ShoppingList getShoppingListOrThrow(Long familyId, Long shoppingListId){
+        return shoppingListRepository.findByFamilyIdAndId(familyId, shoppingListId)
+                .orElseThrow(ShoppingListNotFoundException::new);
     }
 
 }

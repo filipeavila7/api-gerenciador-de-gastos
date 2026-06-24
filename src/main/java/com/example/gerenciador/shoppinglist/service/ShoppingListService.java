@@ -49,6 +49,8 @@ public class ShoppingListService {
                 .map(shoppingListMapper::toShoppingListResponse);
     }
 
+    // ver produtos dentro da lista
+
     // ================ POST ======================
 
     // membro admin pode criar lista de compras
@@ -88,8 +90,7 @@ public class ShoppingListService {
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         // busca lista
-        ShoppingList shoppingList = shoppingListRepository.findByFamilyIdAndId(familyId, shoppingListId)
-                .orElseThrow(ShoppingListNotFoundException::new);
+        ShoppingList shoppingList = globalHelperService.getShoppingListOrThrow(familyId, shoppingListId);
 
         // atualiza
         if (request.name() != null){
@@ -97,6 +98,12 @@ public class ShoppingListService {
         }
 
         return shoppingListMapper.toShoppingListResponse(shoppingListRepository.save(shoppingList));
+
+        // editar produtos dentro da lista
+
+        // marcar como concluido
+
+        // desmarcar como concluido
     }
 
 
@@ -112,11 +119,11 @@ public class ShoppingListService {
         // verifica se o usuario é admin dela
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
-
-        ShoppingList shoppingList = shoppingListRepository.findByFamilyIdAndId(familyId, shoppingListId)
-                        .orElseThrow(ShoppingListNotFoundException::new);
+        // busca a lista
+        ShoppingList shoppingList = globalHelperService.getShoppingListOrThrow(familyId, shoppingListId);
 
         shoppingListRepository.delete(shoppingList);
+
     }
 
 
@@ -148,6 +155,10 @@ public class ShoppingListService {
 
 
     }
+
+    // deletar produto dentro da lista
+
+    // deletar varios produtos dentro da lista
 
 
 
