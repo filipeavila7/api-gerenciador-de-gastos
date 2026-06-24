@@ -4,6 +4,7 @@ package com.example.gerenciador.family.entity;
 import com.example.gerenciador.category.entity.Category;
 import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.purchase.entity.Purchase;
+import com.example.gerenciador.shoppinglist.entity.ShoppingList;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -52,4 +53,8 @@ public class Family {
     // relação inversa com purchase
     @OneToMany(mappedBy = "family", cascade = CascadeType.ALL)
     private List<Purchase> purchases = new ArrayList<>();
+
+    // relação inversa com lista de compras
+    @OneToMany(mappedBy = "family",  cascade = CascadeType.ALL)
+    private List<ShoppingList> shoppingLists = new ArrayList<>();
 }

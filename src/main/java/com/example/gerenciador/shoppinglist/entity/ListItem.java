@@ -1,4 +1,4 @@
-package com.example.gerenciador.shoppinglist;
+package com.example.gerenciador.shoppinglist.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-@Table(name = "list_item")
+@Table(name = "list_item") // produtos dentro da lista
 public class ListItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

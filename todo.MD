@@ -67,7 +67,7 @@
 - [X] Editar dados do produto dentro da compra - quantidade e preço unico
 - [X] Controller de purchase
 - [ ] Metodos admin
-- [ ] Verificação de produtos caso tente apagar mas ele exista em purchaseItens
+- [x] Verificação de produtos caso tente apagar mas ele exista em purchaseItens
 
 ---
 
@@ -81,6 +81,22 @@
 
 ---
 
+## Transactions
+- [x] Criar transação de receita (INCOME)
+- [x] Criar transação de despesa (EXPENSE)
+- [x] Criar transação de despesa automaticamente ao fechar compra
+- [x] Listar todas as transações da família (paginado)
+- [x] Buscar transação por ID
+- [x] Buscar detalhes de uma transação
+- [x] Exibir itens da compra vinculada em transações do tipo EXPENSE
+- [x] Associar transação de despesa a uma compra
+- [x] Permitir transações sem compra associada (INCOME)
+- [x] Calcular saldo da família (INCOME - EXPENSE)
+- [ ] Filtrar transações por tipo
+- [ ] Filtrar transações por período
+- [ ] Editar transação manual
+- [ ] Deletar transação manual
+- [ ] Métodos admin geral
 
 ---
 
@@ -92,6 +108,6 @@
 
 ## Melhorias futuras
 - [ ] Paginação geral padrão
-- [ ] Soft delete
+- [x] Soft delete
 - [ ] Logs de ações
 - [ ] Auditoria (createdAt, createdBy)

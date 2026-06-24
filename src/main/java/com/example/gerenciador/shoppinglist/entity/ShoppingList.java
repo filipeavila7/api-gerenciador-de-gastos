@@ -1,4 +1,4 @@
-package com.example.gerenciador.shoppinglist;
+package com.example.gerenciador.shoppinglist.entity;
 
 import com.example.gerenciador.family.entity.Family;
 import jakarta.persistence.*;
@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Setter
 @Getter
-@Table(name = "shopping_list")
+@Table(name = "shopping_list") // lista de compras
 public class ShoppingList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class ShoppingList {
     private Family family;
 
 
-    @OneToMany(mappedBy = "shopping_list")
+    @OneToMany(mappedBy = "shopping_list", cascade = CascadeType.ALL)
     List<ListItem> listItems = new ArrayList<>();
 
 
