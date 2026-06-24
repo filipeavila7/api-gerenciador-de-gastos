@@ -26,6 +26,9 @@ public class Category {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    Boolean active = true;
+
     // uma categoria pertence a varios produtos
     @OneToMany(mappedBy = "category")
     private List<Product> products = new ArrayList<>();

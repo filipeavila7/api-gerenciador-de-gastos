@@ -71,6 +71,10 @@ public class ProductService {
         Category category = categoryRepository.findByIdAndFamilyId(request.categoryId(), familyId)
                 .orElseThrow(CategoryNotFoundException::new);
 
+        if (category.getActive() == false){
+            throw new CategoryNotFoundException();
+        }
+
         // cria o produto
 
         Product products = new Product();
@@ -113,6 +117,10 @@ public class ProductService {
         if (request.categoryId()!= null){
             Category category = categoryRepository.findByIdAndFamilyId(request.categoryId(), familyId)
                     .orElseThrow(CategoryNotFoundException::new);
+
+            if (category.getActive() == false){
+                throw new CategoryNotFoundException();
+            }
 
             product.setCategory(category);
         }

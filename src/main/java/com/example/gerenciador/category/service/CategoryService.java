@@ -46,7 +46,7 @@ public class CategoryService {
         // verifica se o usuario pertence a familia
         globalHelperService.getMemberOrThrow(family, loggedUser);
 
-        return categoryRepository.findByFamilyId(familyId, pageable)
+        return categoryRepository.findByFamilyIdAndActiveTrue(familyId, pageable)
                 .map(categoryMapper::toCategoryResponse);
     }
 
@@ -67,6 +67,7 @@ public class CategoryService {
 
         category.setName(request.name());
         category.setFamily(family);
+        category.setActive(true);
 
         categoryRepository.save(category);
 
@@ -120,12 +121,9 @@ public class CategoryService {
         Category category = categoryRepository.findByIdAndFamilyId(categoryId, familyId)
                 .orElseThrow(CategoryNotFoundException::new);
 
-        // caso existam produtos relacionados a essa categoria, lança uma exeption
-        if (productRepository.existsByCategoryIdAndFamilyId(categoryId, familyId)){
-            throw new ConflictException("Essa categoria esta relacionada a algum produto");
-        }
+        category.setActive(false);
 
-        categoryRepository.delete(category);
+        categoryRepository.save(category);
     }
 
     // usuario admin apagar varias categorias
