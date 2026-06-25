@@ -6,12 +6,12 @@ import com.example.gerenciador.exceptions.ShoppingListNotFoundException;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.security.SecurityService;
-import com.example.gerenciador.shoppinglist.dto.ShoppingListDeleteRequest;
-import com.example.gerenciador.shoppinglist.dto.ShoppingListRequest;
-import com.example.gerenciador.shoppinglist.dto.ShoppingListResponse;
-import com.example.gerenciador.shoppinglist.dto.ShoppingListUpdateRequest;
+import com.example.gerenciador.shoppinglist.dto.*;
+import com.example.gerenciador.shoppinglist.entity.ListItem;
+import com.example.gerenciador.shoppinglist.entity.PriorityList;
 import com.example.gerenciador.shoppinglist.entity.ShoppingList;
 import com.example.gerenciador.shoppinglist.mapper.ShoppingListMapper;
+import com.example.gerenciador.shoppinglist.repository.ListItemRepository;
 import com.example.gerenciador.shoppinglist.repository.ShoppingListRepository;
 import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,7 @@ public class ShoppingListService {
     private final GlobalHelperService globalHelperService;
     private final SecurityService securityService;
     private final ShoppingListMapper shoppingListMapper;
+    private final ListItemRepository listItemRepository;
 
 
     // ================ GET ======================
@@ -74,6 +75,35 @@ public class ShoppingListService {
     }
 
     // adcionar itens na lista
+
+    public LIstItemResponse addNewItemToList(
+            Long familyId, Long shoppingListId, ListItemRequest request){
+
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin dela
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // busca lista
+        ShoppingList shoppingList = globalHelperService.getShoppingListOrThrow(familyId, shoppingListId);
+
+        ListItem listItem = new ListItem();
+
+        listItem.setName(request.name());
+
+        if (request.priority() == null){
+            listItem.setPriorityList(PriorityList.NORMAL);
+        }
+
+        listItem.setDone(request.done());
+        listItem.setShoppingList(shoppingList);
+
+        return shoppingListMapper.toLIstItemResponse(listItemRepository.save(listItem));
+
+    }
 
 
     // ================ PUT ======================

@@ -104,7 +104,7 @@
 ## Shopping List
 - [X] Criar lista de compras
 - [X] Listar listas de compras por família
-- [ ] Buscar lista de compras por ID validando família
+- [X] Buscar lista de compras por ID validando família
 - [X] Atualizar lista de compras
 - [X] Deletar lista de compras
 - [X] Deletar várias listas de compras
