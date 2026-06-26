@@ -31,7 +31,7 @@ public class ShoppingList {
     private Family family;
 
 
-    @OneToMany(mappedBy = "shopping_list", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "shoppingList", cascade = CascadeType.ALL)
     List<ListItem> listItems = new ArrayList<>();
 
 

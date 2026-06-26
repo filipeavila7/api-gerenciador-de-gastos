@@ -290,6 +290,8 @@ public class ShoppingListService {
             throw new ItemListNotFoundException();
         }
 
+        listItemRepository.deleteAll(items);
+
 
     }
 

@@ -258,7 +258,7 @@ public class FamilyService {
         User loggedUser = securityService.getLoggedUser();
 
         // encontrar a familia
-        Family family = globalHelperService.getFamilyOrThrow(familyId);
+        globalHelperService.getFamilyOrThrow(familyId);
 
         // caso ele seja o último da família, ele não pode sair
         List<FamilyMember> members = familyMemberRepository.findByFamilyId(familyId);
