@@ -10,7 +10,9 @@ import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.products.repository.ProductRepository;
 import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.purchase.repository.PurchaseRepository;
+import com.example.gerenciador.shoppinglist.entity.ListItem;
 import com.example.gerenciador.shoppinglist.entity.ShoppingList;
+import com.example.gerenciador.shoppinglist.repository.ListItemRepository;
 import com.example.gerenciador.shoppinglist.repository.ShoppingListRepository;
 import com.example.gerenciador.transaction.entity.Transaction;
 import com.example.gerenciador.transaction.repository.TransactionRepository;
@@ -32,6 +34,7 @@ public class GlobalHelperService {
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
     private final ShoppingListRepository shoppingListRepository;
+    private final ListItemRepository listItemRepository;
 
     // verificar se o usuario é admin da familia e pertence a ela
     public FamilyMember getAdminMemberOrThrow(Family family, User user) {
@@ -60,19 +63,19 @@ public class GlobalHelperService {
                 .orElseThrow(FamilyNotFoundException::new);
     }
 
-    // buscar produto pelo id do produto e da familia
+    // buscar produto pelo id do produto e da familia e verifica se ele pertence a aquela familia
     public Product getProductOrThrow(Long familyId, Long productId){
         return productRepository.findByIdAndFamilyId(productId, familyId)
                 .orElseThrow(ProductNotFoundExeption::new);
     }
 
-    // buscara purchase pelo id da purchase e da familia
+    // buscar purchase pelo id da purchase e da familia e verifica se ela pertence aquela familia
     public Purchase getPurchaseOrThrow(Long familyId, Long purchaseId){
         return purchaseRepository.findByIdAndFamilyId(purchaseId, familyId)
                 .orElseThrow(PurchaseNotFoundException::new);
     }
 
-    // busca varios produtos
+    // busca varios produtos e verifica se eles pertencem aquela familia
     public List<Product> getManyProductOrThrow(List<Long> ids, Long familyId){
         List<Product> products = productRepository.findAllByIdInAndFamilyIdAndActiveTrue(ids, familyId);
 
@@ -102,5 +105,13 @@ public class GlobalHelperService {
         return shoppingListRepository.findByFamilyIdAndId(familyId, shoppingListId)
                 .orElseThrow(ShoppingListNotFoundException::new);
     }
+
+
+    // busca um item na lista de compras
+    public ListItem getListItemOrThrow(Long itemId, Long shoppingListId){
+        return listItemRepository.findByIdAndShoppingListId(itemId,  shoppingListId)
+                .orElseThrow(ItemListNotFoundException::new);
+    }
+
 
 }

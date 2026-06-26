@@ -94,9 +94,11 @@ public class ShoppingListService {
 
         listItem.setName(request.name());
 
-        if (request.priority() == null){
-            listItem.setPriorityList(PriorityList.NORMAL);
-        }
+        listItem.setPriorityList(
+                request.priority() != null
+                        ? request.priority()
+                        : PriorityList.NORMAL
+        );
 
         listItem.setDone(request.done());
         listItem.setShoppingList(shoppingList);
@@ -129,12 +131,41 @@ public class ShoppingListService {
 
         return shoppingListMapper.toShoppingListResponse(shoppingListRepository.save(shoppingList));
 
-        // editar produtos dentro da lista
 
-        // marcar como concluido
-
-        // desmarcar como concluido
     }
+
+    // editar produtos dentro da lista
+    public LIstItemResponse updateItemInList(
+            Long familyId, Long shoppingListId, Long itemId, ListItemUpdateRequest request
+    ){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin dela
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // busca lista
+        globalHelperService.getShoppingListOrThrow(familyId, shoppingListId);
+
+        ListItem item = globalHelperService.getListItemOrThrow(itemId, shoppingListId);
+
+        if (request.name() != null){
+            item.setName(request.name());
+        }
+        if (request.priority() != null){
+            item.setPriorityList(request.priority());
+        }
+
+        return shoppingListMapper.toLIstItemResponse(listItemRepository.save(item));
+    }
+
+
+
+    // marcar como concluido
+
+    // desmarcar como concluido
 
 
     // ================ DELETE ======================
