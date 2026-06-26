@@ -39,7 +39,7 @@ public class AdminCategoryService {
 
     // admin geral pode ver todas as categorias de uma familia pelo id dela
     public Page<CategoryResponse> adminGetCategoriesByfamilyId(Long familyId, Pageable pageable){
-        return categoryRepository.findByFamilyId(familyId, pageable)
+        return categoryRepository.findAllByFamilyId(pageable, familyId)
                 .map(categoryMapper::toCategoryResponse);
     }
 

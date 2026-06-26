@@ -26,7 +26,8 @@ public class TransactionMapper {
                 t.getTitle(),
                 t.getAmount(),
                 t.getTransactionType(),
-                t.getDateTime()
+                t.getDateTime(),
+                t.getDescription()
         );
     }
 

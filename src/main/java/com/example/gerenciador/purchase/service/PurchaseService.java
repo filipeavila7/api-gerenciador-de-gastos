@@ -101,6 +101,7 @@ public class PurchaseService {
         purchase.setFamily(family);
         purchase.setDateTime(LocalDateTime.now());
         purchase.setPurchaseStatus(PurchaseStatus.OPEN);
+        purchase.setTotal(BigDecimal.ZERO);
 
         purchaseRepository.save(purchase);
 
@@ -151,9 +152,10 @@ public class PurchaseService {
         // adcionar do outro lado da relação
         purchase.getItens().add(purchaseItens);
 
-        purchaseItensRepository.save(purchaseItens);
+        PurchaseItens savedItem = purchaseItensRepository.save(purchaseItens);
+        addToPurchaseTotal(purchase, itemSubtotal(savedItem));
 
-        return purchaseMapper.toPurchaseItensResponse(purchaseItens);
+        return purchaseMapper.toPurchaseItensResponse(savedItem);
 
 
     }
@@ -220,13 +222,21 @@ public class PurchaseService {
 
                 ).toList();
 
-        return purchaseMapper.toPurchaseManyItensResponse(purchaseItensRepository
-                        .saveAll(purchaseItensList));
+        List<PurchaseItens> savedItems = purchaseItensRepository.saveAll(purchaseItensList);
+
+        BigDecimal addedTotal = savedItems.stream()
+                .map(this::itemSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        addToPurchaseTotal(purchase, addedTotal);
+
+        return purchaseMapper.toPurchaseManyItensResponse(savedItems);
     }
 
     // ================ PUT ======================
 
     // membro admin pode editar purchase
+    @Transactional
     public PurchaseResponse updatePurchase(Long familyId, long purchaseId,
                                            PurchaseUpdateRequest request){
         User loggedUser = securityService.getLoggedUser();
@@ -255,6 +265,7 @@ public class PurchaseService {
     }
 
     // membro admin pode editar produtos dentro da purchase
+    @Transactional
     public PurchaseItensResponse updateItemInPurchase(Long familyId, Long purchaseId
             , Long productId, PurchaseItenUpdateRequest request){
         User loggedUser = securityService.getLoggedUser();
@@ -276,6 +287,8 @@ public class PurchaseService {
         PurchaseItens item = purchaseItensRepository.findByPurchaseIdAndProductId(purchaseId, productId)
                 .orElseThrow(ProductNotFoundExeption::new);
 
+        BigDecimal previousSubtotal = itemSubtotal(item);
+
         // atualiza
         if (request.unitPrice() != null){
             item.setUnitPrice(request.unitPrice());
@@ -285,7 +298,10 @@ public class PurchaseService {
             item.setQuantity(request.quantity());
         }
 
-        return purchaseMapper.toPurchaseItensResponse(purchaseItensRepository.save(item));
+        PurchaseItens savedItem = purchaseItensRepository.save(item);
+        addToPurchaseTotal(purchase, itemSubtotal(savedItem).subtract(previousSubtotal));
+
+        return purchaseMapper.toPurchaseItensResponse(savedItem);
 
     }
 
@@ -308,16 +324,14 @@ public class PurchaseService {
         }
 
         // não é possível fechar uma compra que não possui produtos
-        if (purchase.getItens().isEmpty()) {
+        if (!purchaseItensRepository.existsByPurchaseId(purchaseId)) {
             throw new BusinessException("Não é possível fechar uma compra sem itens.");
         }
 
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
-        // calcula total e salva no banco
-        BigDecimal total = calculatePurchaseTotal(purchase);
-        purchase.setTotal(total);
+        BigDecimal total = purchase.getTotal() != null ? purchase.getTotal() : BigDecimal.ZERO;
 
         // fecha
         purchase.setPurchaseStatus(PurchaseStatus.CLOSED);
@@ -411,9 +425,11 @@ public class PurchaseService {
                 .orElseThrow(ProductNotFoundExeption::new);
 
         purchaseItensRepository.delete(item);
+        addToPurchaseTotal(purchase, itemSubtotal(item).negate());
     }
 
     // membro admin pode apagar varios produtos dentro da purchase
+    @Transactional
     public void deleteManyProductsInPurchase(Long familyId, Long purchaseId, DeleteManyRequest request ){
         if(request.ids().size() != new HashSet<>(request.ids()).size()){
             throw new ConflictException(
@@ -442,17 +458,21 @@ public class PurchaseService {
         }
 
         purchaseItensRepository.deleteAll(items);
+        BigDecimal removedTotal = items.stream()
+                .map(this::itemSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        addToPurchaseTotal(purchase, removedTotal.negate());
     }
 
 
-    private BigDecimal calculatePurchaseTotal(Purchase p){
-        return p.getItens()
-                .stream()
-                .map(item ->
-                        item.getUnitPrice()
-                                .multiply(BigDecimal.valueOf(item.getQuantity())) // multiplica o unit price pela quantidade
-                )
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    private BigDecimal itemSubtotal(PurchaseItens item){
+        return item.getUnitPrice()
+                .multiply(BigDecimal.valueOf(item.getQuantity()));
+    }
 
+    private void addToPurchaseTotal(Purchase purchase, BigDecimal amount){
+        BigDecimal currentTotal = purchase.getTotal() != null ? purchase.getTotal() : BigDecimal.ZERO;
+        purchase.setTotal(currentTotal.add(amount));
     }
 }

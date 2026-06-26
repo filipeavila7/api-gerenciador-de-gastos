@@ -12,7 +12,8 @@ public record TransactionResponse(
         String title,
         BigDecimal ammount,
         TransactionType type,
-        LocalDateTime dateTime
+        LocalDateTime dateTime,
+        String description
 
 ) {
 }

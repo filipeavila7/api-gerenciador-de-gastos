@@ -17,7 +17,13 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "category")
+@Table(
+        name = "category",
+        indexes = {
+                @Index(name = "idx_category_family", columnList = "family_id"),
+                @Index(name = "idx_category_family_active", columnList = "family_id, active")
+        }
+)
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

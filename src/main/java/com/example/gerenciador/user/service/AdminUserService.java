@@ -28,11 +28,13 @@ public class AdminUserService {
     // ================ GET ======================
 
     // admin geral pode ver todos os usuarios logados
+    @Transactional(readOnly = true)
     public Page<UserAdminResponse> adminGetAllUsers(Pageable pageable){
         return userRepository.findAll(pageable)
                 .map(userMapper::toUserAdminResponse);
     }
 
+    @Transactional(readOnly = true)
     public UserAdminResponse adminGetUser(Long id){
         User user = globalHelperService.getUserOrThrow(id);
 

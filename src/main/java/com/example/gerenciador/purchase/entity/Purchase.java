@@ -18,7 +18,13 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "purchase") // compra
+@Table(
+        name = "purchase",
+        indexes = {
+                @Index(name = "idx_purchase_family", columnList = "family_id"),
+                @Index(name = "idx_purchase_family_status", columnList = "family_id, purchaseStatus")
+        }
+) // compra
 public class Purchase {
 
     @Id

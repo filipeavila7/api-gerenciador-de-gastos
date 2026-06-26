@@ -32,6 +32,7 @@ public class FamilyService {
     // ================ GET ======================
 
     // ver todas as familias em que o usuario logado esta ou tem
+    @Transactional(readOnly = true)
     public List<FamilyResponse> getMyFamilies(){
         User loggedUser = securityService.getLoggedUser();
 
@@ -46,6 +47,7 @@ public class FamilyService {
     }
 
     // pegar somente uma familia pelo id
+    @Transactional(readOnly = true)
     public FamilyResponse getFamily(Long familyId){
         User loggedUser = securityService.getLoggedUser();
 
@@ -61,6 +63,7 @@ public class FamilyService {
 
 
     // ver os membros de uma familia
+    @Transactional(readOnly = true)
     public List<MemberResponse> getFamilyMembers(Long familyId){
         User loggedUser = securityService.getLoggedUser();
 

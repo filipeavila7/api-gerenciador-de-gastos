@@ -3,6 +3,7 @@ package com.example.gerenciador.transaction.repository;
 import com.example.gerenciador.transaction.entity.Transaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -17,6 +18,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     );
 
     Optional<Transaction> findByFamilyIdAndId(
+            Long familyId,
+            Long transactionId
+    );
+
+    @EntityGraph(attributePaths = {
+            "purchase",
+            "purchase.itens",
+            "purchase.itens.product",
+            "purchase.itens.product.category"
+    })
+    Optional<Transaction> findWithDetailsByFamilyIdAndId(
             Long familyId,
             Long transactionId
     );

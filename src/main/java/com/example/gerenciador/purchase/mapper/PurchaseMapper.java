@@ -15,21 +15,13 @@ import java.util.List;
 public class PurchaseMapper {
 
     public PurchaseResponse toPurchaseResponse(Purchase p){
-        BigDecimal total = p.getItens()
-                .stream()
-                .map(item ->
-                        item.getUnitPrice()
-                                .multiply(BigDecimal.valueOf(item.getQuantity())) // multiplica o unit price pela quantidade
-                )
-                .reduce(BigDecimal.ZERO, BigDecimal::add); // soma todos os valores
-
         return new PurchaseResponse(
                 p.getId(),
                 p.getName(),
                 p.getFamily().getId(),
                 p.getDateTime(),
                 p.getPurchaseStatus(),
-                total
+                p.getTotal() != null ? p.getTotal() : BigDecimal.ZERO
         );
     }
 

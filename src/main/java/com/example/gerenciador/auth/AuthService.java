@@ -24,7 +24,7 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
-                        request.passwprd()
+                        request.password()
                 )
         );
 

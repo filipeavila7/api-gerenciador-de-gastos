@@ -16,7 +16,12 @@ import java.util.List;
 @AllArgsConstructor
 @Setter
 @Getter
-@Table(name = "shopping_list") // lista de compras
+@Table(
+        name = "shopping_list",
+        indexes = {
+                @Index(name = "idx_shopping_list_family", columnList = "family_id")
+        }
+) // lista de compras
 public class ShoppingList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

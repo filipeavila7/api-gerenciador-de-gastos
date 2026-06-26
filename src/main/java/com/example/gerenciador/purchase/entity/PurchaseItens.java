@@ -17,7 +17,14 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "purchase_items") // itens dentro do bloco
+@Table(
+        name = "purchase_items",
+        indexes = {
+                @Index(name = "idx_purchase_items_purchase", columnList = "purchase_id"),
+                @Index(name = "idx_purchase_items_product", columnList = "product_id"),
+                @Index(name = "idx_purchase_items_purchase_product", columnList = "purchase_id, product_id")
+        }
+) // itens dentro do bloco
 public class PurchaseItens {
 
     @Id

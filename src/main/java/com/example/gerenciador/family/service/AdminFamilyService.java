@@ -39,6 +39,7 @@ public class AdminFamilyService {
     // ================ GET ======================
 
     // admin pode ver todas as familias
+    @Transactional(readOnly = true)
     public Page<FamilyResponse> adminGetAllFamilies(Pageable pageable){
 
         return familyRepository.findAll(pageable)
@@ -47,6 +48,7 @@ public class AdminFamilyService {
     }
 
     // admin pode ver somente uma familia
+    @Transactional(readOnly = true)
     public FamilyResponse adminGetByFamilyId(Long familyId){
 
 
@@ -56,6 +58,7 @@ public class AdminFamilyService {
     }
 
     // admin pode ver todos os membros de uma familia
+    @Transactional(readOnly = true)
     public List<MemberResponse> adminGetMembersByFamilyId(Long familyId){
 
         // encontrar a familia

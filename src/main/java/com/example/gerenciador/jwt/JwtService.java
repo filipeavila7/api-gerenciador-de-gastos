@@ -14,8 +14,8 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-    @Value("${JWT_SECRET}")
-    private String SECRET;
+
+    private String SECRET = "sua-chave-super-secreta-com-pelo-menos-32-caracteres";
 
     // transformar a chave secreta (SECRET) em um objeto Key que a biblioteca JJWT consegue usar para assinar e validar tokens.
     private Key getKey(){

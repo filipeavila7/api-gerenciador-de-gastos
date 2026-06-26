@@ -19,7 +19,14 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Table(name = "products")
+@Table(
+        name = "products",
+        indexes = {
+                @Index(name = "idx_products_family", columnList = "family_id"),
+                @Index(name = "idx_products_category", columnList = "category_id"),
+                @Index(name = "idx_products_family_active", columnList = "family_id, active")
+        }
+)
 public class Product {
 
     @Id

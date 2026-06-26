@@ -1,6 +1,7 @@
 package com.example.gerenciador.transaction.service;
 
 import com.example.gerenciador.family.entity.Family;
+import com.example.gerenciador.exceptions.TransactionNotFoundException;
 import com.example.gerenciador.helpers.GlobalHelperService;
 import com.example.gerenciador.purchase.dto.PurchaseTransactionRequest;
 import com.example.gerenciador.purchase.entity.Purchase;
@@ -61,7 +62,8 @@ public class TransactionService {
         globalHelperService.getMemberOrThrow(family, loggedUser);
 
         // verificar se a transação existe
-        Transaction transaction = globalHelperService.getTransactionOrThrow(familyId, transactionId);
+        Transaction transaction = transactionRepository.findWithDetailsByFamilyIdAndId(familyId, transactionId)
+                .orElseThrow(TransactionNotFoundException::new);
 
         return transactionMapper.toTransactionInfoResponse(transaction);
     }

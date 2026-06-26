@@ -29,6 +29,7 @@ public class UserService {
     // ================ GET ======================
 
     // retorna os dados usuario logado
+    @Transactional(readOnly = true)
     public UserResponse getMe(){
         User loggedUser = securityService.getLoggedUser();
 
@@ -48,6 +49,7 @@ public class UserService {
         user.setName(request.name());
         user.setEmail(request.email());
         user.setRole(UserRole.USER);
+        user.setProfileImg(request.profileImg());
         user.setPassword(passwordEncoder.encode(request.password()));
 
         repository.save(user);

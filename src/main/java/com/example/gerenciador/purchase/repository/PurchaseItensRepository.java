@@ -19,6 +19,8 @@ public interface PurchaseItensRepository extends JpaRepository<PurchaseItens, Lo
             Long productId
     );
 
+    boolean existsByPurchaseId(Long purchaseId);
+
     boolean existsByPurchaseIdAndProductIdIn(
             Long purchaseId,
             List<Long> productIds

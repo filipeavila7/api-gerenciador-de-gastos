@@ -12,7 +12,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-@Table(name = "list_item") // produtos dentro da lista
+@Table(
+        name = "list_item",
+        indexes = {
+                @Index(name = "idx_list_item_shopping_list", columnList = "shopping_list_id")
+        }
+) // produtos dentro da lista
 public class ListItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
