@@ -2,6 +2,7 @@ package com.example.gerenciador.shoppinglist.service;
 
 
 import com.example.gerenciador.exceptions.ConflictException;
+import com.example.gerenciador.exceptions.ItemListNotFoundException;
 import com.example.gerenciador.exceptions.ShoppingListNotFoundException;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
@@ -265,6 +266,34 @@ public class ShoppingListService {
     }
 
     // deletar varios produtos dentro da lista
+    public void deleteManyItemsInList(
+            Long familyId, Long shoppingListId, ListItemDeleteRequest request
+    ){
+        if (request.ids().size() != new HashSet<>(request.ids()).size()){
+            throw new ConflictException("Há ids repetidos na requisição");
+        }
+
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin dela
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // busca lista
+        globalHelperService.getShoppingListOrThrow(familyId, shoppingListId);
+
+        List<ListItem> items = listItemRepository.findByShoppingListIdAndIdIn(shoppingListId, request.ids());
+
+        if (request.ids().size() != items.size()){
+            throw new ItemListNotFoundException();
+        }
+
+
+    }
+
+
 
 
 
