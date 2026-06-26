@@ -154,6 +154,7 @@ public class ShoppingListService {
         if (request.name() != null){
             item.setName(request.name());
         }
+
         if (request.priority() != null){
             item.setPriorityList(request.priority());
         }
@@ -162,10 +163,27 @@ public class ShoppingListService {
     }
 
 
+    // marcar como concluido ou desmarcar
+    public LIstItemResponse updateDoneStatus(
+            Long familyId, Long shoppingListId, Long itemId, DoneRequest request
+    ){
+        User loggedUser = securityService.getLoggedUser();
 
-    // marcar como concluido
+        // busca a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
-    // desmarcar como concluido
+        // verifica se o usuario é admin dela
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // busca lista
+        globalHelperService.getShoppingListOrThrow(familyId, shoppingListId);
+
+        ListItem item = globalHelperService.getListItemOrThrow(itemId, shoppingListId);
+
+        item.setDone(request.done());
+
+        return shoppingListMapper.toLIstItemResponse(listItemRepository.save(item));
+    }
 
 
     // ================ DELETE ======================
@@ -218,6 +236,7 @@ public class ShoppingListService {
     }
 
     // deletar produto dentro da lista
+
 
     // deletar varios produtos dentro da lista
 
