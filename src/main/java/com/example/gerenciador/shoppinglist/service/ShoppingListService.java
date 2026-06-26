@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -55,6 +56,7 @@ public class ShoppingListService {
     // ================ POST ======================
 
     // membro admin pode criar lista de compras
+    @Transactional
     public ShoppingListResponse createShoppingList(Long familyId, ShoppingListRequest request){
         User loggedUser = securityService.getLoggedUser();
 
@@ -75,7 +77,7 @@ public class ShoppingListService {
     }
 
     // adcionar itens na lista
-
+    @Transactional
     public LIstItemResponse addNewItemToList(
             Long familyId, Long shoppingListId, ListItemRequest request){
 
@@ -111,6 +113,7 @@ public class ShoppingListService {
     // ================ PUT ======================
 
     // membro admin pode editar lista de compras
+    @Transactional
     public ShoppingListResponse updateShoppingList(
             Long familyId , Long shoppingListId , ShoppingListUpdateRequest request){
         User loggedUser = securityService.getLoggedUser();
@@ -135,6 +138,7 @@ public class ShoppingListService {
     }
 
     // editar produtos dentro da lista
+    @Transactional
     public LIstItemResponse updateItemInList(
             Long familyId, Long shoppingListId, Long itemId, ListItemUpdateRequest request
     ){
@@ -149,6 +153,7 @@ public class ShoppingListService {
         // busca lista
         globalHelperService.getShoppingListOrThrow(familyId, shoppingListId);
 
+        // busca o item
         ListItem item = globalHelperService.getListItemOrThrow(itemId, shoppingListId);
 
         if (request.name() != null){
@@ -164,6 +169,7 @@ public class ShoppingListService {
 
 
     // marcar como concluido ou desmarcar
+    @Transactional
     public LIstItemResponse updateDoneStatus(
             Long familyId, Long shoppingListId, Long itemId, DoneRequest request
     ){
@@ -189,6 +195,7 @@ public class ShoppingListService {
     // ================ DELETE ======================
 
     // membro admin pode deletar lista de compras
+    @Transactional
     public void deleteShoppingList(Long familyId ,Long shoppingListId){
         User loggedUser = securityService.getLoggedUser();
 
@@ -207,6 +214,7 @@ public class ShoppingListService {
 
 
     // membro admin pode apagar varias listas
+    @Transactional
     public void deleteManyShoppingLists(Long familyId, ShoppingListDeleteRequest request){
         // evitar repetidos
         if (request.ids().size() != new HashSet<>(request.ids()).size()){
@@ -236,7 +244,25 @@ public class ShoppingListService {
     }
 
     // deletar produto dentro da lista
+    @Transactional
+    public void delteItemInList(
+            Long familyId, Long shoppingListId, Long itemId
+    ){
+        User loggedUser = securityService.getLoggedUser();
 
+        // busca a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é admin dela
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // busca lista
+        globalHelperService.getShoppingListOrThrow(familyId, shoppingListId);
+
+        ListItem item = globalHelperService.getListItemOrThrow(itemId, shoppingListId);
+
+        listItemRepository.delete(item);
+    }
 
     // deletar varios produtos dentro da lista
 
