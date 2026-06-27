@@ -30,6 +30,8 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
     private final CustomUserDetailsService userDetailsService;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     // configuração de hash de senha
     /// Define como senhas são criptografadas e comparadas.
@@ -57,19 +59,18 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable()) // desliga proteção csrf pois ja esta usando jwt
+                .csrf(csrf -> csrf.disable())
+
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS // não existe login salvo no servidor, servidor não guarda sessão e cada request precisa de jwt
+                                SessionCreationPolicy.STATELESS
                         )
                 )
 
-                // definir quem acessa cada rota
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(
-                                "/auth/**"
-                        ).permitAll()
+                        .requestMatchers("/auth/**")
+                        .permitAll()
 
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
@@ -80,11 +81,21 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
                 )
-                .userDetailsService(userDetailsService) // caso busque usuario, use userDetails
-                .addFilterBefore( // antes do Spring tentar autenticar, roda meu filtro JWT
+
+                .exceptionHandling(exception -> exception
+
+                        .authenticationEntryPoint(authenticationEntryPoint)
+
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
+
+                .userDetailsService(userDetailsService)
+
+                .addFilterBefore(
                         jwtFilter,
                         UsernamePasswordAuthenticationFilter.class
                 );
+
 
         return http.build();
     }

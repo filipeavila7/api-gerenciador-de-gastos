@@ -120,9 +120,6 @@ public class FamilyService {
 
         User loggedUser = securityService.getLoggedUser();
 
-        // encontra o membro novo
-        User member = userRepository.findById(memberId)
-                .orElseThrow(UserNotFoundException::new);
 
         // encontrar a familia
         Family family = globalHelperService.getFamilyOrThrow(familyId);
@@ -132,14 +129,18 @@ public class FamilyService {
             throw new MemberLimitExceededException();
         }
 
+        // verifica se o usuario que ta adcionando pertence aquela família e é admin
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
+        // encontra o membro novo
+        User member = userRepository.findById(memberId)
+                .orElseThrow(UserNotFoundException::new);
+
 
         // verifica se o novo usuario ja esta nessa família
         if (familyMemberRepository.existsByFamilyAndUser(family, member)){
             throw new UserAlreadyInFamilyException();
         }
-
-        // verifica se o usuario que ta adcionando pertence aquela família e é admin
-        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         // criar vinculo
         FamilyMember familyMember = new FamilyMember();

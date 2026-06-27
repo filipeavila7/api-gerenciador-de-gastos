@@ -315,6 +315,9 @@ public class PurchaseService {
         // busca a familia e verifica se ela existe
         Family family = globalHelperService.getFamilyOrThrow(familyId);
 
+        // verifica se o usuario é admin ou pertence a familia
+        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
         // pega a purchase e ja verifica se ela exise e se pertence aquela familia
         Purchase purchase = globalHelperService.getPurchaseOrThrow(familyId, purchaseId);
 
@@ -328,8 +331,6 @@ public class PurchaseService {
             throw new BusinessException("Não é possível fechar uma compra sem itens.");
         }
 
-        // verifica se o usuario é admin ou pertence a familia
-        globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
         BigDecimal total = purchase.getTotal() != null ? purchase.getTotal() : BigDecimal.ZERO;
 
