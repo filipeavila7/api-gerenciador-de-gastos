@@ -109,13 +109,11 @@
 - [X] Deletar lista de compras
 - [X] Deletar várias listas de compras
 - [X] Paginação de listas de compras
-- [ ] Adicionar produtos na lista de compras
-- [ ] Remover produtos da lista de compras
-- [ ] Editar quantidade dos produtos da lista
-- [ ] Listar produtos dentro de uma lista de compras
-- [ ] Validar produtos pertencentes à mesma família
-- [ ] Controller de Shopping List
-- [ ] Permissões de acesso (membro/admin)
+- [x] Adicionar produtos na lista de compras
+- [x] Remover produtos da lista de compras
+- [x] Listar produtos dentro de uma lista de compras
+- [x] Controller de Shopping List
+- [x] Permissões de acesso (membro/admin)
 - [ ] Métodos admin geral para listas de compras
 
 ---
@@ -127,7 +125,18 @@
 ---
 
 ## Melhorias futuras
-- [ ] Paginação geral padrão
+- [X] Paginação geral padrão
 - [x] Soft delete
 - [ ] Logs de ações
 - [ ] Auditoria (createdAt, createdBy)
+- [ ] Ajustar env
+- [ ] Classe para configurar onde as imagens são salvas e o seu nome
+- [ ] Gráficos para accompanhar os gastos durante os meses
+- [ ] Ajustar localDateTime para a hora vier certa indpendente da maquina onde o servidor esta
+- [ ] Integrações com IA como ler boletos e criar automaticamente a compra
+- [ ] WebSockets para acompanhar em tempo real algumas funções
+- [ ] Caches em algumas areas para melhorar performace
+- [ ] Testes em services criticas 
+- [ ] Entidade de histórico da familia, onde mostra as atividades do membro admin como criar produtos, transações etc
+- [ ] Criar fundos reserva de emergência para familias
+- [ ] Notificsções personalizadas usando WebSockets 
