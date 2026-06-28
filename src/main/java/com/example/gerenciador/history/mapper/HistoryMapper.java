@@ -12,6 +12,7 @@ public class HistoryMapper {
         return new HistoryResponse(
                 h.getId(),
                 h.getFamily().getId(),
+                h.getFamily().getName(),
                 h.getUser().getId(),
                 h.getUser().getName(),
                 h.getDescription(),

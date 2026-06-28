@@ -9,6 +9,8 @@ import com.example.gerenciador.family.mapper.FamilyMapper;
 import com.example.gerenciador.family.repository.FamilyMemberRepository;
 import com.example.gerenciador.family.repository.FamilyRepository;
 import com.example.gerenciador.helpers.GlobalHelperService;
+import com.example.gerenciador.history.entity.HistoryAction;
+import com.example.gerenciador.history.service.HistoryService;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
 import com.example.gerenciador.user.repository.UserRepository;
@@ -29,6 +31,9 @@ public class FamilyService {
     private final FamilyMemberRepository familyMemberRepository;
     private final FamilyMapper familyMapper;
     private final GlobalHelperService globalHelperService;
+    private final HistoryService historyService;
+
+
     // ================ GET ======================
 
     // ver todas as familias em que o usuario logado esta ou tem
@@ -110,6 +115,10 @@ public class FamilyService {
 
         familyRepository.save(family);
 
+        String message = "criou a família";
+
+        historyService.createHistory(message, family, loggedUser, HistoryAction.CREATED_FAMILY);
+
         return familyMapper.toResponse(family);
 
     }
@@ -152,7 +161,11 @@ public class FamilyService {
 
         familyMemberRepository.save(familyMember);
 
-        return  familyMapper.toFamilyMemberResponse(familyMember);
+        String message = "Adcionou um membro à família";
+
+        historyService.createHistory(message, family, loggedUser, HistoryAction.ADDED_MEMBER);
+
+        return familyMapper.toFamilyMemberResponse(familyMember);
 
     }
 
@@ -179,6 +192,10 @@ public class FamilyService {
         member.setRole(FamilyRole.ADMIN);
 
         familyMemberRepository.save(member);
+
+        String message = "tornou um membro admnistrador da familia";
+
+        historyService.createHistory(message, family, loggedUser, HistoryAction.CHANGE_MEMBER);
 
         return familyMapper.toMemberResponse(member);
 
@@ -208,6 +225,10 @@ public class FamilyService {
 
         familyRepository.save(family);
 
+        String message = "editou dados da família";
+
+        historyService.createHistory(message, family, loggedUser, HistoryAction.UPDATED_FAMILY);
+
         return familyMapper.toResponse(family);
     }
 
@@ -226,6 +247,7 @@ public class FamilyService {
 
         // verifica se o usuariom logado pertence aquela família e é admin
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
+
 
         familyRepository.delete(family);
 
@@ -251,6 +273,9 @@ public class FamilyService {
             throw new CannotRemoveAdminException();
         }
 
+        String message = "removeu um membro da família";
+
+        historyService.createHistory(message, family, loggedUser, HistoryAction.REMOVED_MEMBER);
 
         familyMemberRepository.delete(memberToRemove);
 
@@ -262,7 +287,7 @@ public class FamilyService {
         User loggedUser = securityService.getLoggedUser();
 
         // encontrar a familia
-        globalHelperService.getFamilyOrThrow(familyId);
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
 
         // caso ele seja o último da família, ele não pode sair
         List<FamilyMember> members = familyMemberRepository.findByFamilyId(familyId);
@@ -292,27 +317,14 @@ public class FamilyService {
             familyMemberRepository.save(newAdmin);
         }
 
+        String message = "saiu da família ";
+
+        historyService.createHistory(message, family, loggedUser, HistoryAction.EXIT_MEMBER);
 
         familyMemberRepository.delete(member);
 
 
     }
-
-
-
-
-
-
-    // ================ TODOLIST ======================
-
-    // todo - (X) criar metodo de admin da familia remover membros
-    // todo - (X) criar metodo para um usuario sair de uma familia e caso ele seja admin, o cargo vai pro user mais antigo
-    // todo - (X) criar metodo para um admin tornar um membro admin
-    // todo - (X) criar metodo para editar dados da familia
-    // todo - (x) criar verificação maxima de membros em uma familia - max
-    // todo - (X) criar crud para usuario admins
-
-
 
 
 }
