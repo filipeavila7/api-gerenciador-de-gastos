@@ -7,6 +7,8 @@ import com.example.gerenciador.exceptions.ConflictException;
 import com.example.gerenciador.exceptions.ProductNotFoundExeption;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
+import com.example.gerenciador.history.entity.HistoryAction;
+import com.example.gerenciador.history.service.HistoryService;
 import com.example.gerenciador.products.dto.ProductDeleteRequest;
 import com.example.gerenciador.products.dto.ProductRequest;
 import com.example.gerenciador.products.dto.ProductResponse;
@@ -35,6 +37,7 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
     private final PurchaseItensRepository purchaseItensRepository;
+    private final HistoryService historyService;
 
     // ================ GET ======================
 
@@ -84,6 +87,8 @@ public class ProductService {
         products.setFamily(family);
         products.setActive(true);
 
+        String message = "criou o produto " + products.getName();
+        historyService.createHistory(message, family, loggedUser, HistoryAction.CREATED_PRODUCT);
 
         return productMapper.toProductResponse(productRepository.save(products));
     }
@@ -129,7 +134,8 @@ public class ProductService {
             product.setName(request.name());
         }
 
-
+        String message = "editou o produto " + product.getName();
+        historyService.createHistory(message, family, loggedUser, HistoryAction.UPDATED_PRODUCT);
 
         return productMapper.toProductResponse(productRepository.save(product));
     }
@@ -154,6 +160,9 @@ public class ProductService {
 
         // apaga
         product.setActive(false);
+
+        String message = "excluiu o produto " + product.getName();
+        historyService.createHistory(message, family, loggedUser, HistoryAction.DELETED_PRODUCT);
 
         productRepository.save(product);
     }
@@ -180,7 +189,17 @@ public class ProductService {
             throw new ProductNotFoundExeption();
         }
 
-        products.forEach(p -> p.setActive(false));
+
+        products.forEach(p -> {
+            p.setActive(false);
+
+            historyService.createHistory(
+                    "removeu o produto " + p.getName(),
+                    family,
+                    loggedUser,
+                    HistoryAction.DELETED_PRODUCT
+            );
+        });
 
         productRepository.saveAll(products);
     }
