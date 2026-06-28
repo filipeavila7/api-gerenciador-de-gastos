@@ -1,0 +1,15 @@
+package com.example.gerenciador.history.entity;
+
+public enum HistoryAction {
+    CREATED_PURCHASE,
+    UPDATED_PURCHASE,
+    CLOSE_PURCHASE,
+    DELETED_PURCHASE,
+    CREATED_PRODUCT,
+    UPDATED_PRODUCT,
+    DELETED_PRODUCT,
+    ADDED_MEMBER,
+    REMOVED_MEMBER,
+    CREATED_CATEGORY,
+    UPDATED_CATEGORY
+}
