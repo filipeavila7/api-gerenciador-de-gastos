@@ -6,6 +6,8 @@ import com.example.gerenciador.exceptions.ProductNotFoundExeption;
 import com.example.gerenciador.exceptions.PurchaseNotFoundException;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
+import com.example.gerenciador.history.entity.HistoryAction;
+import com.example.gerenciador.history.service.HistoryService;
 import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.purchase.dto.*;
 import com.example.gerenciador.purchase.entity.Purchase;
@@ -42,6 +44,7 @@ public class PurchaseService {
     private final SecurityService securityService;
     private final PurchaseMapper purchaseMapper;
     private final TransactionService transactionService;
+    private final HistoryService historyService;
 
     // ================ GET ======================
 
@@ -104,6 +107,9 @@ public class PurchaseService {
         purchase.setTotal(BigDecimal.ZERO);
 
         purchaseRepository.save(purchase);
+
+        String message = "criou uma nova compra " + purchase.getName();
+        historyService.createHistory(message, family, loggedUser, HistoryAction.CREATED_PURCHASE);
 
         return purchaseMapper.toPurchaseResponse(purchase);
 
@@ -254,11 +260,13 @@ public class PurchaseService {
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
-
+        String name = purchase.getName();
 
         // atualiza os dados
         if (request.name() != null){
             purchase.setName(request.name());
+            String message = "editou o nome da compra " + name + " para " + purchase.getName();
+            historyService.createHistory(message, family, loggedUser, HistoryAction.UPDATED_PURCHASE);
         }
 
         return purchaseMapper.toPurchaseResponse(purchaseRepository.save(purchase));
@@ -340,6 +348,8 @@ public class PurchaseService {
         // criar a trasação
         TransactionResponse expenseTransaction = transactionService.createExpenseTransaction(purchase, total, request);
 
+        String message = "fechou a compra " + purchase.getName();
+        historyService.createHistory(message, family, loggedUser, HistoryAction.CLOSE_PURCHASE);
 
         return purchaseMapper.toPurchaseTransactionResponse(purchaseRepository.save(purchase), expenseTransaction);
     }
@@ -364,6 +374,8 @@ public class PurchaseService {
         // verifica se o usuario é admin ou pertence a familia
         globalHelperService.getAdminMemberOrThrow(family, loggedUser);
 
+        String message = "deletou a compra " + purchase.getName();
+        historyService.createHistory(message, family, loggedUser, HistoryAction.DELETED_PURCHASE);
 
         purchaseRepository.delete(purchase);
     }
@@ -398,6 +410,15 @@ public class PurchaseService {
         if (purchases.size() != request.ids().size()){
             throw new PurchaseNotFoundException();
         }
+
+        purchases.forEach(p -> {
+            historyService.createHistory(
+                    "deletou a compra " + p.getName(),
+                    family,
+                    loggedUser,
+                    HistoryAction.DELETED_PURCHASE
+            );
+        });
 
         purchaseRepository.deleteAll(purchases);
 

@@ -1,6 +1,7 @@
 package com.example.gerenciador.history.entity;
 
 public enum HistoryAction {
+    CREATED_TRANSACTION,
     CREATED_FAMILY,
     DELETE_FAMILY,
     UPDATED_FAMILY,
@@ -16,5 +17,6 @@ public enum HistoryAction {
     CHANGE_MEMBER,
     EXIT_MEMBER,
     CREATED_CATEGORY,
-    UPDATED_CATEGORY
+    UPDATED_CATEGORY,
+    DELETED_CATEGORY
 }

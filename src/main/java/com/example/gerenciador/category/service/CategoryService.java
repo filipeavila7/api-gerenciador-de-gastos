@@ -12,7 +12,8 @@ import com.example.gerenciador.exceptions.CategoryNotFoundException;
 import com.example.gerenciador.exceptions.ConflictException;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.helpers.GlobalHelperService;
-import com.example.gerenciador.products.repository.ProductRepository;
+import com.example.gerenciador.history.entity.HistoryAction;
+import com.example.gerenciador.history.service.HistoryService;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class CategoryService {
     private final SecurityService securityService;
     private final GlobalHelperService globalHelperService;
     private final CategoryMapper categoryMapper;
-    private final ProductRepository productRepository;
+    private final HistoryService historyService;
 
     // ================ GET ======================
 
@@ -71,6 +72,9 @@ public class CategoryService {
 
         categoryRepository.save(category);
 
+        String message = "criou a categoria " + category.getName();
+        historyService.createHistory(message, family, loggedUser, HistoryAction.CREATED_CATEGORY);
+
         return categoryMapper.toCategoryResponse(category);
 
     }
@@ -94,11 +98,18 @@ public class CategoryService {
         Category category = categoryRepository.findByIdAndFamilyId(categoryId, familyId)
                 .orElseThrow(CategoryNotFoundException::new);
 
+        String name = category.getName();
+
         if (request.name() != null){
             category.setName(request.name());
+
+            String message = "editou o nome da categoria " + name + " para " + category.getName();
+            historyService.createHistory(message, family, loggedUser, HistoryAction.UPDATED_CATEGORY);
         }
 
         categoryRepository.save(category);
+
+
 
         return categoryMapper.toCategoryResponse(category);
     }
@@ -123,10 +134,13 @@ public class CategoryService {
 
         category.setActive(false);
 
+        String message = "deletou a categoria " + category.getName();
+        historyService.createHistory(message, family, loggedUser, HistoryAction.DELETED_CATEGORY);
+
         categoryRepository.save(category);
     }
 
-    // TODO AJUSTAR ESSE METODO PARA SOFT DELETE
+
     // usuario admin apagar varias categorias
     @Transactional
     public void deleteCategories(Long familyId, CategoryDeleteRequest request){
@@ -148,14 +162,20 @@ public class CategoryService {
         List<Category> categories = categoryRepository.findAllByIdInAndFamilyId(request.ids(), familyId);
 
 
-
-
-
         if (categories.size() != request.ids().size()) {
             throw new CategoryNotFoundException();
         }
 
-        categoryRepository.deleteAll(categories);
+        categories.forEach(c ->{
+                c.setActive(false);
+
+                historyService.createHistory("deletou a categoria " + c.getName()
+                        , family
+                        , loggedUser
+                        , HistoryAction.DELETED_CATEGORY);
+    });
+
+        categoryRepository.saveAll(categories);
     }
 
 

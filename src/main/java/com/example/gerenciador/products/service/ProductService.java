@@ -118,6 +118,7 @@ public class ProductService {
             throw new ConflictException("Não é possível editar um produto que está em uma compra ");
         }
 
+        String name = product.getName();
 
         if (request.categoryId()!= null){
             Category category = categoryRepository.findByIdAndFamilyId(request.categoryId(), familyId)
@@ -127,15 +128,20 @@ public class ProductService {
                 throw new CategoryNotFoundException();
             }
 
+            String message = "editou a categoria do produto " + name + " para " + category;
+            historyService.createHistory(message, family, loggedUser, HistoryAction.UPDATED_PRODUCT);
+
             product.setCategory(category);
         }
 
         if (request.name() != null){
             product.setName(request.name());
+
+            String message = "editou o nome do produto " + name + " para " + product.getName();
+            historyService.createHistory(message, family, loggedUser, HistoryAction.UPDATED_PRODUCT);
         }
 
-        String message = "editou o produto " + product.getName();
-        historyService.createHistory(message, family, loggedUser, HistoryAction.UPDATED_PRODUCT);
+
 
         return productMapper.toProductResponse(productRepository.save(product));
     }

@@ -3,6 +3,8 @@ package com.example.gerenciador.transaction.service;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.exceptions.TransactionNotFoundException;
 import com.example.gerenciador.helpers.GlobalHelperService;
+import com.example.gerenciador.history.entity.HistoryAction;
+import com.example.gerenciador.history.service.HistoryService;
 import com.example.gerenciador.purchase.dto.PurchaseTransactionRequest;
 import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.security.SecurityService;
@@ -31,6 +33,7 @@ public class TransactionService {
     private final SecurityService securityService;
     private final GlobalHelperService globalHelperService;
     private final TransactionMapper transactionMapper;
+    private final HistoryService historyService;
 
 
     // ================ GET ======================
@@ -105,6 +108,9 @@ public class TransactionService {
         transaction.setTransactionType(TransactionType.INCOME);
         transaction.setFamily(family);
 
+        String message = "criou uma nova transação de entrada " + transaction.getTitle() + ", no valor de R$ " + request.ammount();
+        historyService.createHistory(message, family, loggedUser, HistoryAction.CREATED_TRANSACTION);
+
 
         return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
 
@@ -114,6 +120,8 @@ public class TransactionService {
     // criar a trnasação de gasto (metodo exclusivo para closePurchase de PurchaseService)
     public TransactionResponse createExpenseTransaction(
             Purchase purchase, BigDecimal total, PurchaseTransactionRequest request){
+
+        User loggedUser = securityService.getLoggedUser();
 
         // cria a transação
         Transaction transaction = new Transaction();
@@ -127,6 +135,11 @@ public class TransactionService {
 
         // descrição da transação é opcional
         transaction.setDescription(request.description());
+
+        String message = "criou uma nova transação de saída " + transaction.getTitle() + ", no valor de R$ " + total;
+        historyService.createHistory(message
+                , purchase.getFamily(),
+                loggedUser, HistoryAction.CREATED_TRANSACTION);
 
         return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
     }
