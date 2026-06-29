@@ -6,6 +6,8 @@ import com.example.gerenciador.family.entity.FamilyMember;
 import com.example.gerenciador.family.entity.FamilyRole;
 import com.example.gerenciador.family.repository.FamilyMemberRepository;
 import com.example.gerenciador.family.repository.FamilyRepository;
+import com.example.gerenciador.history.entity.History;
+import com.example.gerenciador.history.repository.HistoryRepository;
 import com.example.gerenciador.products.entity.Product;
 import com.example.gerenciador.products.repository.ProductRepository;
 import com.example.gerenciador.purchase.entity.Purchase;
@@ -35,6 +37,7 @@ public class GlobalHelperService {
     private final TransactionRepository transactionRepository;
     private final ShoppingListRepository shoppingListRepository;
     private final ListItemRepository listItemRepository;
+    private final HistoryRepository historyRepository;
 
     // verificar se o usuario é admin da familia e pertence a ela
     public FamilyMember getAdminMemberOrThrow(Family family, User user) {
@@ -114,4 +117,8 @@ public class GlobalHelperService {
     }
 
 
+    public History getHistoryOrThrow(Long familyId, Long historyId){
+        return historyRepository.findByIdAndFamilyId(historyId,  familyId)
+                .orElseThrow(HistoryNotFoundException::new);
+    }
 }
