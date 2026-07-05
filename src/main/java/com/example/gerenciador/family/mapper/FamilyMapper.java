@@ -5,6 +5,7 @@ import com.example.gerenciador.family.dto.FamilyResponse;
 import com.example.gerenciador.family.dto.MemberResponse;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.family.entity.FamilyMember;
+import com.example.gerenciador.utils.uploads.service.FileUrlUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +15,7 @@ public class FamilyMapper {
                 f.getId(),
                 f.getName(),
                 f.getCreatedAt(),
-                f.getProfileImg(),
+                FileUrlUtils.toPublicUrl(f.getProfileImg()),
                 f.getUserMembres().size()
         );
     }
@@ -25,7 +26,7 @@ public class FamilyMapper {
                 f.getFamily().getId(),
                 f.getUser().getId(),
                 f.getUser().getName(),
-                f.getUser().getProfileImg(),
+                FileUrlUtils.toPublicUrl(f.getUser().getProfileImg()),
                 f.getJoinedAt(),
                 f.getRole()
         );
@@ -35,7 +36,7 @@ public class FamilyMapper {
     public MemberResponse toMemberResponse(FamilyMember f){
         return new MemberResponse(
                 f.getUser().getName(),
-                f.getUser().getProfileImg(),
+                FileUrlUtils.toPublicUrl(f.getUser().getProfileImg()),
                 f.getRole(),
                 f.getJoinedAt()
         );

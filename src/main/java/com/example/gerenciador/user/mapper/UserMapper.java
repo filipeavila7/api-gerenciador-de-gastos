@@ -3,6 +3,7 @@ package com.example.gerenciador.user.mapper;
 import com.example.gerenciador.user.dto.UserAdminResponse;
 import com.example.gerenciador.user.dto.UserResponse;
 import com.example.gerenciador.user.entity.User;
+import com.example.gerenciador.utils.uploads.service.FileUrlUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,7 +14,7 @@ public class UserMapper {
                 u.getId(),
                 u.getName(),
                 u.getEmail(),
-                u.getProfileImg()
+                FileUrlUtils.toPublicUrl(u.getProfileImg())
 
 
         );
@@ -25,7 +26,7 @@ public class UserMapper {
                 u.getId(),
                 u.getName(),
                 u.getEmail(),
-                u.getProfileImg(),
+                FileUrlUtils.toPublicUrl(u.getProfileImg()),
                 u.getRole()
 
         );
