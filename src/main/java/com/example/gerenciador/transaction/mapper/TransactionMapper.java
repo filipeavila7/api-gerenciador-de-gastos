@@ -39,7 +39,7 @@ public class TransactionMapper {
 
 
     public TransactionInfoResponse toTransactionInfoResponse(Transaction t){
-        // cpnversão de intens casa a transaction seja do tipo expense (purhcaseId != null)
+        // cpnversão de intens caso a transaction seja do tipo expense (purhcaseId != null)
         List<PurchaseItensResponse> itens =
                 t.getPurchase() == null
                         ? null

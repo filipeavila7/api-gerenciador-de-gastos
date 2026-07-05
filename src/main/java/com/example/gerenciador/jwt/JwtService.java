@@ -1,57 +1,82 @@
 package com.example.gerenciador.jwt;
 
 import com.example.gerenciador.user.entity.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.function.Function;
 
 @Service
 public class JwtService {
 
-    private String SECRET = "sua-chave-super-secreta-com-pelo-menos-32-caracteres";
+    private static final String SECRET =
+            "sua-chave-super-secreta-com-pelo-menos-32-caracteres";
 
-    // transformar a chave secreta (SECRET) em um objeto Key que a biblioteca JJWT consegue usar para assinar e validar tokens.
-    private Key getKey(){
-        return Keys.hmacShaKeyFor(
-                SECRET.getBytes(StandardCharsets.UTF_8)
-        );
+    private Key getKey() {
+        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     }
 
-    // gerar o token jwt
-    public String generateToken (User user){
-
+    // =========================
+    // GERAR TOKEN
+    // =========================
+    public String generateToken(User user) {
         return Jwts.builder()
-                .subject(user.getEmail()) // definie o dono do token
-                .claim("role", user.getRole().name()) // adciona a role do user ex: ADMIN, USER
-                .issuedAt(new Date()) // data que o token foi criado
-                .expiration(new Date(System.currentTimeMillis() + 86400000)) // data de expiração (1 dia)
-                .signWith(getKey()) // Assina o token usando a chave retornada por getKey(), Isso impede que alguém altere o conteúdo do JWT.
-                .compact(); // transforma tudo em uma string JWT
+                .subject(user.getEmail())
+                .claim("role", user.getRole().name())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(getKey())
+                .compact();
     }
 
-    // métodos usados quando o usuário já está autenticado e faz uma requisição para a API.
-    public String extractUserName(String token){ // extrai o token e retorna o usuario dono dele
+    // =========================
+    // EXTRAIR USERNAME
+    // =========================
+    public String extractUserName(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    // =========================
+    // EXTRAIR CLAIMS
+    // =========================
+    private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith((SecretKey) getKey() )
+                .verifyWith((javax.crypto.SecretKey) getKey())
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+                .getPayload();
     }
 
-    // verifica se o user dono do token, é o mesmo carregado do banco
-    public boolean isValid(String token, UserDetails user){
-        String userName = extractUserName(token);
-
-        return  userName.equals(user.getUsername());
+    // =========================
+    // EXPIRAÇÃO
+    // =========================
+    public Date extractExpiration(String token) {
+        return extractAllClaims(token).getExpiration();
     }
 
+    public boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
 
+    // =========================
+    // VALIDAÇÃO COMPLETA (USE ISSO NO FILTER)
+    // =========================
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        try {
+            String username = extractUserName(token);
+
+            return username.equals(userDetails.getUsername())
+                    && !isTokenExpired(token);
+
+        } catch (Exception e) {
+            // token inválido, expirado ou corrompido
+            return false;
+        }
+    }
 }

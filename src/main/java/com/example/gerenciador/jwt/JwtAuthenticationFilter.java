@@ -40,53 +40,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // esse filt
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // pega o header autorization (Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...)
-        String authHeader =
-                request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-        // Se não tem token → deixa a requisição passar sem autenticar
-        // Não quebra a API, Só não autentica o usuário
-        // mportante porque nem todas as rotas precisam de login (ex: login, cadastro)
-        if(authHeader == null ||
-                !authHeader.startsWith("Bearer ")) {
-
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // pegar o token e remover os 7 caracteres de bearer e fica so o token
-        String token =
-                authHeader.substring(7);
+        String token = authHeader.substring(7);
 
-        // extrai o usuario do token
-        String email =
-                jwtService.extractUserName(token);
+        try {
+            String email = jwtService.extractUserName(token);
 
-        // Verificar se já não está autenticado, evita se autenticar 2 vezes ou subscrever autenticação existente
-        if(email != null &&
-                SecurityContextHolder.getContext()
-                        .getAuthentication() == null) {
-            // busca o usuario no banco pelo email extraído no token
-            UserDetails user =
-                    userDetailsService
-                            .loadUserByUsername(email);
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // cria o objeto de autenticação
-            // ele cria o objeto que o Spring entende como usuario logado
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(
-                            user, // ususario
-                            null, // senha não precisa aqui
-                            user.getAuthorities() // role -> ADMIN, USER
-                    );
+                UserDetails user = userDetailsService.loadUserByUsername(email);
 
-            // joga no contexto do spring, agora ele sabe o user autenticado, quem ele é, e as permissões dele
-            SecurityContextHolder.getContext()
-                    .setAuthentication(auth);
+                // 🔥 valida o token antes de autenticar
+                if (jwtService.isTokenValid(token, user)) {
+
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    user,
+                                    null,
+                                    user.getAuthorities()
+                            );
+
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } else {
+                    SecurityContextHolder.clearContext();
+                }
+            }
+
+        } catch (Exception e) {
+            // 🔥 token expirado ou inválido
+            SecurityContextHolder.clearContext();
         }
 
-        // Libera a requisição para continuar o fluxo normal da API
         filterChain.doFilter(request, response);
-
     }
 }

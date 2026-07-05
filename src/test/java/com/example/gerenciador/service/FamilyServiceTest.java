@@ -10,6 +10,8 @@ import com.example.gerenciador.family.mapper.FamilyMapper;
 import com.example.gerenciador.family.repository.FamilyMemberRepository;
 import com.example.gerenciador.family.repository.FamilyRepository;
 import com.example.gerenciador.family.service.FamilyService;
+import com.example.gerenciador.helpers.GlobalHelperService;
+import com.example.gerenciador.history.service.HistoryService;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
 import com.example.gerenciador.user.repository.UserRepository;
@@ -34,6 +36,8 @@ public class FamilyServiceTest {
     @Mock private UserRepository userRepository;
     @Mock private SecurityService securityService;
     @Mock private FamilyMapper familyMapper;
+    @Mock private GlobalHelperService globalHelperService;
+    @Mock private HistoryService historyService;
 
     @InjectMocks
     private FamilyService familyService;
