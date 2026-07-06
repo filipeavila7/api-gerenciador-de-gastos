@@ -86,6 +86,20 @@ public class TransactionService {
         return transactionMapper.toBalanceResponse(transactionRepository.calculateBalance(familyId));
     }
 
+
+    // msotra o numero total de transaões feita pela família
+    public Long totalTransactions(Long familyId){
+        User loggedUser = securityService.getLoggedUser();
+
+        // verifica se a familia existe
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é membro dela
+        globalHelperService.getMemberOrThrow(family, loggedUser);
+
+        return transactionRepository.countByFamilyId(familyId);
+    }
+
     // ================ POST ======================
 
     // membro admin pode criar transações do tipo income

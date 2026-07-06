@@ -17,6 +17,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             Pageable pageable
     );
 
+    long countByFamilyId(Long familyId);
+
     Optional<Transaction> findByFamilyIdAndId(
             Long familyId,
             Long transactionId

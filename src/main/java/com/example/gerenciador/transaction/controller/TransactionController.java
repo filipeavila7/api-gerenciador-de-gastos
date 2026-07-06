@@ -43,12 +43,23 @@ public class TransactionController {
     }
 
 
+    @GetMapping("/total/family/{familyId}")
+    public ResponseEntity<Long> getTotalTransactions(
+            @PathVariable Long familyId
+    ){
+        return ResponseEntity.ok(transactionService.totalTransactions(familyId));
+    }
+
+
     @GetMapping("/get/balance/family/{familyId}")
     public ResponseEntity<BalanceResponse> getMybalance(
             @PathVariable Long familyId
     ){
         return ResponseEntity.ok(transactionService.getMyBalance(familyId));
     }
+
+
+
 
     // ================ POST ======================
 
