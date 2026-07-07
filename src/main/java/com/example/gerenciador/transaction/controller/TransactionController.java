@@ -1,10 +1,7 @@
 package com.example.gerenciador.transaction.controller;
 
 
-import com.example.gerenciador.transaction.dto.BalanceResponse;
-import com.example.gerenciador.transaction.dto.TransactionIncomeRequest;
-import com.example.gerenciador.transaction.dto.TransactionInfoResponse;
-import com.example.gerenciador.transaction.dto.TransactionResponse;
+import com.example.gerenciador.transaction.dto.*;
 import com.example.gerenciador.transaction.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +53,18 @@ public class TransactionController {
             @PathVariable Long familyId
     ){
         return ResponseEntity.ok(transactionService.getMyBalance(familyId));
+    }
+
+    // /transactions/balance/family/1?year=2026&month=7
+    @GetMapping("/balance/family/{familyId}")
+    public ResponseEntity<TransactionBalanceMonthResponse> getBalanceByMonth(
+            @PathVariable Long familyId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(
+                transactionService.getBalanceByMonth(familyId, year, month)
+        );
     }
 
 

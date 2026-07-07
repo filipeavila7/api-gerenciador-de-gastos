@@ -8,10 +8,7 @@ import com.example.gerenciador.history.service.HistoryService;
 import com.example.gerenciador.purchase.dto.PurchaseTransactionRequest;
 import com.example.gerenciador.purchase.entity.Purchase;
 import com.example.gerenciador.security.SecurityService;
-import com.example.gerenciador.transaction.dto.BalanceResponse;
-import com.example.gerenciador.transaction.dto.TransactionIncomeRequest;
-import com.example.gerenciador.transaction.dto.TransactionInfoResponse;
-import com.example.gerenciador.transaction.dto.TransactionResponse;
+import com.example.gerenciador.transaction.dto.*;
 import com.example.gerenciador.transaction.entity.Transaction;
 import com.example.gerenciador.transaction.entity.TransactionType;
 import com.example.gerenciador.transaction.mapper.TransactionMapper;
@@ -23,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -98,6 +96,24 @@ public class TransactionService {
         globalHelperService.getMemberOrThrow(family, loggedUser);
 
         return transactionRepository.countByFamilyId(familyId);
+    }
+
+
+
+    // pegar valor total de transações do tipo income e exepense
+    public TransactionBalanceMonthResponse getBalanceByMonth(
+            Long familyId,
+            int year,
+            int month
+    ) {
+        LocalDateTime start = LocalDate.of(year, month, 1).atStartOfDay();
+        LocalDateTime end = start.plusMonths(1);
+
+        return transactionRepository.getBalanceByMonth(
+                familyId,
+                start,
+                end
+        );
     }
 
     // ================ POST ======================
