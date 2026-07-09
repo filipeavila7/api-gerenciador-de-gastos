@@ -11,6 +11,7 @@ public record PurchaseResponse(
         Long familyId,
         LocalDateTime dateTime,
         PurchaseStatus status,
+        int quantityProducts,
         BigDecimal total
 
 ) {

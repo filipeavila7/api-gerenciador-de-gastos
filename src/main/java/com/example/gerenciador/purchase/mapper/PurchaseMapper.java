@@ -21,6 +21,7 @@ public class PurchaseMapper {
                 p.getFamily().getId(),
                 p.getDateTime(),
                 p.getPurchaseStatus(),
+                p.getItens().size(),
                 p.getTotal() != null ? p.getTotal() : BigDecimal.ZERO
         );
     }

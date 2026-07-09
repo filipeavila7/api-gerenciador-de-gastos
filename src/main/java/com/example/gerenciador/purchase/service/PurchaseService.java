@@ -166,7 +166,7 @@ public class PurchaseService {
 
     }
 
-    @Transactional
+    @Transactional // dar uma olhada nesse metodo depois
     public List<PurchaseItensResponse> addManyProductsToPurchase(Long familyId, Long purchaseId, PurchaseManyItensRequest request){
         User loggedUser = securityService.getLoggedUser();
 
@@ -211,7 +211,7 @@ public class PurchaseService {
                         p -> p
                 ));
 
-         // percorrer o request e salavr todos de uma vez
+         // percorrer o request e salvar todos de uma vez
         List<PurchaseItens> purchaseItensList = request.itensRequests().stream()
                 .map(itemRequest -> {
                             Product product = productMap.get(itemRequest.productId());// para cada item request, pegar o produto pelo map, pelo id
