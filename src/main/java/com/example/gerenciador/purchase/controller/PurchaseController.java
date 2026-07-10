@@ -54,10 +54,19 @@ public class PurchaseController {
     }
 
     @GetMapping("/my/family/{familyId}/purchase/{purchaseId}")
+    public ResponseEntity<PurchaseResponse> getPurchaseById(
+            @PathVariable Long familyId,
+            @PathVariable Long purchaseId
+    ){
+        return ResponseEntity.ok(purchaseService.getPurchaseById(familyId, purchaseId));
+    }
+
+
+    @GetMapping("/my/family/{familyId}/purchase/{purchaseId}/itens")
     public ResponseEntity<Page<PurchaseItensResponse>> getMyProductsInPurchase(
             @PathVariable Long familyId,
             @PathVariable Long purchaseId,
-            @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC)
+            @PageableDefault(size = 12, sort = "product.name", direction = Sort.Direction.ASC)
             Pageable pageable
     ){
         return ResponseEntity.ok(purchaseService.getMyProductsInPurchase(familyId, purchaseId,pageable));

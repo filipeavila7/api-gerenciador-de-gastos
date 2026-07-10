@@ -48,6 +48,25 @@ public class PurchaseService {
 
     // ================ GET ======================
 
+
+    // retorna uma purchase pelo id
+    public PurchaseResponse getPurchaseById(Long familyId, Long purchaseId){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verfica se é membro
+        globalHelperService.getMemberOrThrow(family, loggedUser);
+
+
+        return purchaseMapper.toPurchaseResponse(
+                globalHelperService.getPurchaseOrThrow(familyId, purchaseId)
+        );
+
+
+    }
+
     // retornar todas as compras da familia, apenas para membros dela
     public Page<PurchaseResponse> getMyPurchases(Long familyId, Pageable pageable){
         User loggedUser = securityService.getLoggedUser();
@@ -166,7 +185,7 @@ public class PurchaseService {
 
     }
 
-    @Transactional // dar uma olhada nesse metodo depois
+    @Transactional
     public List<PurchaseItensResponse> addManyProductsToPurchase(Long familyId, Long purchaseId, PurchaseManyItensRequest request){
         User loggedUser = securityService.getLoggedUser();
 
