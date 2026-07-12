@@ -10,6 +10,7 @@ public class ProductMapper {
                 p.getId(),
                 p.getName(),
                 p.getCategory().getId(),
+                p.getCategory().getName(),
                 p.getFamily().getId()
         );
     }
