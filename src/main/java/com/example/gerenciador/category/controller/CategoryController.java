@@ -103,6 +103,19 @@ public class CategoryController {
     }
 
 
+    @GetMapping("/my/family/{familyId}/search")
+    public ResponseEntity<Page<CategoryResponse>> categorySearch(
+            @PathVariable Long familyId,
+            @RequestParam String name,
+            @PageableDefault(size = 12, sort = "name", direction = Sort.Direction.ASC )
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                categoryService.categorySearch(familyId, name, pageable)
+        );
+    }
+
+
     // ================ POST ======================
 
     @PostMapping("/new/family/{familyId}")

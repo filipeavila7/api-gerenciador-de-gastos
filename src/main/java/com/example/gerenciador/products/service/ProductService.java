@@ -59,6 +59,7 @@ public class ProductService {
     // pesquisar por nome ou filtrar por categoria
     public Page<ProductResponse> productSearch(
             Long familyId, String name, Long categoryId, Pageable pageable){
+
         User loggedUser = securityService.getLoggedUser();
 
         // encontrar a familia
@@ -68,7 +69,9 @@ public class ProductService {
         globalHelperService.getMemberOrThrow(family, loggedUser);
 
         // verifica se a categoria pertence àquela familia
-        globalHelperService.getCategoryOrThrow(familyId, categoryId);
+        if (categoryId != null) {
+            globalHelperService.getCategoryOrThrow(familyId, categoryId);
+        }
 
         return productRepository.search(familyId, name, categoryId, pageable)
                 .map(productMapper::toProductResponse);

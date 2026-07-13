@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByFamilyId(Long familyId);
 
-    Page<Category> findByFamilyIdAndNameContainingIgnoreCase(
+    Page<Category> findByFamilyIdAndActiveTrueAndNameContainingIgnoreCase(
             Long familyId,
             String name,
             Pageable pageable

@@ -51,6 +51,22 @@ public class CategoryService {
                 .map(categoryMapper::toCategoryResponse);
     }
 
+
+    // filtrar categorias por nome
+    public Page<CategoryResponse> categorySearch(Long familyId, String name, Pageable pageable){
+        User loggedUser = securityService.getLoggedUser();
+
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario pertence a familia
+        globalHelperService.getMemberOrThrow(family, loggedUser);
+
+        return categoryRepository.findByFamilyIdAndActiveTrueAndNameContainingIgnoreCase(
+                familyId, name, pageable)
+                .map(categoryMapper::toCategoryResponse);
+    }
+
     // ================ POST ======================
 
     // usauario admin criar categoria de produto
