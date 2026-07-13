@@ -1,5 +1,7 @@
 package com.example.gerenciador.helpers;
 
+import com.example.gerenciador.category.entity.Category;
+import com.example.gerenciador.category.repository.CategoryRepository;
 import com.example.gerenciador.exceptions.*;
 import com.example.gerenciador.family.entity.Family;
 import com.example.gerenciador.family.entity.FamilyMember;
@@ -38,6 +40,7 @@ public class GlobalHelperService {
     private final ShoppingListRepository shoppingListRepository;
     private final ListItemRepository listItemRepository;
     private final HistoryRepository historyRepository;
+    private final CategoryRepository categoryRepository;
 
     // verificar se o usuario é admin da familia e pertence a ela
     public FamilyMember getAdminMemberOrThrow(Family family, User user) {
@@ -120,5 +123,10 @@ public class GlobalHelperService {
     public History getHistoryOrThrow(Long familyId, Long historyId){
         return historyRepository.findByIdAndFamilyId(historyId,  familyId)
                 .orElseThrow(HistoryNotFoundException::new);
+    }
+
+    public Category getCategoryOrThrow(Long familyId, Long categoryId){
+        return categoryRepository.findByIdAndFamilyId(categoryId, familyId)
+                .orElseThrow(CategoryNotFoundException::new);
     }
 }

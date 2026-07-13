@@ -104,6 +104,16 @@ public class ProductController {
 
     }
 
+    @GetMapping("/my/family/{familyId}/search")
+    public ResponseEntity<Page<ProductResponse>> productSearch(
+            @PathVariable Long familyId,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long categoryId,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(productService.productSearch(familyId, name, categoryId, pageable));
+    }
+
 
     // ================ POST ======================
 
