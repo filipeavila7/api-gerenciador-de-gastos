@@ -62,7 +62,7 @@ public class CategoryService {
         // verifica se o usuario pertence a familia
         globalHelperService.getMemberOrThrow(family, loggedUser);
 
-        return categoryRepository.findByFamilyIdAndActiveTrueAndNameContainingIgnoreCase(
+        return categoryRepository.findByFamilyIdAndNameContainingIgnoreCase(
                 familyId, name, pageable)
                 .map(categoryMapper::toCategoryResponse);
     }

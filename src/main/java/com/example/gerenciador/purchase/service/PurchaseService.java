@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -67,6 +68,7 @@ public class PurchaseService {
 
     }
 
+
     // retornar todas as compras da familia, apenas para membros dela
     public Page<PurchaseResponse> getMyPurchases(Long familyId, Pageable pageable){
         User loggedUser = securityService.getLoggedUser();
@@ -100,6 +102,44 @@ public class PurchaseService {
         return purchaseItensRepository.findAllByPurchaseId(purchaseId, pageable)
                 .map(purchaseMapper::toPurchaseItensResponse);
 
+    }
+
+    public Page<PurchaseResponse> purchaseSearch(
+            Long familyId,
+            String name,
+            PurchaseStatus status,
+            LocalDate startDate,
+            LocalDate endDate,
+            Pageable pageable
+    ) {
+
+        User user = securityService.getLoggedUser();
+
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        globalHelperService.getMemberOrThrow(family, user);
+
+
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+
+        if(startDate != null) {
+            start = startDate.atStartOfDay();
+        }
+
+        if(endDate != null) {
+            end = endDate.plusDays(1).atStartOfDay();
+        }
+
+
+        return purchaseRepository.search(
+                familyId,
+                name,
+                status,
+                start,
+                end,
+                pageable
+        ).map(purchaseMapper::toPurchaseResponse);
     }
 
 

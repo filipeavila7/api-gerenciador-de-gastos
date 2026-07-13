@@ -1,6 +1,7 @@
 package com.example.gerenciador.purchase.controller;
 
 import com.example.gerenciador.purchase.dto.*;
+import com.example.gerenciador.purchase.entity.PurchaseStatus;
 import com.example.gerenciador.purchase.service.PurchaseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -8,10 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -71,6 +74,34 @@ public class PurchaseController {
     ){
         return ResponseEntity.ok(purchaseService.getMyProductsInPurchase(familyId, purchaseId,pageable));
 
+    }
+
+
+    @GetMapping("/my/family/{familyId}/search")
+    public ResponseEntity<Page<PurchaseResponse>> search(
+            @PathVariable Long familyId,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) PurchaseStatus status,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate startDate,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate endDate,
+
+            @PageableDefault(size = 12, sort = "dateTime", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                purchaseService.purchaseSearch(
+                        familyId,
+                        name,
+                        status,
+                        startDate,
+                        endDate,
+                        pageable
+                )
+        );
     }
 
 
