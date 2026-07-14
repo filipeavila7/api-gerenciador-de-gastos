@@ -116,6 +116,46 @@ public class TransactionService {
         );
     }
 
+
+    // filtrar transações
+    public Page<TransactionResponse> transactionSearch(
+            Long familyId,
+            String title,
+            TransactionType type,
+            LocalDate startDate,
+            LocalDate endDate,
+            Pageable pageable
+    ) {
+
+        User user = securityService.getLoggedUser();
+
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        globalHelperService.getMemberOrThrow(family, user);
+
+
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+
+        if(startDate != null){
+            start = startDate.atStartOfDay();
+        }
+
+        if(endDate != null){
+            end = endDate.plusDays(1).atStartOfDay();
+        }
+
+
+        return transactionRepository.search(
+                familyId,
+                title,
+                type,
+                start,
+                end,
+                pageable
+        ).map(transactionMapper::toTransactionResponse);
+    }
+
     // ================ POST ======================
 
     // membro admin pode criar transações do tipo income

@@ -2,6 +2,7 @@ package com.example.gerenciador.transaction.controller;
 
 
 import com.example.gerenciador.transaction.dto.*;
+import com.example.gerenciador.transaction.entity.TransactionType;
 import com.example.gerenciador.transaction.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @RestController
@@ -67,6 +70,32 @@ public class TransactionController {
         );
     }
 
+
+    @GetMapping("/my/family/{familyId}/search")
+    public ResponseEntity<Page<TransactionResponse>> search(
+            @PathVariable Long familyId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) TransactionType type,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @PageableDefault(
+                    size = 12,
+                    sort = "dateTime",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                transactionService.transactionSearch(
+                        familyId,
+                        title,
+                        type,
+                        startDate,
+                        endDate,
+                        pageable
+                )
+        );
+    }
 
 
 

@@ -130,13 +130,13 @@
 - [ ] Logs de ações
 - [ ] Auditoria (createdAt, createdBy)
 - [ ] Ajustar env
-- [ ] Classe para configurar onde as imagens são salvas e o seu nome
-- [ ] Gráficos para accompanhar os gastos durante os meses
+- [X] Classe para configurar onde as imagens são salvas e o seu nome
+- [X] Gráficos para accompanhar os gastos durante os meses
 - [ ] Ajustar localDateTime para a hora vier certa indpendente da maquina onde o servidor esta
 - [ ] Integrações com IA como ler boletos e criar automaticamente a compra
 - [ ] WebSockets para acompanhar em tempo real algumas funções
 - [ ] Caches em algumas areas para melhorar performace
 - [ ] Testes em services criticas 
-- [ ] Entidade de histórico da familia, onde mostra as atividades do membro admin como criar produtos, transações etc
+- [X] Entidade de histórico da familia, onde mostra as atividades do membro admin como criar produtos, transações etc
 - [ ] Criar fundos reserva de emergência para familias
 - [ ] Notificsções personalizadas usando WebSockets 

@@ -2,6 +2,7 @@ package com.example.gerenciador.transaction.repository;
 
 import com.example.gerenciador.transaction.dto.TransactionBalanceMonthResponse;
 import com.example.gerenciador.transaction.entity.Transaction;
+import com.example.gerenciador.transaction.entity.TransactionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -37,6 +38,26 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Transaction> findWithDetailsByFamilyIdAndId(
             Long familyId,
             Long transactionId
+    );
+
+
+
+    @Query("""
+    SELECT t
+    FROM Transaction t
+    WHERE t.family.id = :familyId
+      AND (:title IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :title, '%')))
+      AND (:type IS NULL OR t.transactionType = :type)
+      AND (:start IS NULL OR t.dateTime >= :start)
+      AND (:end IS NULL OR t.dateTime < :end)
+""")
+    Page<Transaction> search(
+            @Param("familyId") Long familyId,
+            @Param("title") String title,
+            @Param("type") TransactionType type,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            Pageable pageable
     );
 
 
