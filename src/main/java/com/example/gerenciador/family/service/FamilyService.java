@@ -15,6 +15,8 @@ import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
 import com.example.gerenciador.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,17 +40,16 @@ public class FamilyService {
 
     // ver todas as familias em que o usuario logado esta ou tem
     @Transactional(readOnly = true)
-    public List<FamilyResponse> getMyFamilies(){
+    public Page<FamilyResponse> getMyFamilies(Pageable pageable){
         User loggedUser = securityService.getLoggedUser();
 
-        // procura as familias em que o user logado esta
-        List<FamilyMember> memberships = familyMemberRepository.findByUserId(loggedUser.getId());
+        // procura as familias em  que o user logado esta
+
 
         // pegar somente as famílias do FamilyMember
-        return memberships.stream()
+        return familyMemberRepository.findByUserId(loggedUser.getId(), pageable)
                 .map(FamilyMember::getFamily)
-                .map(familyMapper::toResponse)
-                .toList();
+                .map(familyMapper::toResponse);
     }
 
     // pegar somente uma familia pelo id

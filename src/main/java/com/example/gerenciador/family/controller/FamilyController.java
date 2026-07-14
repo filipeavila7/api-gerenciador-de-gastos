@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,8 +86,11 @@ public class FamilyController {
     // ================ GET ======================
 
     @GetMapping("/my")
-    public ResponseEntity<List<FamilyResponse>> getMyFamilies(){
-        return ResponseEntity.ok(familyService.getMyFamilies());
+    public ResponseEntity<Page<FamilyResponse>> getMyFamilies(
+            @PageableDefault(size = 12)
+            Pageable pageable
+    ){
+        return ResponseEntity.ok(familyService.getMyFamilies(pageable));
     }
 
     @GetMapping("/my/family/{familyId}")
