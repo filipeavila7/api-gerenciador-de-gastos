@@ -53,6 +53,22 @@ public class ShoppingListService {
     }
 
     // ver produtos dentro da lista
+    public Page<LIstItemResponse> getItemsInList(Long familyId, Long shoppingListId, Pageable pageable){
+        User loggedUser = securityService.getLoggedUser();
+
+        // busca a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se o usuario é membro dela
+        globalHelperService.getMemberOrThrow(family, loggedUser);
+
+        // busca lista
+        globalHelperService.getShoppingListOrThrow(familyId, shoppingListId);
+
+       return listItemRepository.findAllByShoppingListId(shoppingListId, pageable)
+               .map(shoppingListMapper::toLIstItemResponse);
+    }
+
 
     // ================ POST ======================
 
