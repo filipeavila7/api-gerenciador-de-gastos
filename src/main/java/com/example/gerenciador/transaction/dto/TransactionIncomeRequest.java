@@ -18,6 +18,7 @@ public record TransactionIncomeRequest(
         @Positive
         BigDecimal ammount,
 
+        @Size(max = 120)
         String description // opcional
 
 
