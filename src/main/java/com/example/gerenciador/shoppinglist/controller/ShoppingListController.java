@@ -91,7 +91,21 @@ public class ShoppingListController {
         return ResponseEntity.ok(shoppingListService.updateItemInList(familyId,shoppingListId, itemId, request));
     }
 
+    @PutMapping("/update/family/{familyId}/list/{shoppingListId}/item/{itemId}/done")
+    public ResponseEntity<LIstItemResponse> updateDoneStatus(
+            @PathVariable Long familyId,
+            @PathVariable Long shoppingListId,
+            @PathVariable Long itemId,
+            @Valid DoneRequest request
+    ){
+        return ResponseEntity.ok(shoppingListService.updateDoneStatus(familyId, shoppingListId, itemId, request));
+    }
+
 
     // ================ DELETE ======================
+
+
+
+
 
 }
