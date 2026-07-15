@@ -1,9 +1,7 @@
 package com.example.gerenciador.shoppinglist.controller;
 
 
-import com.example.gerenciador.shoppinglist.dto.LIstItemResponse;
-import com.example.gerenciador.shoppinglist.dto.ShoppingListRequest;
-import com.example.gerenciador.shoppinglist.dto.ShoppingListResponse;
+import com.example.gerenciador.shoppinglist.dto.*;
 import com.example.gerenciador.shoppinglist.service.ShoppingListService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,9 +60,37 @@ public class ShoppingListController {
     }
 
 
+    @PostMapping("/new/family/{familyId}/list/{shoppingListId}/add")
+    public ResponseEntity<LIstItemResponse> createShoppingList(
+            @PathVariable Long familyId,
+            @PathVariable Long shoppingListId,
+            @Valid @RequestBody ListItemRequest request
+    ){
+        return ResponseEntity.status(HttpStatus.CREATED).body(shoppingListService.addNewItemToList(familyId, shoppingListId, request));
+    }
 
 
     // ================ PUT ======================
+
+    @PutMapping("/update/family/{familyId}/list/{shoppingListId}")
+    ResponseEntity<ShoppingListResponse> updateShoppingList(
+            @PathVariable Long familyId,
+            @PathVariable Long shoppingListId,
+            @Valid ShoppingListUpdateRequest request
+            ){
+        return ResponseEntity.ok(shoppingListService.updateShoppingList(familyId,shoppingListId, request));
+    }
+
+    @PutMapping("/update/family/{familyId}/list/{shoppingListId}/item/{itemId}")
+    ResponseEntity<LIstItemResponse> updateitemInList(
+            @PathVariable Long familyId,
+            @PathVariable Long shoppingListId,
+            @PathVariable Long itemId,
+            @Valid ListItemUpdateRequest request
+    ){
+        return ResponseEntity.ok(shoppingListService.updateItemInList(familyId,shoppingListId, itemId, request));
+    }
+
 
     // ================ DELETE ======================
 
