@@ -1,4 +1,9 @@
 package com.example.gerenciador.products.dto;
 
-public record ProductExpenseResponse() {
+import java.math.BigDecimal;
+
+public record ProductExpenseResponse(
+        String productName,
+        BigDecimal total
+) {
 }

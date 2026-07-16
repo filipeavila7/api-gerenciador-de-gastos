@@ -1,6 +1,7 @@
 package com.example.gerenciador.graphics.repository;
 
 import com.example.gerenciador.category.dto.CategoryExpenseResponse;
+import com.example.gerenciador.products.dto.ProductExpenseResponse;
 import com.example.gerenciador.purchase.entity.PurchaseItens;
 import com.example.gerenciador.transaction.dto.TransactionMonthResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -65,5 +66,29 @@ GROUP BY month(t.dateTime)
 ORDER BY month(t.dateTime)
 """)
     List<TransactionMonthResponse> getMonthlyExpenses(Long familyId, Integer year);
+
+
+
+    // pegar valores totais dos produtos para o gráfico
+    @Query("""
+SELECT new com.example.gerenciador.products.dto.ProductExpenseResponse(
+    p.name,
+    SUM(i.unitPrice * i.quantity)
+)
+FROM PurchaseItens i
+JOIN i.product p
+JOIN i.purchase pur
+WHERE pur.family.id = :familyId
+AND pur.purchaseStatus = com.example.gerenciador.purchase.entity.PurchaseStatus.CLOSED
+AND FUNCTION('YEAR', pur.dateTime) = :year
+AND FUNCTION('MONTH', pur.dateTime) = :month
+GROUP BY p.name
+ORDER BY SUM(i.unitPrice * i.quantity) DESC
+""")
+    List<ProductExpenseResponse> getProductExpensesByMonth(
+            Long familyId,
+            Integer year,
+            Integer month
+    );
 
 }
