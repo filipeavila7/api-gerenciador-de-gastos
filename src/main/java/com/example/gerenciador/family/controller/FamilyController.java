@@ -1,6 +1,7 @@
 package com.example.gerenciador.family.controller;
 
 import com.example.gerenciador.family.dto.*;
+import com.example.gerenciador.family.entity.FamilyRole;
 import com.example.gerenciador.family.service.AdminFamilyService;
 import com.example.gerenciador.family.service.FamilyService;
 import jakarta.validation.Valid;
@@ -102,6 +103,15 @@ public class FamilyController {
     @GetMapping("/my/family/{familyId}/members")
     public ResponseEntity<List<MemberResponse>> getFamilyMembers(@PathVariable Long familyId){
         return ResponseEntity.ok(familyService.getFamilyMembers(familyId));
+    }
+
+    @GetMapping("/my/family/{familyId}/my-role")
+    public ResponseEntity<FamilyRole> getMyRole(
+            @PathVariable Long familyId
+    ) {
+        return ResponseEntity.ok(
+                familyService.getMyRole(familyId)
+        );
     }
 
 

@@ -89,6 +89,19 @@ public class FamilyService {
 
     }
 
+    // metodo para pegar a role do user logado dependendo da familia
+    public FamilyRole getMyRole (Long familyId){
+        User loggedUser = securityService.getLoggedUser();
+
+        // encontrar a familia
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se é da familia e retorna a role
+        return globalHelperService.
+                getMemberOrThrow(family, loggedUser)
+                .getRole();
+    }
+
     // ================ POST ======================
 
     // criar família com o user logado sendo o admin

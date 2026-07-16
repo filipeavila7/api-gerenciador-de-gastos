@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -76,7 +77,7 @@ public class ShoppingListController {
     ResponseEntity<ShoppingListResponse> updateShoppingList(
             @PathVariable Long familyId,
             @PathVariable Long shoppingListId,
-            @Valid ShoppingListUpdateRequest request
+            @Valid @RequestBody ShoppingListUpdateRequest request
             ){
         return ResponseEntity.ok(shoppingListService.updateShoppingList(familyId,shoppingListId, request));
     }
@@ -86,7 +87,7 @@ public class ShoppingListController {
             @PathVariable Long familyId,
             @PathVariable Long shoppingListId,
             @PathVariable Long itemId,
-            @Valid ListItemUpdateRequest request
+            @Valid @RequestBody ListItemUpdateRequest request
     ){
         return ResponseEntity.ok(shoppingListService.updateItemInList(familyId,shoppingListId, itemId, request));
     }
@@ -96,13 +97,53 @@ public class ShoppingListController {
             @PathVariable Long familyId,
             @PathVariable Long shoppingListId,
             @PathVariable Long itemId,
-            @Valid DoneRequest request
+            @Valid @RequestBody DoneRequest request
     ){
         return ResponseEntity.ok(shoppingListService.updateDoneStatus(familyId, shoppingListId, itemId, request));
     }
 
 
     // ================ DELETE ======================
+
+    @DeleteMapping("/delete/family/{familyId}/list/{shoppingListId}")
+    public ResponseEntity<Void> deleteShoppingList(
+            @PathVariable Long familyId,
+            @PathVariable Long shoppingListId
+    ){
+        shoppingListService.deleteShoppingList(familyId, shoppingListId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @DeleteMapping("/delete/family/{familyId}/list/many")
+    public ResponseEntity<Void> deleteManyShoppingLists(
+            @PathVariable Long familyId,
+            @Valid @RequestBody ShoppingListDeleteRequest request
+    ){
+        shoppingListService.deleteManyShoppingLists(familyId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @DeleteMapping("/delete/family/{familyId}/list/{shoppingListId}/item/{itemId}")
+    public ResponseEntity<Void> delteItemInList(
+            @PathVariable Long familyId,
+            @PathVariable Long shoppingListId,
+            @PathVariable Long itemId
+    ){
+        shoppingListService.delteItemInList(familyId, shoppingListId, itemId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/delete/family/{familyId}/list/{shoppingListId}/item/many")
+    public ResponseEntity<Void> deleteManyItemsInList(
+            @PathVariable Long familyId,
+            @PathVariable Long shoppingListId,
+            @Valid @RequestBody ListItemDeleteRequest request
+    ){
+        shoppingListService.deleteManyItemsInList(familyId, shoppingListId, request);
+        return ResponseEntity.noContent().build();
+    }
 
 
 

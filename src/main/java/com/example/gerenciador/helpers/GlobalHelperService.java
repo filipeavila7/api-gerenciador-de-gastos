@@ -56,8 +56,8 @@ public class GlobalHelperService {
     }
 
     // verificar somente se o usuario pertence a familia
-    public void getMemberOrThrow(Family family, User user) {
-        familyMemberRepository
+    public FamilyMember getMemberOrThrow(Family family, User user) {
+        return familyMemberRepository
                 .findByFamilyAndUser(family, user)
                 .orElseThrow(() -> new AccessDeniedException("Access denied"));
 
