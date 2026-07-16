@@ -28,7 +28,7 @@ public class ShoppingListController {
             @PageableDefault(
                     size = 12,
                     sort = "createdAt",
-                    direction = Sort.Direction.DESC
+                    direction = Sort.Direction.ASC
             )
             Pageable pageable
     ){

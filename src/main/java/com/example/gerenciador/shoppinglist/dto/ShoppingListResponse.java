@@ -6,6 +6,7 @@ public record ShoppingListResponse(
         Long id,
         Long familyId,
         String name,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        int totalItems
 ) {
 }

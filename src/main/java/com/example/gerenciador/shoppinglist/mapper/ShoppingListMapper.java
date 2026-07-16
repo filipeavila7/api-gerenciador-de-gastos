@@ -14,7 +14,8 @@ public class ShoppingListMapper {
                 s.getId(),
                 s.getFamily().getId(),
                 s.getName(),
-                s.getCreatedAt()
+                s.getCreatedAt(),
+                s.getListItems().size()
         );
     }
 
