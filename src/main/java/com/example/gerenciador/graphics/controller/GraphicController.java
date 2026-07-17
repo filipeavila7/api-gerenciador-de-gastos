@@ -2,6 +2,7 @@ package com.example.gerenciador.graphics.controller;
 
 import com.example.gerenciador.category.dto.CategoryExpenseResponse;
 import com.example.gerenciador.graphics.service.GraphicService;
+import com.example.gerenciador.products.dto.ProductExpenseResponse;
 import com.example.gerenciador.transaction.dto.TransactionMonthResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,16 @@ public class GraphicController {
             @RequestParam Integer month
     ) {
         return ResponseEntity.ok(graphicService.getCategoryExpenseByMonth(familyId, year, month));
+    }
+
+
+    @GetMapping("/product-expenses")
+    public ResponseEntity<List<ProductExpenseResponse>> getProductExpenses(
+            @RequestParam Long familyId,
+            @RequestParam Integer year,
+            @RequestParam Integer month
+    ) {
+        return ResponseEntity.ok(graphicService.getProductExpenseByMonth(familyId, year, month));
     }
 
 
