@@ -1,4 +1,4 @@
-package com.example.gerenciador.auth;
+package com.example.gerenciador.auth.service;
 
 import com.example.gerenciador.auth.dto.LoginRequest;
 import com.example.gerenciador.auth.dto.LoginResponse;
