@@ -3,6 +3,7 @@ package com.example.gerenciador.history.controller;
 
 import com.example.gerenciador.history.dto.HistoryDeleteRequest;
 import com.example.gerenciador.history.dto.HistoryResponse;
+import com.example.gerenciador.history.entity.HistoryAction;
 import com.example.gerenciador.history.service.HistoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +27,39 @@ public class HistoryController {
             @PageableDefault(
                     size = 12,
                     sort = "createdAt",
-                    direction = Sort.Direction.ASC
+                    direction = Sort.Direction.DESC
             )
             Pageable pageable
     ){
         return ResponseEntity.ok(historyService.getMyHistory(familyId, pageable));
+    }
+
+    @GetMapping("my/family/{familyId}/search")
+    public ResponseEntity<Page<HistoryResponse>> historySearch(
+            @PathVariable Long familyId,
+
+            @RequestParam(required = false)
+            HistoryAction action,
+
+            @RequestParam(required = false)
+            String description,
+
+            @PageableDefault(
+                    size = 12,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                historyService.historySearch(
+                        familyId,
+                        action,
+                        description,
+                        pageable
+                )
+        );
     }
 
     @DeleteMapping("/my/family/{familyId}/history/{historyId}/delete")

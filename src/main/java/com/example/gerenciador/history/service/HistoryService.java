@@ -57,6 +57,21 @@ public class HistoryService {
 
     }
 
+    // filtrar por HistoryAction
+    public Page<HistoryResponse> historySearch(
+            Long familyId, HistoryAction historyAction, String description,  Pageable pageable
+    ){
+        User loggedUser = securityService.getLoggedUser();
+
+        Family family = globalHelperService.getFamilyOrThrow(familyId);
+
+        // verifica se é membro
+        globalHelperService.getMemberOrThrow(family, loggedUser);
+
+        return historyRepository.historySearch(familyId, historyAction, description, pageable)
+                .map(historyMapper::toHistoryResponse);
+    }
+
     // membro admin pode apagar historico
     public void deleteHistory(Long familyId, Long historyId){
         User loggedUser = securityService.getLoggedUser();

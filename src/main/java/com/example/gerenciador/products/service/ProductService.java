@@ -150,7 +150,7 @@ public class ProductService {
                 throw new CategoryNotFoundException();
             }
 
-            String message = "editou a categoria do produto " + name + " para " + category;
+            String message = "editou a categoria do produto " + name + " para " + category.getName();
             historyService.createHistory(message, family, loggedUser, HistoryAction.UPDATED_PRODUCT);
 
             product.setCategory(category);
