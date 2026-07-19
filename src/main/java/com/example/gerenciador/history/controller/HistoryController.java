@@ -21,6 +21,8 @@ public class HistoryController {
 
     private final HistoryService historyService;
 
+    // ================ GET ======================
+
     @GetMapping("/my/family/{familyId}")
     public ResponseEntity<Page<HistoryResponse>> getMyHistory(
             @PathVariable Long familyId,
@@ -61,6 +63,8 @@ public class HistoryController {
                 )
         );
     }
+
+    // ================ DELETE ======================
 
     @DeleteMapping("/my/family/{familyId}/history/{historyId}/delete")
     public ResponseEntity<Void> deleteHistory(
