@@ -138,6 +138,7 @@ public class FamilyService {
     }
 
     // usuário Admin adcionar novos membros as famílias
+    // esse metodo será usado para outros fins
     @Transactional
     public FamilyMemberResponse addNewMemberToFamily(Long familyId, Long memberId){
 

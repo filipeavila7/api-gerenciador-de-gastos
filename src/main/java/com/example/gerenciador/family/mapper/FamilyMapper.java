@@ -35,6 +35,7 @@ public class FamilyMapper {
 
     public MemberResponse toMemberResponse(FamilyMember f){
         return new MemberResponse(
+                f.getId(),
                 f.getUser().getName(),
                 FileUrlUtils.toPublicUrl(f.getUser().getProfileImg()),
                 f.getRole(),

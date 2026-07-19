@@ -5,6 +5,7 @@ import com.example.gerenciador.family.entity.FamilyRole;
 import java.time.LocalDateTime;
 
 public record MemberResponse(
+        long id,
         String name,
         String profileImg,
         FamilyRole role,

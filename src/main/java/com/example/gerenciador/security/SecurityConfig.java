@@ -114,6 +114,8 @@ public class SecurityConfig {
                         .requestMatchers("/users/**")
                         .permitAll()
 
+                        .requestMatchers("/uploads/**").permitAll()
+
                         .anyRequest()
                         .authenticated()
                 )
