@@ -1,8 +1,10 @@
 package com.example.gerenciador.familyinvite.service;
 
-import com.example.gerenciador.exceptions.InvalidInviteException;
-import com.example.gerenciador.exceptions.InviteNotFoundException;
+import com.example.gerenciador.exceptions.*;
 import com.example.gerenciador.family.entity.Family;
+import com.example.gerenciador.family.entity.FamilyMember;
+import com.example.gerenciador.family.entity.FamilyRole;
+import com.example.gerenciador.family.repository.FamilyMemberRepository;
 import com.example.gerenciador.familyinvite.dto.FamilyInviteDetailsResponse;
 import com.example.gerenciador.familyinvite.dto.FamilyInviteResponse;
 import com.example.gerenciador.familyinvite.entity.FamilyInvite;
@@ -10,6 +12,8 @@ import com.example.gerenciador.familyinvite.entity.InviteStatus;
 import com.example.gerenciador.familyinvite.mapper.FamilyInviteMapper;
 import com.example.gerenciador.familyinvite.repository.FamilyInviteRepository;
 import com.example.gerenciador.helpers.GlobalHelperService;
+import com.example.gerenciador.history.entity.HistoryAction;
+import com.example.gerenciador.history.service.HistoryService;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.entity.User;
 import jakarta.transaction.Transactional;
@@ -27,7 +31,9 @@ public class FamilyInviteService {
     private final FamilyInviteRepository familyInviteRepository;
     private final SecurityService securityService;
     private final GlobalHelperService globalHelperService;
-    private final FamilyInviteMapper familyInviteMaper;
+    private final FamilyInviteMapper familyInviteMapper;
+    private final FamilyMemberRepository familyMemberRepository;
+    private final HistoryService historyService;
 
     // metodo para gerar um token aleatório
     private String generateToken(){
@@ -36,7 +42,7 @@ public class FamilyInviteService {
     }
 
     // metodo para validar convite
-    public void validateInvite(FamilyInvite invite){
+    private void validateInvite(FamilyInvite invite){
 
         // se o status do token for diferente de pendente
         if (invite.getStatus() != InviteStatus.PENDING ){
@@ -45,12 +51,13 @@ public class FamilyInviteService {
 
         // se a data de expiração for antes da de hoje -> convite expirou
         if(invite.getExpiresAt().isBefore(LocalDateTime.now())){
-            throw new InvalidInviteException();
+            throw new InviteExpiredException();
         }
     }
 
     // usuario admin criar link de convite para a família
-    private FamilyInviteResponse createInvite(Long familyId){
+    @Transactional
+    public FamilyInviteResponse createInvite(Long familyId){
         User loggedUser = securityService.getLoggedUser();
 
         // verifica se a família existe
@@ -72,7 +79,7 @@ public class FamilyInviteService {
         familyInvite.setStatus(InviteStatus.PENDING);
         familyInvite.setCreatedBy(loggedUser);
 
-         return familyInviteMaper.
+         return familyInviteMapper.
                  toFamilyInviteResponse(familyInviteRepository.save(familyInvite));
     }
 
@@ -87,7 +94,7 @@ public class FamilyInviteService {
         // metodo de validação de convite
         validateInvite(invite);
 
-        return familyInviteMaper.FamilyInviteDetailsResponse(invite);
+        return familyInviteMapper.FamilyInviteDetailsResponse(invite);
 
     }
 
@@ -112,7 +119,86 @@ public class FamilyInviteService {
 
 
     // aceitar o convite
+    @Transactional
+    public void acceptInvite(String token){
+        User user = securityService.getLoggedUser();
+
+        // verifica se o convite existe
+        FamilyInvite invite = familyInviteRepository
+                .findByToken(token)
+                .orElseThrow(InviteNotFoundException::new);
+
+        // valida
+        validateInvite(invite);
 
 
+        // pega a familia do convite
+        Family family = invite.getFamily();
+
+        // verifica se o usuário ja está nela
+        if(familyMemberRepository.existsByFamilyAndUser(
+                family,
+                user
+        )){
+            throw new UserAlreadyInFamilyException();
+        }
+
+        // verifica se a família esta cheia
+        if(familyMemberRepository.countByFamilyId(family.getId()) >= 12){
+            throw new MemberLimitExceededException();
+        }
+
+        // cria o vinculo
+        FamilyMember member = new FamilyMember();
+
+        member.setFamily(family);
+        member.setUser(user);
+        member.setRole(FamilyRole.MEMBER);
+        member.setJoinedAt(LocalDateTime.now());
+
+        // salva
+        familyMemberRepository.save(member);
+
+        // marca o status como accepted
+        invite.setStatus(InviteStatus.ACCEPTED);
+
+
+        historyService.createHistory(
+                user.getName() + " entrou na família",
+                family,
+                user,
+                HistoryAction.ADDED_MEMBER
+        );
+    }
+
+    // usuario admin que criou o convite pode cancelar ele, invalida o token
+    @Transactional
+    public void cancelInvite(String token) {
+
+        User loggedUser = securityService.getLoggedUser();
+
+
+        FamilyInvite invite = familyInviteRepository.findByToken(token)
+                .orElseThrow(InviteNotFoundException::new);
+
+
+        Family family = invite.getFamily();
+
+
+        // verifica se quem cancelou é admin da família
+        globalHelperService.getAdminMemberOrThrow(
+                family,
+                loggedUser
+        );
+
+
+        if(invite.getStatus() != InviteStatus.PENDING){
+            throw new InvalidInviteException();
+        }
+
+
+        invite.setStatus(InviteStatus.CANCELLED);
+
+    }
 
 }
