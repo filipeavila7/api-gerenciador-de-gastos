@@ -4,8 +4,11 @@ import com.example.gerenciador.auth.dto.LoginRequest;
 import com.example.gerenciador.auth.dto.LoginResponse;
 import com.example.gerenciador.exceptions.UserNotFoundException;
 import com.example.gerenciador.jwt.JwtService;
+import com.example.gerenciador.security.refresh.entity.RefreshToken;
+import com.example.gerenciador.security.refresh.service.RefreshTokenService;
 import com.example.gerenciador.user.entity.User;
 import com.example.gerenciador.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,10 +20,14 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository repository;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
+
+
+
+    @Transactional
     public LoginResponse login(LoginRequest request){
 
-        // autenticar o usuario
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
@@ -32,10 +39,42 @@ public class AuthService {
         User user = repository.findByEmail(request.email())
                 .orElseThrow(UserNotFoundException::new);
 
-        // gerar token para o usuario logado
+
         String token = jwtService.generateToken(user);
 
-        // retornar o token
-        return new LoginResponse(token);
+
+        refreshTokenService.deleteAll(user);
+
+
+        RefreshToken refresh =
+                refreshTokenService.create(user);
+
+
+        return new LoginResponse(
+                token,
+                refresh.getToken()
+        );
+    }
+
+    // refresh token
+    public LoginResponse refresh(String refreshToken){
+
+        // valida o refresh token
+        RefreshToken token =
+                refreshTokenService.validate(refreshToken);
+
+
+        User user = token.getUser();
+
+
+        // cria um novo jwt
+        String newAccessToken =
+                jwtService.generateToken(user);
+
+
+        return new LoginResponse(
+                newAccessToken,
+                refreshToken
+        );
     }
 }
