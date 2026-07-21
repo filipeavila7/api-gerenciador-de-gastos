@@ -3,6 +3,7 @@ package com.example.gerenciador.user.service;
 
 
 import com.example.gerenciador.exceptions.EmailAlreadyExistsException;
+import com.example.gerenciador.exceptions.InvalidPasswordException;
 import com.example.gerenciador.security.SecurityService;
 import com.example.gerenciador.user.dto.UpdateUserRequest;
 import com.example.gerenciador.user.entity.UserRole;
@@ -30,7 +31,7 @@ public class UserService {
 
     // retorna os dados usuario logado
     @Transactional(readOnly = true)
-    public UserResponse getMe(){
+    public UserResponse getMe() {
         User loggedUser = securityService.getLoggedUser();
 
         return userMapper.toUserResponse(loggedUser);
@@ -40,7 +41,7 @@ public class UserService {
     // ================ POST ======================
 
     @Transactional
-    public UserResponse createUser(UserRequest request){
+    public UserResponse createUser(UserRequest request) {
         if (repository.existsByEmail(request.email())) {
             throw new EmailAlreadyExistsException();
         }
@@ -58,12 +59,11 @@ public class UserService {
     }
 
 
-
     // ================ DELETE ======================
 
     // Próprio usuario se deletar
     @Transactional
-    public void deleteMe(){
+    public void deleteMe() {
         User loggedUser = securityService.getLoggedUser();
         repository.delete(loggedUser);
     }
@@ -73,15 +73,15 @@ public class UserService {
 
     // Próprio usuario logado se editar
     @Transactional
-    public UserResponse editMe(UpdateUserRequest request){
+    public UserResponse editMe(UpdateUserRequest request) {
         User user = securityService.getLoggedUser();
 
         if (request.name() != null) {
             user.setName(request.name());
         }
 
-        if(request.email() != null &&
-                !request.email().equals(user.getEmail())){
+        if (request.email() != null &&
+                !request.email().equals(user.getEmail())) {
 
             repository.findByEmail(request.email())
                     .ifPresent(u -> {
@@ -91,18 +91,36 @@ public class UserService {
             user.setEmail(request.email());
         }
 
-        if (request.password() != null) {
-            user.setPassword(passwordEncoder.encode(request.password()));
+        if (request.newPassword() != null) {
+
+            if (request.password() == null ||
+                    !passwordEncoder.matches(
+                            request.password(),
+                            user.getPassword()
+                    )) {
+
+                throw new InvalidPasswordException();
+            }
+
+            user.setPassword(
+                    passwordEncoder.encode(
+                            request.newPassword()
+                    )
+            );
         }
 
-        if (request.profileImg() != null){
-            user.setProfileImg(request.profileImg());
-        }
+            if (request.profileImg() != null) {
+                user.setProfileImg(request.profileImg());
+            }
 
-        repository.save(user);
+            repository.save(user);
 
-        return userMapper.toUserResponse(user);
+            return userMapper.toUserResponse(user);
+
+
 
     }
 
-}
+    }
+
+

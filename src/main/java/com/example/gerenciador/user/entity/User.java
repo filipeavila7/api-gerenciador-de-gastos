@@ -1,6 +1,8 @@
 package com.example.gerenciador.user.entity;
 
 import com.example.gerenciador.family.entity.FamilyMember;
+import com.example.gerenciador.history.entity.History;
+import com.example.gerenciador.security.refresh.entity.RefreshToken;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,11 +46,27 @@ public class User implements UserDetails {
     private UserRole role = UserRole.USER;
 
     // relação com a tabela intermediária que liga famílias com usuarios
-    @OneToMany(mappedBy = "user")
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true)
     private List<FamilyMember> memberships = new ArrayList<>();
 
 
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private RefreshToken refreshToken;
 
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true
+    )
+    private List<History> histories;
 
     // informar ao Spring quais permissões (authorities/roles) o usuário possui.
     @Override

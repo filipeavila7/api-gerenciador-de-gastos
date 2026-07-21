@@ -5,6 +5,7 @@ import com.example.gerenciador.auth.dto.LoginResponse;
 import com.example.gerenciador.exceptions.UserNotFoundException;
 import com.example.gerenciador.jwt.JwtService;
 import com.example.gerenciador.security.refresh.entity.RefreshToken;
+import com.example.gerenciador.security.refresh.repository.RefreshTokenRepository;
 import com.example.gerenciador.security.refresh.service.RefreshTokenService;
 import com.example.gerenciador.user.entity.User;
 import com.example.gerenciador.user.repository.UserRepository;
@@ -21,6 +22,7 @@ public class AuthService {
     private final UserRepository repository;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
 
 
@@ -43,7 +45,12 @@ public class AuthService {
         String token = jwtService.generateToken(user);
 
 
-        refreshTokenService.deleteAll(user);
+        refreshTokenRepository.deleteByUserId(user.getId());
+        refreshTokenRepository.flush();
+
+
+
+
 
 
         RefreshToken refresh =

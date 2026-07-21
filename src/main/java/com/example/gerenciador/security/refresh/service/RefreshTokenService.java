@@ -110,7 +110,7 @@ public class RefreshTokenService {
      */
     @Transactional
     public void deleteAll(User user){
-
+        System.out.println("dentro do delete");
         repository.deleteByUser(user);
     }
 }
