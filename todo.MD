@@ -34,7 +34,7 @@
 - [X] Deletar produtos em lote
 - [x] Associar produto à categoria
 - [x] Validar categoria da mesma família
-- [ ] Filtrar por categoria
+- [X] Filtrar por categoria
 - [x] Paginação de produtos
 - [X] controller de produtos
 - [x] metodos admin geral 
@@ -44,9 +44,9 @@
 ## Segurança
 - [x] Verificação de admin
 - [x] Verificação de membro da família
-- [ ] Centralizar regras de autorização melhor (helper/service)
-- [ ] Validar acesso a categorias
-- [ ] Evitar repetição de lógica de permissão
+- [X] Centralizar regras de autorização melhor (helper/service)
+- [X] Validar acesso a categorias
+- [X] Evitar repetição de lógica de permissão
 
 ---
 
@@ -66,7 +66,6 @@
 - [X] Deletar varios produto da compra
 - [X] Editar dados do produto dentro da compra - quantidade e preço unico
 - [X] Controller de purchase
-- [ ] Metodos admin
 - [x] Verificação de produtos caso tente apagar mas ele exista em purchaseItens
 
 ---
@@ -75,9 +74,7 @@
 - [x] Testes de criação de família
 - [x] Testes de adicionar membro
 - [x] Testes de permissão (admin vs não-admin)
-- [ ] Testes de categoria
-- [ ] Testes de produto
-- [ ] Testes de exceções (AccessDenied, NotFound)
+
 
 ---
 
@@ -92,11 +89,11 @@
 - [x] Associar transação de despesa a uma compra
 - [x] Permitir transações sem compra associada (INCOME)
 - [x] Calcular saldo da família (INCOME - EXPENSE)
-- [ ] Filtrar transações por tipo
-- [ ] Filtrar transações por período
+- [X] Filtrar transações por tipo
+- [X] Filtrar transações por período
 - [ ] Editar transação manual
 - [ ] Deletar transação manual
-- [ ] Métodos admin geral
+
 
 
 ---
@@ -132,7 +129,7 @@
 - [ ] Ajustar env
 - [X] Classe para configurar onde as imagens são salvas e o seu nome
 - [X] Gráficos para accompanhar os gastos durante os meses
-- [ ] Ajustar localDateTime para a hora vier certa indpendente da maquina onde o servidor esta
+- [X] Ajustar localDateTime para a hora vier certa indpendente da maquina onde o servidor esta
 - [ ] Integrações com IA como ler boletos e criar automaticamente a compra
 - [ ] WebSockets para acompanhar em tempo real algumas funções
 - [ ] Caches em algumas areas para melhorar performace
