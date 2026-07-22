@@ -8,6 +8,9 @@ public record FamilyInviteDetailsResponse(
         String familyName,
         String createdByName,
         LocalDateTime expiresAt,
-        InviteStatus status
+        InviteStatus status,
+        Long familyId,
+        String profileImg
+
 ) {
 }

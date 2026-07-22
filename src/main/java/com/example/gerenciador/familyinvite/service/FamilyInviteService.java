@@ -91,8 +91,6 @@ public class FamilyInviteService {
         FamilyInvite invite = familyInviteRepository.findByToken(token)
                 .orElseThrow(InviteNotFoundException::new);
 
-        // metodo de validação de convite
-        validateInvite(invite);
 
         return familyInviteMapper.FamilyInviteDetailsResponse(invite);
 

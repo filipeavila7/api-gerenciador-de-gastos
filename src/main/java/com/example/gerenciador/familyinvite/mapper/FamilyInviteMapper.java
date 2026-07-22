@@ -3,6 +3,7 @@ package com.example.gerenciador.familyinvite.mapper;
 import com.example.gerenciador.familyinvite.dto.FamilyInviteDetailsResponse;
 import com.example.gerenciador.familyinvite.dto.FamilyInviteResponse;
 import com.example.gerenciador.familyinvite.entity.FamilyInvite;
+import com.example.gerenciador.utils.uploads.service.FileUrlUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +21,9 @@ public class FamilyInviteMapper {
                 f.getFamily().getName(),
                 f.getCreatedBy().getName(),
                 f.getExpiresAt(),
-                f.getStatus()
+                f.getStatus(),
+                f.getFamily().getId(),
+                FileUrlUtils.toPublicUrl(f.getFamily().getProfileImg())
         );
     }
 }
