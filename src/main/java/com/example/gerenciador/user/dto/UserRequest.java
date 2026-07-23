@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 public record UserRequest(
 
         @NotBlank(message = "Nome é obrigatório")
-        @Size(min = 3, max = 25, message = "Nome deve ter entre 3 e 25 caracteres")
+        @Size(max = 25, message = "Nome deve ter entre 3 e 25 caracteres")
         String name,
 
         @NotBlank(message = "Email é obrigatório")

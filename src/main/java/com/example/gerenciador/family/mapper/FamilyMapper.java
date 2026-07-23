@@ -34,10 +34,15 @@ public class FamilyMapper {
 
 
     public MemberResponse toMemberResponse(FamilyMember f){
+        String profileImg = f.getUser().getProfileImg() != null
+                ? FileUrlUtils.toPublicUrl(f.getUser().getProfileImg())
+                : null;
+
         return new MemberResponse(
                 f.getId(),
+                f.getUser().getId(),
                 f.getUser().getName(),
-                FileUrlUtils.toPublicUrl(f.getUser().getProfileImg()),
+                profileImg,
                 f.getRole(),
                 f.getJoinedAt()
         );

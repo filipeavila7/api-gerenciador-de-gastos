@@ -3,6 +3,7 @@ package com.example.gerenciador.user.controller;
 import com.example.gerenciador.user.dto.*;
 import com.example.gerenciador.user.service.AdminUserService;
 import com.example.gerenciador.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -100,7 +101,7 @@ public class UserController {
     // ================ POST ======================
 
     @PostMapping("/new")
-    public ResponseEntity<UserResponse> crateUser(@RequestBody UserRequest request){
+    public ResponseEntity<UserResponse> crateUser(@Valid @RequestBody UserRequest request){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createUser(request));
     }
