@@ -39,6 +39,8 @@ public class Family {
 
     // cascadeType ALL -> caso a familia seja apagada, todas as registros onde estão o seu id são apagados tambem
 
+
+
     // relação com a tabela intermediária que liga famílias com usuarios
     @OneToMany(mappedBy = "family", cascade = CascadeType.ALL)
     private List<FamilyMember> userMembres = new ArrayList<>();
