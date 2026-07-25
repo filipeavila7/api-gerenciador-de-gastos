@@ -1,23 +1,28 @@
-package com.example.gerenciador.security;
+package com.example.gerenciador.config;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
-import org.springframework.context.annotation.Configuration;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-
-@Configuration
+@Slf4j
+@Component
 public class EnvConfig {
 
+    @Value("${DB_URL}")
+    private String dbUrl;
+
+    @Value("${DB_USER}")
+    private String dbUser;
+
+    @Value("${DB_PASSWORD}")
+    private String dbPassword;
+
+
     @PostConstruct
-    public void loadEnv() {
-
-        Dotenv dotenv = Dotenv.configure()
-                .ignoreIfMissing()
-                .load();
-
-        System.setProperty("JWT_SECRET", dotenv.get("JWT_SECRET"));
-        System.setProperty("DB_URL", dotenv.get("DB_URL"));
-        System.setProperty("DB_USER", dotenv.get("DB_USER"));
-        System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
+    public void check() {
+        log.info("DB_URL: {}", dbUrl);
+        log.info("DB_USER: {}", dbUser);
+        log.info("DB_PASSWORD: {}", dbPassword);
     }
 }
