@@ -13,6 +13,9 @@ public record PurchaseItenUpdateRequest(
         BigDecimal unitPrice,
 
         @Positive
-        Long quantity
+        Long quantity,
+
+        @PositiveOrZero
+        BigDecimal discount
 ) {
 }

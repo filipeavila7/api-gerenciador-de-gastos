@@ -19,6 +19,9 @@ public record PurchaseItensRequest(
 
         @NotNull
         @Positive
-        Long quantity
+        Long quantity,
+
+        @Positive
+        BigDecimal discount
 ) {
 }

@@ -48,6 +48,7 @@ public class PurchaseItens {
     @Column(nullable = false)
     private BigDecimal unitPrice;
 
-
+    @Column(nullable = false)
+    private BigDecimal discount = BigDecimal.ZERO;
 
 }

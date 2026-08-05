@@ -212,6 +212,8 @@ public class PurchaseService {
 
         purchaseItens.setQuantity(request.quantity());
         purchaseItens.setUnitPrice(request.unitPrice());
+        purchaseItens.setDiscount(request.discount());
+
 
 
         // adcionar do outro lado da relação
@@ -281,6 +283,7 @@ public class PurchaseService {
                             item.setProduct(product);
                             item.setQuantity(itemRequest.quantity());
                             item.setUnitPrice(itemRequest.unitPrice());
+                            item.setDiscount(itemRequest.discount());
 
                             return item; // retorna para adcionar na lista
                         }
@@ -363,6 +366,10 @@ public class PurchaseService {
 
         if (request.quantity() != null){
             item.setQuantity(request.quantity());
+        }
+
+        if (request.discount() != null){
+            item.setDiscount(request.discount());
         }
 
         PurchaseItens savedItem = purchaseItensRepository.save(item);
@@ -548,8 +555,15 @@ public class PurchaseService {
 
 
     private BigDecimal itemSubtotal(PurchaseItens item){
-        return item.getUnitPrice()
+
+        BigDecimal subtotal = item.getUnitPrice()
                 .multiply(BigDecimal.valueOf(item.getQuantity()));
+
+        BigDecimal discount = item.getDiscount() != null
+                ? item.getDiscount()
+                : BigDecimal.ZERO;
+
+        return subtotal.subtract(discount);
     }
 
     private void addToPurchaseTotal(Purchase purchase, BigDecimal amount){

@@ -105,8 +105,14 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/auth/**",
-                                "/invite/token/**")
+                        .requestMatchers(
+                                "/auth/**",
+                                "/invite/token/**",
+                                "/",
+                                "/index.html",
+                                "/assets/**",
+                                "/favicon.svg"
+                        )
                         .permitAll()
 
                         .requestMatchers("/admin/**")
@@ -115,7 +121,8 @@ public class SecurityConfig {
                         .requestMatchers("/users/**")
                         .permitAll()
 
-                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/uploads/**")
+                        .permitAll()
 
                         .anyRequest()
                         .authenticated()

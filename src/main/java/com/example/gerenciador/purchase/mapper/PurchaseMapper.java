@@ -27,9 +27,14 @@ public class PurchaseMapper {
     }
 
     public PurchaseItensResponse toPurchaseItensResponse(PurchaseItens p){
-        BigDecimal subtotal =
-                p.getUnitPrice()
-                        .multiply(BigDecimal.valueOf(p.getQuantity()));
+        BigDecimal subtotal = p.getUnitPrice()
+                .multiply(BigDecimal.valueOf(p.getQuantity()));
+
+        BigDecimal discount = p.getDiscount() != null
+                ? p.getDiscount()
+                : BigDecimal.ZERO;
+
+        subtotal = subtotal.subtract(discount);
 
         return new PurchaseItensResponse(
                 p.getPurchase().getId(),
@@ -39,7 +44,8 @@ public class PurchaseMapper {
                 p.getProduct().getCategory().getName(),
                 p.getUnitPrice(),
                 p.getQuantity(),
-                subtotal
+                subtotal,
+                discount
         );
     }
 
@@ -48,8 +54,14 @@ public class PurchaseMapper {
         return purchaseItens.stream()
                 .map(item -> {
 
-                    BigDecimal subTotal = item.getUnitPrice()
+                    BigDecimal subtotal = item.getUnitPrice()
                             .multiply(BigDecimal.valueOf(item.getQuantity()));
+
+                    BigDecimal discount = item.getDiscount() != null
+                            ? item.getDiscount()
+                            : BigDecimal.ZERO;
+
+                    subtotal = subtotal.subtract(discount);
 
                     return new PurchaseItensResponse(
                             item.getPurchase().getId(),
@@ -59,7 +71,8 @@ public class PurchaseMapper {
                             item.getProduct().getCategory().getName(),
                             item.getUnitPrice(),
                             item.getQuantity(),
-                            subTotal
+                            subtotal,
+                            discount
                     );
                 })
                 .toList();

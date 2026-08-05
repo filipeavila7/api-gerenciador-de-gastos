@@ -10,7 +10,8 @@ public record PurchaseItensResponse(
         String categoryName,
         BigDecimal unitPrice,
         Long quantity,
-        BigDecimal subtotal
+        BigDecimal subtotal,
+        BigDecimal discount
 
 ) {
 }
